@@ -1,0 +1,6 @@
+Timezone: "Europe/Stockholm"
+
+Ingress: false
+GrafanaServerHostname: "grafana.colonyos.io"
+
+GrafanaImage: grafana/grafana-oss:latest-ubuntu

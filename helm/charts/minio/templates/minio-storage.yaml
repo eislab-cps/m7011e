@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-path-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn 
+  resources:
+    requests:
+      storage: {{ .Values.StorageSize | quote }} 

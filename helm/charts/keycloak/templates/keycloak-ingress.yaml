@@ -1,0 +1,28 @@
+{{ if .Values.Ingress }}
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.IngressController }}
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    {{ if .Values.CertManager }}
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    {{ end }}
+spec:
+  rules:
+  - host: {{ .Values.KeycloakHostname | quote }} 
+    http:
+      paths:
+        - pathType: {{ .Values.IngressPathType }} 
+          path: /
+          backend:
+            service:
+              name: keycloak-service
+              port: 
+                number: 8080
+  tls:
+    - secretName: keycloak-secret
+      hosts:
+        - {{ .Values.KeycloakHostname | quote }}
+ {{ end }}

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet 
+metadata:
+  name: postgres-statefulset
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgresql-internal"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+     metadata:
+       labels:
+          app: postgres
+     spec:
+         containers:
+           - name: postgres 
+             image: {{ (.Values.DBImage) }} 
+             imagePullPolicy: "IfNotPresent"
+             ports:
+               - containerPort: 5432
+             envFrom:
+               - configMapRef:
+                   name: postgres-config
+             volumeMounts:
+               - mountPath: /var/lib/postgresql/data
+                 name: postgresdb
+             {{ if .Values.DBResourceLimit }}
+             resources:
+                limits:
+                  memory: {{ (.Values.DBMemory | quote) }}
+                requests:
+                  cpu: {{ (.Values.DBCPU | quote) }}
+                  memory: {{ (.Values.DBMemory | quote) }}
+             {{ end }}
+         volumes:
+           - name: postgresdb
+             persistentVolumeClaim:
+               claimName: postgresql-pvc

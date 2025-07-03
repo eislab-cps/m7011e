@@ -1,0 +1,6 @@
+apiVersion: v1
+name: rabbitmq
+description: A helm chart for setting up a RabbitMQ server
+type: application
+version: 0.0.1
+appVersion: 0.0.1

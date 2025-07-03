@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-deployment
+  labels:
+    app: minio 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio 
+  template:
+     metadata:
+       labels:
+          app: minio 
+     spec:
+         containers:
+           - name: minio 
+             image: {{ .Values.Image | quote }} 
+             imagePullPolicy: "Always"
+             command: ['minio']
+             args: ['server', '/var/lib/minio/data', '--console-address', ':9001']
+             ports:
+               - containerPort: 9000
+               - containerPort: 9001
+             envFrom:
+               - configMapRef:
+                   name: minio-config
+             volumeMounts:
+               - name: storage 
+                 mountPath: /var/lib/minio/data 
+         volumes:
+            - name: storage
+              persistentVolumeClaim:
+                claimName: local-path-pvc

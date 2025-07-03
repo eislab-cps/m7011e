@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+  labels:
+    app: keycloak 
+spec:
+  replicas: {{ (int .Values.KeycloakReplicas) }}
+  selector:
+    matchLabels:
+      app: keycloak 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 25%
+  template:
+     metadata:
+      annotations:
+        timestamp: {{ now | quote }}
+      labels:
+        app: keycloak 
+     spec:
+        containers:
+        - name: keycloak-container 
+          image: {{ .Values.KeycloakImage | quote }} 
+          imagePullPolicy: "Always"
+          command: ["/opt/keycloak/bin/kc.sh"]
+          args: ["start"]
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: keycloak-config
+          {{ if .Values.KeycloakResourceLimit }}
+          resources:
+            limits:
+              memory: {{ (.Values.KeycloakMemory | quote) }}
+            requests:
+              cpu: {{ (.Values.KeycloakCPU | quote) }}
+              memory: {{ (.Values.KeycloakMemory | quote) }}
+          {{ end }}
