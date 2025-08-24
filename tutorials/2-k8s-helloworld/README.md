@@ -161,6 +161,8 @@ hello-world-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
 
 Your application should now be accessible at your configured domain (e.g., `https://helloworld.ltu-m7011e-johan.se`).
 
+![Helloworld](./webapp.png)
+
 ## How the Application Works
 This application demonstrates several key Kubernetes concepts:
 
