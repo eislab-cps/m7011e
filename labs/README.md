@@ -27,6 +27,8 @@ Based on your completed courses, you should have:
 
 Submit a **1-page proposal** including:
 
+📋 **Use the [Project Proposal Template](project-proposal-template.md)** for detailed guidance and structure.
+
 - **Problem Statement**: What problem are you solving?
 - **Core Features**: List 3-5 main features your system will provide
 - **Target Users**: Who will use your system?
@@ -48,6 +50,8 @@ Submit a **1-page proposal** including:
 ## Core Technical Requirements
 
 All projects **MUST** include these elements to pass:
+
+📋 **See [Technical Requirements](technical-requirements.md)** for detailed specifications.
 
 ### 1. Full-Stack Implementation
 *Learning Objective: Build dynamic web systems*
@@ -123,37 +127,46 @@ All projects **MUST** include these elements to pass:
 
 ## Grading Criteria
 
-**IMPORTANT**: Grades measure **individual technical knowledge**, not feature quantity or visual design. Each team member will have an **individual oral examination** to demonstrate their understanding of:
-- System architecture decisions and trade-offs
-- Security implementations and vulnerability prevention  
-- Code they wrote and why they wrote it that way
-- How their component integrates with the overall system
-- Alternative approaches they considered
+**IMPORTANT**: **Team receives shared grade** based on system quality and implementation. Each team member must **pass individual oral examination** to receive the team grade. The oral exam verifies you participated meaningfully in technical work and understand:
+- Your personal contributions to the system
+- Basic system architecture and data flow
+- Technologies used and fundamental concepts
+- Security and testing approaches implemented
 
-### Grade 3 (Pass) - **Knowledge Requirements**
-- **Individual Understanding**: Can explain their own code and basic system design
-- **Architecture Knowledge**: Understands monolithic vs microservices trade-offs
-- **Security Awareness**: Can explain authentication flow and basic security measures
-- **Testing Knowledge**: Understands what their tests validate and why
-- **Deployment Understanding**: Can explain Docker and Kubernetes basics
-- **Integration Knowledge**: Understands how frontend/backend/database connect
+### Team Grading Based on System Quality
 
-### Grade 4 (Good) - **Knowledge Requirements**
-- **Advanced Architecture**: Can justify architectural decisions and discuss alternatives
-- **Deep Security Knowledge**: Understands OWASP top 10, can explain threat modeling
-- **Testing Strategy**: Can explain test pyramid, integration vs unit tests, edge cases
-- **DevOps Understanding**: Can explain CI/CD pipeline stages and deployment strategies  
-- **Performance Awareness**: Can identify bottlenecks and explain caching strategies
-- **System Integration**: Understands service communication, error handling, monitoring
+**All team members receive the same grade based on the delivered system:**
 
-### Grade 5 (Excellent) - **Knowledge Requirements**
-- **Expert Architecture**: Can discuss scalability patterns, CAP theorem, distributed systems
-- **Security Expert**: Can explain zero-trust principles, secure coding practices, compliance
-- **Advanced DevOps**: Can explain blue-green vs canary deployments, chaos engineering
-- **System Design**: Can design systems for scale, explain database sharding, caching layers
-- **Performance Expert**: Can explain profiling, optimization strategies, monitoring best practices
-- **Innovation**: Can propose and justify novel solutions, discuss emerging technologies
-- **Teaching Ability**: Can explain complex concepts clearly, mentor others
+#### Grade 3 (Pass) - **System Requirements**
+- All core technical requirements implemented
+- Basic security measures (authentication, HTTPS, input validation)
+- 60% test coverage with functional tests
+- Working Kubernetes deployment
+- Basic documentation
+
+#### Grade 4 (Good) - **System Requirements**  
+- Well-structured architecture with clear component separation
+- One advanced feature implemented (real-time, AI, performance, or advanced DevOps)
+- 70%+ test coverage including integration tests and edge cases
+- Comprehensive documentation and monitoring
+- CI/CD pipeline with multiple environments
+
+#### Grade 5 (Excellent) - **System Requirements**
+- Production-ready system with advanced architecture
+- Two advanced features demonstrating innovation
+- Comprehensive testing, security, and monitoring
+- Advanced DevOps practices (blue-green deployment, observability)
+- Exceptional documentation and system design
+
+### Oral Examination: Pass/Fail Requirement
+
+**To receive your team grade, you must PASS the individual oral examination by demonstrating:**
+- Understanding of your personal contributions
+- Basic system architecture knowledge
+- Familiarity with technologies used
+- Awareness of security and testing implementations
+
+📋 **See [Oral Examination Guide](oral-examination-guide.md)** for detailed preparation instructions and assessment criteria.
 
 ## Deliverables & Realistic Timeline
 
@@ -191,20 +204,40 @@ All projects **MUST** include these elements to pass:
 - **Git Repository**: All code in version control with meaningful commits
 - **Live Demo**: Working application deployed on Kubernetes
 - **Documentation**: Comprehensive README and technical documentation
-- **Individual Oral Examination**: Each team member examined separately on:
-  - Their specific contributions and implementation decisions
-  - Understanding of the overall system architecture
-  - Alternative approaches and trade-offs considered
-  - Ability to extend or modify the system
-  - Knowledge of underlying technologies and principles
+- **Pre-Assessment Document**: Individual technical reflection (2 pages) submitted before oral exam
+  - 📋 **Use [Pre-Assessment Document Template](pre-assessment-document.md)**
+- **AI Usage Portfolio**: Documentation of AI interactions and validation process
+  - 📋 **Use [AI Usage Portfolio Template](ai-usage-portfolio.md)**
+- **Individual Oral Examination**: 20-minute pass/fail examination to verify technical understanding
+  - Must pass to receive team grade
+  - Focuses on design decisions, system understanding, and AI collaboration effectiveness
 
 ## Important Guidelines
 
-### AI Usage Policy
-- AI tools (ChatGPT, Claude, Cursor) encouraged for learning and development
-- You must understand and be able to explain ALL code and design decisions
-- 60%+ test coverage required for all AI-generated code
-- Full accountability for submitted work regardless of origin
+### AI-Assisted Development Policy
+
+**AI tools (Claude Code, ChatGPT, Cursor, etc.) are strongly encouraged** for modern software development practices.
+
+#### **Encouraged AI Usage:**
+- Code generation and implementation assistance
+- Architecture and design pattern suggestions  
+- Documentation and comment generation
+- Debugging and error resolution
+- Test case generation and validation
+
+#### **Your Responsibilities:**
+- **Understand everything**: Must explain all design decisions and architectural choices
+- **Validate AI output**: Test and verify all AI-generated code thoroughly
+- **Document AI interactions**: Maintain log of AI usage and validation process
+- **Own the decisions**: You are accountable for all technical choices, regardless of origin
+
+#### **Assessment Focus:**
+- **Design reasoning**: Why did you choose this architecture/approach?
+- **Alternative evaluation**: What other options did you consider?
+- **AI collaboration**: How effectively did you use AI assistance?
+- **System understanding**: Can you modify and extend the system?
+
+**Key Principle**: Assessment focuses on your **engineering judgment and system understanding**, not code authorship.
 
 ### Academic Integrity
 - Work must be original to your team
@@ -228,3 +261,19 @@ All projects **MUST** include these elements to pass:
 ---
 
 **Remember**: Focus on backend architecture, security, and scalability. The goal is to build a production-ready system that demonstrates enterprise-level development practices.
+
+---
+
+## Supporting Documents
+
+📚 **Complete Lab Assignment Documentation:**
+
+- **[Project Proposal Template](project-proposal-template.md)** - Detailed template for Week 1 submission
+- **[Technical Requirements](technical-requirements.md)** - Comprehensive technical specifications  
+- **[Project Scope Examples](project-scope-examples.md)** - Grade 3/4/5 project examples with realistic scope
+- **[Grading Rubric](grading-rubric.md)** - Detailed assessment criteria and point breakdown
+- **[Pre-Assessment Document Template](pre-assessment-document.md)** - Individual reflection template
+- **[AI Usage Portfolio Template](ai-usage-portfolio.md)** - AI collaboration documentation template
+- **[Oral Examination Guide](oral-examination-guide.md)** - Preparation guide and assessment criteria
+
+💡 **Read all supporting documents** before starting your project to understand the complete requirements and expectations.

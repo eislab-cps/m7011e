@@ -2,23 +2,21 @@
 
 ## Overview
 
-**CRITICAL**: This project evaluates **individual technical knowledge and understanding**, not feature quantity or team output. Each student receives **individual oral examination** to demonstrate their personal mastery of concepts.
+**GRADING MODEL**: Teams receive **shared grades** based on system quality and implementation. Individual students must **pass oral examination** to receive the team grade.
 
 **Evaluation Focus**: 
-- Deep understanding of implemented technologies
-- Ability to explain architectural decisions and alternatives
-- Security knowledge and threat awareness
-- System design principles and trade-offs
-- **NOT**: Feature count, visual design, or team productivity
+- **Team Grade**: System architecture, feature implementation, production readiness
+- **Individual Requirement**: Pass/fail oral exam verifying meaningful technical participation
+- **NOT**: Individual performance differences, feature count, or visual design
 
-## Grading Scale
+## Team Grading Scale
 
-| Grade | Description | Requirements Met |
-|-------|-------------|------------------|
-| **5** | Excellent | All core requirements + 2 advanced features + exceptional quality |
-| **4** | Good | All core requirements + 1 advanced feature + solid implementation |
-| **3** | Satisfactory | All core requirements + basic implementation |
-| **F** | Fail | Core requirements not met |
+| Grade | Description | System Requirements |
+|-------|-------------|-------------------|
+| **5** | Excellent | Production-ready system + 2 advanced features + exceptional documentation |
+| **4** | Good | Well-structured system + 1 advanced feature + comprehensive testing |
+| **3** | Satisfactory | All core requirements + basic implementation + working deployment |
+| **F** | Fail | Core requirements not met OR student fails oral examination |
 
 ---
 
@@ -117,37 +115,51 @@
 | **API Documentation** | Interactive OpenAPI docs, comprehensive examples | Good API documentation | Basic API documentation | Poor or missing API docs |
 | **Setup Instructions** | Complete deployment guide, automated setup | Good setup instructions | Basic setup documented | Poor or missing instructions |
 
-### Individual Oral Examination (25 points - MOST IMPORTANT)
+## Individual Oral Examination (Pass/Fail)
 
-**Each student examined separately for 20-30 minutes**
+**Each student examined separately for 20 minutes**
 
-| Criteria | Grade 5 (23-25 pts) | Grade 4 (18-22 pts) | Grade 3 (13-17 pts) | Fail (0-12 pts) |
-|----------|---------------------|---------------------|---------------------|-----------------|
-| **Code Ownership** | Can explain every line of their code, design rationale, and alternative approaches | Can explain most of their code and justify key decisions | Can explain basic functionality they implemented | Cannot explain their own code or design decisions |
-| **System Architecture** | Can draw complete system from memory, explain all interactions, discuss scaling strategies | Can explain system components and data flow, basic scaling considerations | Can explain their component's role in overall system | Cannot explain system design or their component's place |
-| **Technology Mastery** | Deep understanding of chosen technologies, can compare with alternatives, explain limitations | Good grasp of technologies used, can explain basic trade-offs | Basic understanding of technologies sufficient for implementation | Superficial or incorrect understanding of technologies |
-| **Problem Solving** | Can propose multiple solutions to hypothetical problems, explain trade-offs, discuss emerging trends | Can suggest improvements and handle basic system modification questions | Can identify obvious issues and suggest simple fixes | Cannot think critically about the system or propose solutions |
+### Pass Criteria (Required to receive team grade):
+
+| Assessment Area | Pass Requirement |
+|----------------|------------------|
+| **Design Decision Ownership** | Can explain and justify architectural and implementation decisions they were involved in |
+| **System Architecture** | Can draw basic system architecture and explain component interactions and data flow |
+| **AI Collaboration** | Can demonstrate effective use of AI tools and validation of AI-generated solutions |
+| **Technology Understanding** | Shows familiarity with key technologies and can explain trade-offs and alternatives |
+| **Problem-Solving** | Can modify system components and reason about hypothetical changes or improvements |
+
+### Fail Conditions (Receives failing grade regardless of team performance):
+
+- Cannot explain or justify design decisions they were involved in
+- No understanding of basic system architecture or data flow
+- Cannot demonstrate how they validated AI-generated code or suggestions
+- Cannot answer fundamental questions about technologies used or their trade-offs
+- Cannot reason about system modifications or improvements
+- Clear evidence of minimal participation in technical decision-making
+- Cannot demonstrate understanding of security or testing approaches
 
 ---
 
-## Final Grade Calculation
+## Final Grade Assignment
 
-### Grade 5 (Excellent): 85-100 points
-- All core requirements (75 points)
-- Two advanced features (20 points)
-- Excellent documentation and oral defense (25 points)
+### Grade Assignment Formula:
+```
+IF (student passes oral exam) AND (team system meets requirements):
+    student_grade = team_system_grade
+ELSE:
+    student_grade = FAIL
+```
 
-### Grade 4 (Good): 70-84 points  
-- All core requirements (75 points)
-- One advanced feature (10 points)
-- Good documentation and oral defense (20 points)
+### Team System Grade Determination:
 
-### Grade 3 (Satisfactory): 55-69 points
-- All core requirements (75 points)
-- Acceptable documentation and oral defense (15 points)
+**Grade 5**: Production-ready system with 2 advanced features, exceptional documentation, comprehensive testing and monitoring
 
-### Fail: <55 points
-- Core requirements not adequately met
+**Grade 4**: Well-structured system with 1 advanced feature, good documentation, solid testing and CI/CD
+
+**Grade 3**: All core requirements implemented, basic documentation, 60%+ test coverage, working deployment
+
+**Fail**: Core requirements not met OR any team member fails oral examination
 
 ---
 

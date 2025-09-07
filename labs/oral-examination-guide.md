@@ -12,13 +12,13 @@ Each student will have a **20-30 minute individual oral examination** to demonst
 
 ## Assessment Areas
 
-### 1. Code Ownership (25% of oral exam)
+### 1. Design Decision Ownership (30% of oral exam)
 
 **Questions will probe:**
-- "Walk me through this function you wrote - explain each line"
+- "Walk me through a major architectural decision you were involved in"
 - "Why did you choose this approach over alternatives?"
-- "What would happen if we changed this parameter?"
-- "Show me the tests for this code - what are they actually testing?"
+- "What would happen if we needed to scale this 10x?"
+- "Show me how you validated this solution - what testing did you do?"
 
 **Grade 5 Student:**
 - Explains every design decision with clear rationale
@@ -64,31 +64,32 @@ Each student will have a **20-30 minute individual oral examination** to demonst
 - Doesn't understand their role in the system
 - Cannot explain data flow
 
-### 3. Technology Mastery (25% of oral exam)
+### 3. AI Collaboration and Validation (25% of oral exam)
 
-**Deep Dive Questions:**
+**AI Usage Assessment:**
+- "Show me an example where you used AI effectively for this project"
+- "Describe a time when AI gave you incorrect advice - how did you identify and fix it?"
+- "What was your process for validating AI-generated code?"
+- "How did AI help you understand this technology/pattern better?"
+
+**Technology Understanding:**
 - "Why did you choose PostgreSQL over MongoDB for this use case?"
-- "Explain how JWT authentication works - what's in the token?"
-- "What's the difference between Docker and Kubernetes?"
-- "How does your CI/CD pipeline actually work?"
+- "What are the trade-offs of your chosen architecture?"
+- "How would you modify this system for different requirements?"
 
-**Grade 5 Student:**
-- Deep understanding of chosen technologies
-- Can compare alternatives and explain trade-offs
-- Understands underlying principles and limitations
-- Keeps up with emerging technologies and trends
-
-**Grade 3 Student:**
-- Basic understanding sufficient for implementation
-- Knows key concepts of technologies they used
-- Can explain why they chose their stack
-- Understands fundamental concepts
+**Pass Standard Student:**
+- Can demonstrate effective AI collaboration with specific examples
+- Shows systematic approach to validating AI suggestions
+- Understands technology trade-offs and can explain choices
+- Can identify when AI advice was incorrect and how they corrected it
+- Shows learning and growth through AI-assisted development
 
 **Failing Student:**
-- Superficial or incorrect understanding
-- Cannot explain technology choices
-- Relies on tutorials without understanding
-- Confused about basic concepts
+- Cannot provide examples of effective AI collaboration
+- No systematic approach to validating AI output
+- Superficial understanding of technologies used
+- Cannot identify problems with AI suggestions
+- Over-reliance on AI without critical evaluation
 
 ### 4. Problem Solving & Critical Thinking (20% of oral exam)
 
@@ -119,23 +120,27 @@ Each student will have a **20-30 minute individual oral examination** to demonst
 ## Sample Examination Flow
 
 ### Opening (2-3 minutes)
-- "Tell me about your role in the team and what you implemented"
-- "What was the most challenging part of your implementation?"
+- "Tell me about your role in the team and what you contributed"
+- "What was your most significant technical contribution to this project?"
 
-### Code Deep Dive (8-10 minutes)
-- "Show me the most complex function you wrote"
-- "Walk me through your authentication implementation"
-- "Explain your database schema design choices"
+### Design Decision Deep Dive (6-8 minutes)
+- "Walk me through a major architectural decision you were involved in"
+- "Show me how you validated this approach"
+- "What alternatives did you consider and why did you reject them?"
 
-### Architecture Discussion (8-10 minutes)
-- "Draw your system architecture on the whiteboard"
-- "Trace a user request from frontend to database and back"
-- "What would you change if you had to start over?"
+### AI Collaboration Assessment (6-8 minutes)
+- "Give me a specific example of effective AI collaboration"
+- "Show me a case where you had to correct or reject AI suggestions"
+- "How did you ensure AI-generated code met your requirements?"
 
-### Technology & Problem Solving (5-7 minutes)
-- "Why did you choose your technology stack?"
+### Architecture & Integration (4-6 minutes)
+- "Draw your system architecture and explain the data flow"
+- "How does your component integrate with the rest of the system?"
+- "What would happen if [component] failed?"
+
+### Problem Solving (2-4 minutes)
 - "How would you handle [hypothetical scenario]?"
-- "What would you add next if you had more time?"
+- "What would you improve if you started this project over?"
 
 ## Red Flags - Automatic Concerns
 
