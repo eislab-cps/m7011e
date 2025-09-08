@@ -101,29 +101,44 @@ All projects **MUST** include these elements to pass:
 
 ## Advanced Features (Choose One for Higher Grades)
 
-### Option A: Real-Time Features
-- WebSocket implementation for live updates
-- Real-time notifications or messaging
-- Collaborative editing capabilities
-- Live presence indicators
+### Option A: Real-Time Personalization
+**Example**: Recipe sharing platform with live recommendation updates
+- **WebSocket-based live updates**: When user likes a recipe, recommendations instantly update
+- **Real-time collaborative filtering**: "Users similar to you just liked..." appears immediately  
+- **Live cooking session features**: Real-time ingredient substitution suggestions during cooking
+- **Dynamic difficulty adjustment**: Recipe complexity adapts based on user's cooking success rate
 
-### Option B: AI Integration
-- LLM chatbot integration
-- Recommendation system with collaborative filtering
-- Semantic search functionality
-- AI-generated content or insights
+### Option B: AI-Powered Dynamic Content with LLM Integration
+**Example**: Study group platform with MCP-enabled AI tutoring system
+- **MCP-powered AI agents**: Implement Model Context Protocol for sophisticated AI tool integration
+- **Dynamic LLM interactions**: Claude/GPT integration that adapts responses based on user's learning progress
+- **Contextual knowledge retrieval**: AI agents access course materials, user progress, and learning analytics
+- **Personalized content generation**: LLMs generate custom explanations, quizzes, and study materials
+- **Multi-modal AI responses**: Text, code examples, and structured data based on learning context
+- **AI workflow automation**: Autonomous task planning for personalized study schedules
 
-### Option C: Performance Optimization
-- Redis caching strategy implementation
-- CDN integration for static assets
-- Database query optimization
-- Performance monitoring and alerting
+### Option C: Data-Driven Dynamic Features
+**Example**: Fitness tracking app with behavioral adaptation
+- **Usage pattern analysis**: Track when/how users interact with different features
+- **Dynamic dashboard layouts**: Homepage widgets reorder based on user's most-used features
+- **Behavioral workout recommendations**: Suggest exercises based on user's activity patterns and preferences
+- **Context-aware notifications**: Notification timing/content adapts based on user's response patterns
 
-### Option D: Advanced DevOps
-- Comprehensive Grafana monitoring dashboards
-- Blue-green or canary deployment strategy
-- Feature flags system
-- Chaos engineering or resilience testing
+### Option D: Advanced Cloud-Native Architecture  
+**Example**: Event-driven microservices for social media platform
+- **Event sourcing for user activities**: All user actions stored as events, enabling complex queries
+- **Microservices with service mesh**: User service, content service, notification service with Istio
+- **Advanced Kubernetes operators**: Custom operators for auto-scaling based on user engagement
+- **Distributed tracing**: Track request flow across microservices for performance optimization
+
+### Option E: Real-Time Collaborative Editing
+**Example**: Collaborative documentation platform with live editing capabilities
+- **CRDT implementation**: Conflict-free Replicated Data Types for seamless multi-user editing
+- **Real-time cursors and selections**: See other users' cursors, selections, and edits in real-time
+- **Operational transforms**: Handle concurrent edits without conflicts or data loss
+- **Presence awareness**: Show who's online and actively editing documents
+- **Version history with branching**: Track document changes with ability to branch and merge edits
+- **WebSocket scaling**: Horizontal scaling of real-time connections across multiple servers
 
 ## Grading Criteria
 
@@ -177,7 +192,7 @@ All projects **MUST** include these elements to pass:
 5. **Week 5**: Authentication + security implementation
 6. **Week 6**: Advanced features + CI/CD pipeline
 7. **Week 7**: Production hardening + comprehensive testing
-8. **Week 8**: Final presentation and demonstration
+8. **Week 8**: Individual oral examinations with TA demo
 
 **Kubernetes Learning Path**: Weeks 1-2 tutorials, Week 4 deployment, Weeks 5-7 optimization
 
@@ -202,7 +217,7 @@ All projects **MUST** include these elements to pass:
 ## Submission Requirements
 
 - **Git Repository**: All code in version control with meaningful commits
-- **Live Demo**: Working application deployed on Kubernetes
+- **TA Demo**: Working application demonstration to teaching assistant
 - **Documentation**: Comprehensive README and technical documentation
 - **Pre-Assessment Document**: Individual technical reflection (2 pages) submitted before oral exam
   - 📋 **Use [Pre-Assessment Document Template](pre-assessment-document.md)**
@@ -256,7 +271,7 @@ All projects **MUST** include these elements to pass:
 | 5 | Advanced Features | Choose and implement advanced option |
 | 6 | Testing & Security | Comprehensive testing, security review |
 | 7 | Polish & Documentation | Final documentation, performance tuning |
-| 8 | Presentation | Demo day, oral examinations |
+| 8 | Assessment | Individual oral examinations, TA demos |
 
 ---
 
@@ -270,7 +285,6 @@ All projects **MUST** include these elements to pass:
 
 - **[Project Proposal Template](project-proposal-template.md)** - Detailed template for Week 1 submission
 - **[Technical Requirements](technical-requirements.md)** - Comprehensive technical specifications  
-- **[Project Scope Examples](project-scope-examples.md)** - Grade 3/4/5 project examples with realistic scope
 - **[Grading Rubric](grading-rubric.md)** - Detailed assessment criteria and point breakdown
 - **[Pre-Assessment Document Template](pre-assessment-document.md)** - Individual reflection template
 - **[AI Usage Portfolio Template](ai-usage-portfolio.md)** - AI collaboration documentation template

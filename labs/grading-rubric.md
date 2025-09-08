@@ -67,47 +67,47 @@
 
 ## Advanced Features (Choose 1 for Grade 4, 2 for Grade 5)
 
-### Real-Time Features (10 points)
+### Real-Time Personalization (10 points)
 
 | Implementation Quality | Points | Description |
 |----------------------|--------|-------------|
-| **Excellent** | 9-10 | WebSockets with scaling considerations, real-time collaboration |
-| **Good** | 7-8 | Working WebSocket implementation, basic real-time features |
-| **Basic** | 5-6 | Simple real-time updates implemented |
-| **Poor** | 0-4 | Non-functional or poorly implemented |
+| **Excellent** | 9-10 | Live recommendation updates, WebSocket scaling, real-time behavioral adaptation |
+| **Good** | 7-8 | Working real-time features with basic personalization algorithms |
+| **Basic** | 5-6 | Simple real-time updates with basic user preference tracking |
+| **Poor** | 0-4 | Non-functional or purely static personalization |
 
-### AI Integration (10 points)
-
-| Implementation Quality | Points | Description |
-|----------------------|--------|-------------|
-| **Excellent** | 9-10 | Sophisticated AI features, proper error handling, cost optimization |
-| **Good** | 7-8 | Working AI integration with good user experience |
-| **Basic** | 5-6 | Basic AI functionality implemented |
-| **Poor** | 0-4 | Non-functional or poorly implemented |
-
-### Performance Optimization (10 points)
+### AI-Powered Dynamic Content with LLM Integration (10 points)
 
 | Implementation Quality | Points | Description |
 |----------------------|--------|-------------|
-| **Excellent** | 9-10 | Multi-layer caching, CDN, database optimization, performance testing |
-| **Good** | 7-8 | Good caching strategy, performance improvements demonstrated |
-| **Basic** | 5-6 | Basic caching or optimization implemented |
-| **Poor** | 0-4 | Minimal or no optimization |
+| **Excellent** | 9-10 | MCP implementation, contextual LLM responses, autonomous AI agents, multi-modal content generation |
+| **Good** | 7-8 | Working LLM integration with context awareness and personalized responses |
+| **Basic** | 5-6 | Basic LLM API integration with simple prompt engineering |
+| **Poor** | 0-4 | Static AI responses or non-functional LLM integration |
 
-### Advanced DevOps (10 points)
+### Data-Driven Dynamic Features (10 points)
 
 | Implementation Quality | Points | Description |
 |----------------------|--------|-------------|
-| **Excellent** | 9-10 | Comprehensive monitoring, advanced deployment strategies, resilience testing |
-| **Good** | 7-8 | Good monitoring and deployment practices |
-| **Basic** | 5-6 | Basic advanced DevOps practices |
-| **Poor** | 0-4 | Minimal or poorly implemented |
+| **Excellent** | 9-10 | Comprehensive user analytics, dynamic UI adaptation, behavioral prediction |
+| **Good** | 7-8 | Good user behavior tracking with responsive feature adaptation |
+| **Basic** | 5-6 | Basic user activity tracking with simple feature customization |
+| **Poor** | 0-4 | Static features or minimal behavior tracking |
+
+### Advanced Cloud-Native Architecture (10 points)
+
+| Implementation Quality | Points | Description |
+|----------------------|--------|-------------|
+| **Excellent** | 9-10 | Microservices with service mesh, event sourcing, distributed tracing, custom operators |
+| **Good** | 7-8 | Well-designed microservices with advanced Kubernetes patterns |
+| **Basic** | 5-6 | Basic microservices decomposition with standard Kubernetes deployment |
+| **Poor** | 0-4 | Monolithic deployment or poorly designed service boundaries |
 
 ---
 
-## Documentation & Communication (15 points)
+## Team Documentation & Communication (15 points)
 
-### Documentation Quality
+### Documentation Quality (15 points)
 
 | Criteria | Grade 5 (14-15 pts) | Grade 4 (11-13 pts) | Grade 3 (8-10 pts) | Fail (0-7 pts) |
 |----------|---------------------|---------------------|---------------------|-----------------|
@@ -115,9 +115,12 @@
 | **API Documentation** | Interactive OpenAPI docs, comprehensive examples | Good API documentation | Basic API documentation | Poor or missing API docs |
 | **Setup Instructions** | Complete deployment guide, automated setup | Good setup instructions | Basic setup documented | Poor or missing instructions |
 
-## Individual Oral Examination (Pass/Fail)
+---
+
+## Individual Oral Examination (Pass/Fail Only)
 
 **Each student examined separately for 20 minutes**
+**⚠️ No points awarded - purely pass/fail threshold to receive team grade**
 
 ### Pass Criteria (Required to receive team grade):
 
@@ -153,13 +156,17 @@ ELSE:
 
 ### Team System Grade Determination:
 
-**Grade 5**: Production-ready system with 2 advanced features, exceptional documentation, comprehensive testing and monitoring
+**Points-based grading for team deliverables:**
+- Core Requirements: 75 points
+- Advanced Features: 20 points  
+- Documentation: 15 points
+- **Total: 110 points possible**
 
-**Grade 4**: Well-structured system with 1 advanced feature, good documentation, solid testing and CI/CD
-
-**Grade 3**: All core requirements implemented, basic documentation, 60%+ test coverage, working deployment
-
-**Fail**: Core requirements not met OR any team member fails oral examination
+**Grade Boundaries:**
+- **Grade 5**: 85+ points (Production-ready system + 2 advanced features + excellent docs)
+- **Grade 4**: 70-84 points (Well-structured system + 1 advanced feature + good docs)  
+- **Grade 3**: 55-69 points (Core requirements + basic docs + working deployment)
+- **Fail**: <55 points OR any team member fails oral examination
 
 ---
 
