@@ -53,92 +53,103 @@ All projects **MUST** include these elements to pass:
 
 📋 **See [Technical Requirements](technical-requirements.md)** for detailed specifications.
 
+### 0. Dynamic Web System
+*Learning Objective: Understand dynamic web systems*
+- **Dynamic Content**: Content changes based on user interactions or data (e.g., user profiles, real-time updates)
+Task 1: Design and propose a dynamic web system (see project proposal template)
+
 ### 1. Full-Stack Implementation
 *Learning Objective: Build dynamic web systems*
 
-- **Frontend**: React/Vue/Angular (student choice) - **Note: Focus minimal, backend emphasis**
-- **Backend API**: Node.js/Python (recommended) or Go/Rust (advanced, limited TA support)
-- **Database**: PostgreSQL (recommended) or MongoDB (justify choice)
+- **Frontend**: React (recommended) Vue (limited TA support) Angular (no suppport) (student choice) - **Note: Focus minimal, backend emphasis**
+- **Backend API**: Node.js/Python/Go (recommended)
+- **Database**: PostgreSQL or MongoDB or omething else (student choice)
+Task 1: Well-designed schema with proper relationships (must be able to explain and motivate design choices) 
+Task 2: Docment in Github
+- **Containerization**: Docker for all services with multi-stage builds
 - **Deployment**: All components deployed on Kubernetes with Helm charts
-
-**Stack Recommendations by Experience:**
-- **Beginner-Friendly**: Node.js + Express + PostgreSQL + React
-- **Python Preference**: Python + FastAPI + PostgreSQL + Vue
-- **Advanced Challenge**: Go/Rust + PostgreSQL + Angular (limited support)
+- **Microservices architecture**: Brake down into multiple services (e.g., user service, content service)
+- **Testing**: Minimum 60% code coverage on backend (not UI)
+Task 1: Implement tests (unit/integration). At least 2 endpoint failure test cases (e.g., unauthorized access, validation errors)
+Task 2: Implement Github action (see tutorials provided)
+- **Documentation**: README, API docs, deployment guide
 
 ### 2. API Design & Communication
 *Learning Objective: Create application-programming interface*
 
-- **RESTful API** with proper HTTP methods and status codes
-- **Authentication**: JWT or OAuth 2.0 implementation
-- **API Documentation**: OpenAPI/Swagger specifications
-- **Input Validation**: Comprehensive request validation and sanitization
+- **RESTful API**: with proper HTTP methods and status codes
+- **Event-driven architecture**: Use message queues (e.g., RabbitMQ, Kafka) to decouple services (loosly coupled)
+- **Authentication**: JWT or OAuth 2.0 implementation based on Keyclock
+- **API Documentation**: OpenAPI/Swagger/Async API specifications
 
 ### 3. System Design & Architecture
 *Learning Objective: Model, simulate, predict and evaluate web systems*
 
 - **Architecture Diagram**: C4 model or similar architectural documentation
-- **Database Schema**: Well-designed schema with proper relationships
-- **Performance Analysis**: Load testing results and bottleneck identification
-- **Scalability Plan**: Detailed plan for handling 100x current user load
+Task 1: Document in Github
+- **Database Schema**: Well-designed schema with proper relationships (must be able to explain and motivate design choices) 
+Task 1: Docment in Github
+- **Performance Analysis**: Load testing results and bottleneck identification 
+Task 1: Implement script/tool that generate traffic to simulate load. 
+Task 2: Implement tool for observability and monitoring (Prometheous/Grafana or equivalent).
+Task 3: Document performance metrics and bottlenecks identified using monitoring tools
 
 ### 4. Security & Ethics
 *Learning Objective: Ethical handling of sensitive data*
 
 - **Secure Authentication**: Proper password hashing, session management
-- **Input Sanitization**: Protection against SQL injection, XSS attacks
+Task 1: Implement secure authentication mechanism (e.g., JWT, OAuth 2.0)
+Task 2: Document protection against SQL injection, XSS attacks
 - **HTTPS**: SSL/TLS certificates (automatic via Let's Encrypt)
+Task 1: Implement HTTPS for all communications (see tutorials provided)
+Task 2: Document how certificates are managed and renewed
 - **Data Privacy**: GDPR compliance considerations documented
-
-### 5. Production Readiness
-*Learning Objective: Professional development practices*
-
-- **CI/CD Pipeline**: GitHub Actions or GitLab CI with automated deployments
-- **Automated Testing**: Minimum 60% code coverage on backend (not UI)
-- **Error Handling**: At least 2 endpoint failure test cases (e.g., unauthorized access, validation errors)
-- **Monitoring**: Basic monitoring with Prometheus/Grafana or equivalent
-- **Documentation**: README, API docs, deployment guide
+Task 1: Document how GDRP data privacy measures (e.g., data minimization, user consent) could be implemented. Being able to reason about Etnical handling of sensitive data, how does the system ensure data privacy and security? How does it affect the world? 
 
 ## Advanced Features (Choose One for Higher Grades)
 
-### Option A: Real-Time Personalization
-**Example**: Recipe sharing platform with live recommendation updates
-- **WebSocket-based live updates**: When user likes a recipe, recommendations instantly update
-- **Real-time collaborative filtering**: "Users similar to you just liked..." appears immediately  
-- **Live cooking session features**: Real-time ingredient substitution suggestions during cooking
-- **Dynamic difficulty adjustment**: Recipe complexity adapts based on user's cooking success rate
+### Option A: Advanced Personalization
+**Example**: Recipe sharing platform with live recommendation updates. The web system must be context aware and adapt to content, previous user interactions, and real-time events.
 
-### Option B: AI-Powered Dynamic Content with LLM Integration
-**Example**: Study group platform with MCP-enabled AI tutoring system
-- **MCP-powered AI agents**: Implement Model Context Protocol for sophisticated AI tool integration
-- **Dynamic LLM interactions**: Claude/GPT integration that adapts responses based on user's learning progress
-- **Contextual knowledge retrieval**: AI agents access course materials, user progress, and learning analytics
-- **Personalized content generation**: LLMs generate custom explanations, quizzes, and study materials
-- **Multi-modal AI responses**: Text, code examples, and structured data based on learning context
-- **AI workflow automation**: Autonomous task planning for personalized study schedules
+For example)
+- **Collaborative filtering**: "Users similar to you just liked..." appears immediately  
+- **LLM/MCP integration**: Personalized recipe suggestions based on dietary preferences. Note students must pay for their own LLM API usage (e.g., OpenAI, Anthropic), or model on local machines using Ollama, etc. Does not work on provided K8s cluster.
+- **Dynamic UI updates**: Recommendations update in real-time as user interacts, adapts based on user task
 
-### Option C: Data-Driven Dynamic Features
-**Example**: Fitness tracking app with behavioral adaptation
-- **Usage pattern analysis**: Track when/how users interact with different features
-- **Dynamic dashboard layouts**: Homepage widgets reorder based on user's most-used features
-- **Behavioral workout recommendations**: Suggest exercises based on user's activity patterns and preferences
-- **Context-aware notifications**: Notification timing/content adapts based on user's response patterns
-
-### Option D: Advanced Cloud-Native Architecture  
+### Option B: Advanced Cloud-Native Architecture  
 **Example**: Event-driven microservices for social media platform
+
+Examles)
 - **Event sourcing for user activities**: All user actions stored as events, enabling complex queries
 - **Microservices with service mesh**: User service, content service, notification service with Istio
 - **Advanced Kubernetes operators**: Custom operators for auto-scaling based on user engagement
 - **Distributed tracing**: Track request flow across microservices for performance optimization
+- **CI/CD/GitOps**: GitHub Actions or GitLab CI with automated deployments
 
-### Option E: Real-Time Collaborative Editing
-**Example**: Collaborative documentation platform with live editing capabilities
-- **CRDT implementation**: Conflict-free Replicated Data Types for seamless multi-user editing
-- **Real-time cursors and selections**: See other users' cursors, selections, and edits in real-time
-- **Operational transforms**: Handle concurrent edits without conflicts or data loss
-- **Presence awareness**: Show who's online and actively editing documents
-- **Version history with branching**: Track document changes with ability to branch and merge edits
-- **WebSocket scaling**: Horizontal scaling of real-time connections across multiple servers
+
+
+### Option C: Progresss Web App (PWA) with Offline Support
+**Example**: Fitness tracking app with offline capabilities
+- **Service Workers**: Cache assets and API responses for offline use
+- **IndexedDB/CRDT**: Store user data locally when offline, sync when back online
+- **Push Notifications**: Remind users of workouts even when app is closed
+- **Responsive Design**: Works seamlessly across devices
+- **Performance Optimization**: Fast load times and smooth interactions
+
+### Option D: Advanded Security Features<F15>
+**Example**: Zero-trust architecture, role-based access control
+- **Zero-trust model**: Every request authenticated and authorized, even within the network
+- **Encryption at rest and in transit**: All sensitive data encrypted using strong algorithms
+- **Role-based access control (RBAC)**: Fine-grained permissions for different user roles
+- **Security Auditing**: Log and monitor all access and changes to sensitive data
+- **Automated Security Testing**: Integrate security scans into CI/CD pipeline
+
+### Option E: Advanded Real-Time Features
+**Example**: Real-time multi-player game or collaborative tool
+
+For example)
+- **WebSocket-based live updates**: When user likes a recipe, recommendations instantly update
+- **Live cooking session features**: Real-time ingredient substitution suggestions during cooking
 
 ## Grading Criteria
 
@@ -154,24 +165,30 @@ All projects **MUST** include these elements to pass:
 
 #### Grade 3 (Pass) - **System Requirements**
 - All core technical requirements implemented
-- Basic security measures (authentication, HTTPS, input validation)
-- 60% test coverage with functional tests
-- Working Kubernetes deployment
-- Basic documentation
+- 50%+ test coverage on backend code
 
 #### Grade 4 (Good) - **System Requirements**  
-- Well-structured architecture with clear component separation
-- One advanced feature implemented (real-time, AI, performance, or advanced DevOps)
-- 70%+ test coverage including integration tests and edge cases
+- Previous grade 3 requirements met
+- Advanced feature implemented (Option A-E)
+- 60%+ test coverage including integration tests and edge cases
 - Comprehensive documentation and monitoring
-- CI/CD pipeline with multiple environments
 
 #### Grade 5 (Excellent) - **System Requirements**
-- Production-ready system with advanced architecture
-- Two advanced features demonstrating innovation
-- Comprehensive testing, security, and monitoring
-- Advanced DevOps practices (blue-green deployment, observability)
-- Exceptional documentation and system design
+- Previous grade 4 requirements met
+- Scientific sound evaluation of advanced implementation (options A-E), for example, being able to to demonstrate how the system can be scaled (horizontally/vertically) to handle increased load, demonstrate how the system handles failures and ensures minimal user impact, off line support.
+- 70%+ test coverage with end-to-end tests, strategy how to handle edge cases and failure scenarios with mockups/emulators/simulations etc.
+
+TODO: Fix the the text below and 
+**Scalability Plan**: Detailed plan for handling 100x current user load
+Tasks 1: Implement script/tool that generate traffic to simulate load.
+Tasks 2: Document how system can be scaled (horizontally/vertically) to handle increased load.
+
+- **Resiliency Plan**: Evaluate how user experience implication of restarting microservices. 
+Task 1: Implement high availability for critical services (e.g., user authentication)
+Task 2: Implement script/tool that randomly restart critical microservices to simulate failure.
+Task 3: Document how system handles failures and ensures minimal user impact. Can it be done seamlessly wihtout affecting user experience? How can microservices be updated?
+
+NOTE: Social impact and business model are not graded, but should be considered in project proposal, and is condifered for the rigid scientific sound evaluation of advanced implementation (options A-E).
 
 ### Oral Examination: Pass/Fail Requirement
 
