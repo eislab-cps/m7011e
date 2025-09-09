@@ -1,7 +1,8 @@
-# Lab Assignment: Design and Implement Your Own Dynamic Web System
+# Lab Assignment: 
+## Design and Implement Your Own Dynamic Web System
 
 ## Overview
-This is the main lab assignment for the **Design of Dynamic Web Systems (M7011E)** course. You will design and implement a complete dynamic web system that demonstrates modern full-stack development principles, cloud-native deployment, and production-ready practices.
+This document coverts the lab assignment for the **Design of Dynamic Web Systems (M7011E)** course, where you will design and implement a complete dynamic web system, and also demonstrates modern full-stack development principles, cloud-native deployment, and production-ready practices.
 
 ## Prerequisites
 Based on your completed courses, you should have:
@@ -10,14 +11,12 @@ Based on your completed courses, you should have:
 - **Web Basics**: Client-server communication concepts
 - **Version Control**: Git experience for collaborative development
 
-**New Technologies You'll Learn**: Docker, Kubernetes, CI/CD pipelines, cloud-native development patterns.
-
 ## Assignment Structure
 ### Students work in teams of 3 people (or 2 if odd number of students)
-- Students that find a groups will be assigned to a group of 3 by the instructor
+- Students that find a groups will automatically be assigned to a group of 3 by the instructor
 - Choose your own project idea
 - Must fulfill all core technical requirements  
-- Focus on backend architecture, security, and scalability
+- Focus on backend architecture, security, and scalability (no frontend polish, UX design, or mobile apps)
 - Each team gets dedicated Kubernetes cluster access. Contact TA for access info and credentials.
 
 ## Project Proposal (Week 1)
@@ -40,7 +39,15 @@ Submit a **1-page proposal** including:
 - Fitness tracking with social challenges
 - Local news aggregator with personalization
 - Movie night planning with voting system
-- Lecture note sharing with collaborative annotations
+- Travel itinerary planner with shared editing
+- Volunteer coordination platform for community service
+- Campus resource sharing platform (e.g., textbooks, equipment)
+- Local marketplace for students to buy/sell items
+- Study group finder with matching algorithms
+- Campus event calendar with personalized recommendations
+- Online tutoring platform with session scheduling
+- Group project management tool with task assignments
+- Multiplayer games with real-time interaction
 
 ## Core Technical Requirements
 All projects **MUST** include these elements to pass:
@@ -50,90 +57,84 @@ All projects **MUST** include these elements to pass:
 
 The system must be dynamic, meaning content changes based on user interactions or data (e.g., user profiles, real-time updates).
 
-**REQ1**: System must include an approved project proposal document submitted to instructor
+**REQ1**: Students must propose project proposal document and get it approved by the instructors
 
-**REQ2**: System must demonstrate content adaptation based on approved proposal design
-
-**REQ3**: System must include documented examples of dynamic content changes
-
-**REQ4**: System must implement at least two types of dynamic behavior (e.g., user-specific content, real-time data updates, adaptive interfaces)
-
-**REQ5**: System must respond differently to different user states or interactions
+**REQ2**: System must demonstrate content adaptation based on approved proposal design, specifically system must implement at least two types of dynamic behavior (e.g., user-specific content, real-time data updates, adaptive interfaces)
 
 ### 2. Full-Stack Implementation
 *Learning Objective: Build dynamic web systems*
 
 The system must be a full-stack web application with frontend, backend, and database components, and be based on microservices architecture.
 
-**REQ6**: System must include functional frontend using React (recommended), Vue (limited support), or Angular (no support) - **Note: Minimal focus, backend emphasis**
+**REQ3**: System must include functional frontend using React (recommended), Vue (limited support), or Angular (no support) - **Note: Minimal focus, backend emphasis**
 
-**REQ7**: System must include backend API built with Node.js/Python/Go (recommended)
+**REQ4**: System must include backend API built with Node.js/Python/Go (recommended)
 
-**REQ8**: System must achieve minimum 50% code coverage on backend services (UI testing not required)
+**REQ5**: System must achieve minimum 50% code coverage on backend services (UI testing not required)
 
-**REQ9**: System must include functional GitHub Actions CI/CD pipeline
+**REQ6**: System must include functional GitHub Actions CI/CD pipeline
 
-**REQ10**: System must include at least 2 endpoint failure test cases per service/components (e.g., unauthorized access, validation errors)
+**REQ7**: System must include at least 2 endpoint failure test cases per service/components (e.g., unauthorized access, validation errors)
 
-**REQ11**: System must select and implement a suitable database technology (e.g., PostgreSQL, MongoDB) with justification for the choice based on project requirements
+**REQ8**: System must select and implement a suitable database technology (e.g., PostgreSQL, MongoDB) with justification for the choice based on project requirements
 
-**REQ12**: System must include documented and well-designed database schema with proper relationships (must be able to explain and motivate design choices)
+**REQ9**: System must include documented and well-designed database schema with proper relationships (must be able to explain and motivate design choices)
 
 ### 3. Cloud-Native Deployment
 *Learning Objective: Deploy and manage web systems in cloud environments*
 
 The system must be deployed in a cloud-native manner using containerization and orchestration tools.
 
-**REQ13**: System must include Docker containerization for all services with multi-stage builds
+**REQ10**: System must include Docker containerization
 
-**REQ14**: System must implement microservices architecture with multiple logical services (e.g., user service, content service)
+**REQ11**: System must implement microservices architecture with multiple logical services (e.g., user service, content service)
 
-**REQ15**: System must include Kubernetes deployment for all components using Helm charts
+**REQ12**: System must include Kubernetes deployment for all components using Helm charts
 
-**REQ16**: Project must include observability and monitoring tools (Prometheus/Grafana or equivalent)
+**REQ13**: Project must include observability and monitoring tools (Prometheus/Grafana or equivalent)
 
 ### 4. API Design & Communication
 *Learning Objective: Create application-programming interface*
 
 The system must expose a well-designed API for frontend-backend communication and inter-service communication.
 
-**REQ17**: System must implement RESTful API with proper HTTP methods and status codes
+**REQ14**: System must implement RESTful API with proper HTTP methods and status codes
 
-**REQ18**: System must implement event-driven architecture using message queues (e.g., RabbitMQ, Kafka) for communication between microservices (loosely coupled)
+**REQ15**: System must implement event-driven architecture using message queues (e.g., RabbitMQ, Kafka) for communication between microservices (loosely coupled)
 
-**REQ19**: System must implement authentication using JWT or OAuth 2.0 based on Keycloak
-
-**REQ20**: System must include comprehensive API documentation using OpenAPI/Swagger/AsyncAPI specifications
+**REQ16**: System must include comprehensive API documentation using OpenAPI/Swagger/AsyncAPI specifications
 
 ### 5. System Design & Architecture
 *Learning Objective: Model, simulate, predict and evaluate web systems*
 
 The system must demonstrate sound architectural design principles and performance considerations.
 
-**REQ21**: Project must include comprehensive architecture diagram using C4 model or equivalent architectural documentation, and documentation in GitHub repository
+**REQ17**: Project must include comprehensive architecture diagram using C4 model or equivalent architectural documentation, and documentation in GitHub repository
 
-**REQ22**: Project must include performance analysis with load testing results and bottleneck identification
+**REQ18**: Project must include performance analysis with load testing results and bottleneck identification
 
-**REQ23**: Project must include implemented script/tool that generates traffic to simulate system load
+**REQ19**: Project must include implemented script/tool that generates traffic to simulate system load
 
 ### 6. Security & Ethics
 *Learning Objective: Ethical handling of sensitive data*
 
 The system must implement security best practices and consider ethical implications of data handling.
 
-**REQ24**: Project must implement secure authentication with proper password hashing and session management (e.g., JWT, OAuth 2.0)
+**REQ20**: System must implement secure authentication using JWT or OAuth 2.0 based on Keycloak
 
-**REQ25**: Project must include documented protection against SQL injection and XSS attacks
+**REQ21**: System must provide authorization mechanisms to restrict access to sensitive data and operations based on user roles
 
-**REQ26**: Project must implement HTTPS for all communications using SSL/TLS certificates (automatic via Let's Encrypt)
+**REQ22**: Project must include documented protection against SQL injection and XSS attacks
 
-**REQ27**: Project must include documentation of certificate management and renewal processes
+**REQ23**: Project must implement HTTPS for all communications using SSL/TLS certificates (automatic via Let's Encrypt)
 
-**REQ28**: Project must include GDPR compliance considerations and data privacy measures documentation
+**REQ24**: Project must include documentation of certificate management and automatic renewal processes
 
-**REQ29**: Project must document how data privacy measures (e.g., data minimization, user consent) are implemented
+**REQ25**: Project must include GDPR compliance considerations and data privacy measures documentation
 
-**REQ30**: Project must include ethical analysis of sensitive data handling, privacy implications, and societal impact
+**REQ26**: Project must document how data privacy measures (e.g., data minimization, user consent) are implemented
+
+**REQ27**: Project must include ethical analysis of sensitive data handling, privacy implications, and societal impact
 
 ## Advanced Features (Choose One for Higher Grades)
 To achieve Grade 4 or 5, teams must implement one advanced feature from the options below to enhance their chosen project. This is in addition to all core requirements.
@@ -202,32 +203,23 @@ Each student is examined **individually** (20-minute session) and must demonstra
 ## Grade Levels
 
 ### Grade 3 (Pass) - Core Implementation
-- All core technical requirements (REQ1-REQ30) fully implemented
+- All core technical requirements (REQ1-REQ27) fully implemented
 - 50%+ test coverage on backend code with comprehensive failure scenario testing
 - Working Kubernetes deployment with proper monitoring
 - Complete project documentation
 
 ### Grade 4 (Good) - Advanced Implementation
-**Two pathways to achieve Grade 4:**
-
-**Path A: Advanced Feature Implementation**
-- All Grade 3 requirements met
+- All Grade 3 requirements significantly exceeded in quality and sophistication
 - One advanced feature (Option A-E) successfully implemented
 - 60%+ test coverage including integration tests and edge cases
 - Comprehensive documentation and monitoring
-
-**Path B: Exceptional Core Implementation**
-- All Grade 3 requirements significantly exceeded in quality and sophistication
-- 65%+ test coverage with advanced testing strategies
 - Exceptional architectural design or performance optimization
-- Superior security implementation beyond basic requirements
 
 ### Grade 5 (Excellent) - Production-Ready System
-**Requirements:**
 - All Grade 4 requirements met
-- **Scientific Evaluation** with quantitative analysis demonstrating advanced system capabilities. **Note**: Students must demonstrate rigorous, quantitative evaluation in their chosen area(s). The goal is scientific rigor and technical depth, not breadth across all evaluation types.
+- Scientific Evaluation with quantitative analysis demonstrating advanced system capabilities. **Note**: Students must demonstrate rigorous, quantitative evaluation in their chosen area(s). The goal is scientific rigor and technical depth, not just feature addition.
 
-**Scientific Evaluation Options** (choose at least one with rigorous analysis):
+**Scientific Evaluation Options** (choose at least one with rigorous scientific analysis):
 
 **Scalability Analysis:**
 - Load testing script/tool that generates realistic traffic to simulate system load
