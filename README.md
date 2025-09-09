@@ -23,13 +23,13 @@ Step-by-step tutorials covering how to create web application and deploying serv
 **Lecture 4**: DevOps Practices, Observability & Performance Testing  
 **Learning Outcomes**: REQ6 (CI/CD pipeline), REQ18-19 (Performance analysis, load testing)
 
-### Week 5 – Security & Ethical Data Handling
-**Lecture 5**: Web Security, Authentication & Privacy Protection  
-**Learning Outcomes**: REQ20-27 (Security, authentication, GDPR compliance, ethics)
-
-### Week 6 – Personalization & AI Integration
+### Week 5 – Personalization & AI Integration
 **Lecture 6**: AI Integration in Dynamic Web Systems & Personalization Algorithms  
 **Learning Outcomes**: Advanced Options A-E (emphasis on personalization and AI), scientific evaluation preparation
+
+### Week 6 – Security & Ethical Data Handling
+**Lecture 5**: Web Security, Authentication & Privacy Protection  
+**Learning Outcomes**: REQ20-27 (Security, authentication, GDPR compliance, ethics)
 
 ### Week 7 – Project Demonstrations & Assessment
 **Individual Oral Examinations**: Technical competency verification (20-min sessions)  
