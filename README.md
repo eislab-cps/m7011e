@@ -7,31 +7,26 @@ Step-by-step tutorials covering how to create web application and deploying serv
 ## [Labs Assignments](labs/)
 
 ## Lectures Overview
-### Week 1 – Full-Stack Development
-**Lecture 1**: Dynamic Web Systems & Database Design Patterns  
-**Learning Outcomes**: REQ1-2 (Dynamic systems), REQ3-7 (Full-stack, testing, failure cases), REQ8-9 (Database), REQ17 (Architecture docs)
+### Week 1 – Introduction & Lab Assignment
+**Lecture 1** (Johan) 3/11: Course Overview & Lab Assignment Kickoff
+**Deadline**: Form Teams by 5/11
+**Deadline**: Project Proposal Submission by 9/11
 
-### Week 2 – Kubernetes & Cloud-Native Deployment
-**Lecture 2**: Kubernetes Fundamentals & Container Orchestration  
-**Learning Outcomes**: REQ10-12 (Docker, microservices, Kubernetes), REQ13 (Monitoring)
+### Week 2 – Kubernetes & Cloud-Native Workshop
+**Lecture 2** (Johan) 10/11: Kubernetes Fundamentals & Container Orchestration  
+**Workshop** (Casper) 14/11: Hands-on Kubernetes
+**Learning Outcomes**: Learn how to build a Docker container and deploy K8s microservice.
 
-### Week 3 – API Design & Service Communication
-**Lecture 3**: RESTful APIs, Event-Driven Architecture & Inter-Service Communication  
-**Learning Outcomes**: REQ14-16 (APIs, events, documentation), REQ20-21 (Authentication, authorization)
+### Week 3 – CI/CD & Production Systems
+**Workshop** (Johan) 19/11 : DevOps practices, CI/CD pipelines, and observability
+**Learning Outcomes**: Learn how to use GitOps to deploy a dynamic web system.
 
-### Week 4 – CI/CD & Production Systems
-**Lecture 4**: DevOps Practices, Observability & Performance Testing  
-**Learning Outcomes**: REQ6 (CI/CD pipeline), REQ18-19 (Performance analysis, load testing)
+### Week 4 – Security & Ethical Data Handling
+**Workshop** (Johan) 25/11: Web Security, Authentication & Privacy Protection  
+**Learning Outcomes** (Johan): Keycloak integration for secure authentication.
+**Deadline**: Mid-term demostration (Casper) (28/11): Demonstrate basic live dynamic system on Kubernetes.
 
-### Week 5 – Personalization & AI Integration
-**Lecture 6**: AI Integration in Dynamic Web Systems & Personalization Algorithms  
-**Learning Outcomes**: Advanced Options A-E (emphasis on personalization and AI), scientific evaluation preparation
-
-### Week 6 – Security & Ethical Data Handling
-**Lecture 5**: Web Security, Authentication & Privacy Protection  
-**Learning Outcomes**: REQ20-27 (Security, authentication, GDPR compliance, ethics)
-
-### Week 7 – Project Demonstrations & Assessment
+### Week 8+ Project Demonstrations & Assessment (07/1-09/1)
 **Individual Oral Examinations**: Technical competency verification (20-min sessions)  
 **Team Demonstrations**: Complete system showcase and TA demos  
 **Final Deliverables**: All requirements completed, comprehensive documentation

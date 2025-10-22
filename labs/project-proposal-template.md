@@ -64,20 +64,18 @@ Frontend <-> API <-> Services <-> Database
 **Target Grade**: [3/4/5] - *Justification: [Why this target is realistic]*
 
 ## 7. Development Plan
-
+Example of development timeline:
 **Weeks 1-2**: Database schema, basic services, authentication, Kubernetes setup
 **Weeks 3-4**: Core features, API implementation, CI/CD pipeline
 **Weeks 5-6**: Advanced feature, comprehensive testing, security
 **Weeks 7-8**: Documentation, performance analysis, final polish
 
 ## 8. Risk Assessment
-
 **Main Risks**:
 - **Technical**: [One key risk and mitigation]
 - **Scope**: [One key risk and mitigation]
 
 **Fallback Plan**: [Minimum viable features for Grade 3]
-
 ## 9. Team Organization
 
 **[Member 1]**: [Primary responsibility area]

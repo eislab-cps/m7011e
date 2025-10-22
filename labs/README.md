@@ -100,7 +100,7 @@ The system must expose a well-designed API for frontend-backend communication an
 
 **REQ14**: System must implement RESTful API with proper HTTP methods and status codes
 
-**REQ15**: System must implement event-driven architecture using message queues (e.g., RabbitMQ, Kafka) for communication between microservices (loosely coupled)
+**REQ15**: System must implement loosly coupled where indvidual microservices can be updated, restarted seperately, e.g implement an event-driven architecture using message queues (RabbitMQ, Kafka) for intra-communication between microservices.
 
 **REQ16**: System must include comprehensive API documentation using OpenAPI/Swagger/AsyncAPI specifications
 
@@ -241,3 +241,18 @@ Each student is examined **individually** (20-minute session) and must demonstra
 - 70%+ test coverage with end-to-end tests
 - Comprehensive edge case and failure scenario testing using mockups/emulators/simulations
 - Automated testing pipeline with multiple test environments and deployment strategies
+
+AP: Johan
+Announcement course start
+Avboka pass/lektioner ej använda
+Lektion: Intro 
+Tutorial: CI/CD/Gitops
+Tutoral: Keycloak
+Skapa VM:ar/Kubernetes
+
+AP: Casper
+Canvas: Flytta in material in Canvas
+Förbereda workshops 
+Canvas: Länkar till videos/publikt material
+Midterm demo
+Presentation guidelines

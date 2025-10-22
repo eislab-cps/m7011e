@@ -1,0 +1,40 @@
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Simple Hello World</title>
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                text-align: center; 
+                background: #f0f8ff; 
+                padding: 50px;
+            }
+            .container { 
+                background: white; 
+                padding: 30px; 
+                border-radius: 10px; 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                display: inline-block;
+            }
+            h1 { color: #2e8b57; }
+            .info { background: #f9f9f9; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>{{ .Values.message }}</h1>
+            <div class="info">
+                <p><strong>Domain:</strong> {{ .Values.domain }}</p>
+                <p><strong>App Name:</strong> {{ .Values.app.name }}</p>
+                <p><strong>Replicas:</strong> {{ .Values.app.replicas }}</p>
+            </div>
+        </div>
+    </body>
+    </html>
