@@ -1,3 +1,0 @@
-ManagementHostname: "rabbitmq.colonyos.io"
-APIHostname: "rabbitmq-api.colonyos.io"
-Image: "rabbitmq:3-management"
