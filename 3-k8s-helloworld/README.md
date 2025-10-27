@@ -1,4 +1,5 @@
-# Introduction 
+# Tutorial 3 - Deploy a simple web app on Kubernetes 
+
 This tutorial will guide you through deploying a simple application using Helm to verify your Kubernetes setup is working correctly.
 
 ## Understanding Helm

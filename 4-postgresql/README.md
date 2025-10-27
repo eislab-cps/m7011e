@@ -1,4 +1,5 @@
-# Introduction
+# Tutorial 4 - Deploying a PostgreSQL database on Kubernetes
+
 This guide contains instructions how to deploying PostgreSQL on Kubernetes.
 The provided Helm chart deploys a PostgreSQL database using a StatefulSet with persistent storage. The chart includes:
 
