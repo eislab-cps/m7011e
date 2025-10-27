@@ -2,6 +2,18 @@
 A hands-on introduction to Kubernetes and application deployment.
 
 ## Tutorials
+### [1-basic-webapp](./1-basic-webapp/)
+Build a simple REST API web application with Flask and vanilla JavaScript.
+
+**Covers:**
+- Client-server architecture and communication
+- REST vs JSON-RPC comparison
+- Flask REST API development
+- Frontend-backend communication with Fetch API
+- CORS and HTTP methods
+- JSON data format
+- In-memory data storage
+
 ### [2-k8s-getting-started](./2-k8s-getting-started/)
 Set up your development environment and connect to the Kubernetes cluster.
 
