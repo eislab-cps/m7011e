@@ -1,5 +1,6 @@
-# Kubernetes Tutorials
-A hands-on introduction to Kubernetes and application deployment.
+# M7011E - Dynamic Web Systems Tutorials
+
+A hands-on introduction to Kubernetes, application deployment, AI code generation.
 
 ## Tutorials
 ### [1-basic-webapp](./1-basic-webapp/)
