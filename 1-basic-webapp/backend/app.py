@@ -17,7 +17,14 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 # Enable CORS to allow requests from frontend (different port/origin)
-CORS(app)
+# Configure CORS to allow requests from any origin for development
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # In-memory storage for todos (will be reset when server restarts)
 # In production, you would use a database like PostgreSQL, MongoDB, etc.
@@ -133,11 +140,12 @@ if __name__ == '__main__':
     # debug=True enables auto-reload and detailed error messages
     # Don't use debug=True in production!
     print("Starting Flask server...")
-    print("API will be available at: http://127.0.0.1:5000")
+    print("API will be available at: http://127.0.0.1:8000")
     print("API endpoints:")
-    print("  GET    http://127.0.0.1:5000/api/todos")
-    print("  POST   http://127.0.0.1:5000/api/todos")
-    print("  DELETE http://127.0.0.1:5000/api/todos/<id>")
+    print("  GET    http://127.0.0.1:8000/api/todos")
+    print("  POST   http://127.0.0.1:8000/api/todos")
+    print("  DELETE http://127.0.0.1:8000/api/todos/<id>")
     print("\nPress CTRL+C to stop the server")
+    print("\nNote: Using port 8000 to avoid conflicts with system services")
 
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=True, host='127.0.0.1', port=8000)
