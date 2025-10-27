@@ -6,7 +6,7 @@ A simple todo list application demonstrating fundamental web application concept
 
 By completing this tutorial, you will understand:
 - How web applications work (client-server architecture)
-- The difference between REST and RPC
+- The difference between REST and JSON-RPC
 - How to build a REST API with Flask (Python)
 - How to create a frontend that communicates with a backend
 - HTTP methods and their purposes
@@ -34,26 +34,44 @@ A web application typically consists of two parts:
 - **Server (Backend)**: Processes requests, handles business logic, manages data (Python, Node.js, Java, etc.)
 - **Communication**: They talk via HTTP protocol using structured messages
 
-### 2. RPC vs REST
+### 2. JSON-RPC vs REST
 
 There are different ways for clients and servers to communicate:
 
-#### RPC (Remote Procedure Call)
+#### JSON-RPC (Remote Procedure Call)
 - **Concept**: Call functions/procedures on a remote server as if they were local
-- **Style**: Action-oriented (verbs)
-- **Example endpoints**:
-  - `POST /createTodo`
-  - `POST /deleteTodo`
-  - `POST /getTodos`
+- **Style**: Action-oriented (method names)
+- **Protocol**: All requests go to a single endpoint (e.g., `/api` or `/rpc`)
+- **Request Format**:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "createTodo",
+  "params": {"text": "Learn Flask"},
+  "id": 1
+}
+```
+
+- **Response Format**:
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {"id": 1, "text": "Learn Flask"},
+  "id": 1
+}
+```
 
 **Characteristics:**
-- All operations typically use POST
-- Function names in the URL
+- All operations use POST to a single endpoint
+- Method name is in the JSON payload, not the URL
+- Supports batching multiple calls in one request
 - Think: "What action should the server perform?"
+- Used by: Ethereum blockchain API, many internal microservices
 
 #### REST (Representational State Transfer)
 - **Concept**: Treat everything as a "resource" that you can manipulate
 - **Style**: Resource-oriented (nouns)
+- **Protocol**: Different URLs for different resources
 - **Example endpoints**:
   - `GET /todos` - Retrieve todos
   - `POST /todos` - Create a new todo
@@ -65,8 +83,35 @@ There are different ways for clients and servers to communicate:
 - URLs represent resources (nouns)
 - Stateless - each request contains all needed information
 - Think: "What resource am I working with?"
+- Used by: Most modern web APIs (GitHub, Twitter, Stripe, etc.)
 
-**This tutorial uses REST** because it's the most common pattern for modern web APIs.
+#### Comparison Example
+
+**Same operation in both styles:**
+
+**JSON-RPC:**
+```
+POST /api
+Body: {"jsonrpc": "2.0", "method": "getTodos", "id": 1}
+
+POST /api
+Body: {"jsonrpc": "2.0", "method": "createTodo", "params": {"text": "Learn"}, "id": 2}
+
+POST /api
+Body: {"jsonrpc": "2.0", "method": "deleteTodo", "params": {"id": 1}, "id": 3}
+```
+
+**REST:**
+```
+GET /api/todos
+
+POST /api/todos
+Body: {"text": "Learn"}
+
+DELETE /api/todos/1
+```
+
+**This tutorial uses REST** because it's the most common pattern for modern web APIs and leverages HTTP methods naturally.
 
 ### 3. HTTP Methods
 
@@ -477,7 +522,7 @@ After completing this tutorial:
 
 You've learned:
 - ✅ Client-server architecture
-- ✅ Difference between RPC and REST
+- ✅ Difference between JSON-RPC and REST
 - ✅ How to build a REST API with Flask
 - ✅ How to make HTTP requests from JavaScript
 - ✅ HTTP methods (GET, POST, DELETE)
