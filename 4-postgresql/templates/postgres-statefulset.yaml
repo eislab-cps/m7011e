@@ -16,7 +16,7 @@ spec:
           app: postgres
      spec:
          containers:
-           - name: timescaledb
+           - name: postgres
              image: {{ (.Values.DBImage) }} 
              imagePullPolicy: "IfNotPresent"
              ports:

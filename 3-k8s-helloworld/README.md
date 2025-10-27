@@ -1,4 +1,4 @@
-# Deploying a Hello World Application
+# Introduction 
 This tutorial will guide you through deploying a simple application using Helm to verify your Kubernetes setup is working correctly.
 
 ## Understanding Helm

@@ -1,5 +1,5 @@
-# Prerequisites
-Before getting started, ensure you have the following tools installed and configured:
+# Introduction
+This guide provides step-by-step instructions to help you begin working with Kubernetes on the LTU-Rancher cluster.
 
 ## 1. Install kubectl
 Install the `kubectl` command-line tool to interact with and manage Kubernetes clusters.
