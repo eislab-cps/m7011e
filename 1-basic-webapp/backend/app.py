@@ -17,7 +17,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 # Enable CORS to allow requests from frontend (different port/origin)
-CORS(app)
+# Allow all origins for development - in production, specify exact origins
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # In-memory storage for todos (will be reset when server restarts)
 # In production, you would use a database like PostgreSQL, MongoDB, etc.
