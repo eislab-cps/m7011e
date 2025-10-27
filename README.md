@@ -40,3 +40,16 @@ Deploy a PostgreSQL database on Kubernetes using Helm charts with persistent sto
 - Database configuration with ConfigMaps
 - Port forwarding to access databases locally
 - Database client tools installation and usage
+- StatefulSet vs Deployment comparison
+
+### [5-claude-code-frontend](./5-claude-code-frontend/)
+Rebuild the Tutorial 1 todo list using React and Claude Code, learning effective AI-assisted development techniques.
+
+**Covers:**
+- Effective prompt engineering for AI-assisted development
+- Step-by-step React development with Claude Code
+- Converting vanilla JavaScript to React
+- API integration and state management
+- Tailwind CSS styling
+- Iterative development workflow
+- Common issues and troubleshooting
