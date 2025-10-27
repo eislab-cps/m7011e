@@ -1,0 +1,11 @@
+StorageClassName: local-path 
+Timezone: "Europe/Stockholm"
+
+DBUser: "postgres"
+DBPassword: "TODO"
+DBImage: timescale/timescaledb:2.13.0-pg16
+DBResourceLimit: false
+DBCPU: "1000m"
+DBMemory: "1000Mi"
+DBStorage: 10Gi
+TimescaleDB: true
