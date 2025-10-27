@@ -202,8 +202,8 @@
     </div>
 
     <script>
-        // API base URL - change this if your backend runs on a different port
-        const API_URL = 'http://localhost:5000/api/todos';
+        // API base URL - Using port 8000 to avoid conflicts with system services
+        const API_URL = 'http://localhost:8000/api/todos';
 
         // DOM elements
         const todoForm = document.getElementById('todoForm');
@@ -236,7 +236,7 @@
 
             } catch (error) {
                 console.error('Error fetching todos:', error);
-                showError('Failed to load todos. Make sure the backend server is running on port 5000.');
+                showError('Failed to load todos. Make sure the backend server is running on port 8000.');
             }
         }
 
