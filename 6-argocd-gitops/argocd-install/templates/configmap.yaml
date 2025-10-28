@@ -1,3 +1,6 @@
+---
+# This ConfigMap will be created first by Helm, then patched by the install job
+# The install job patches it to ensure the URL is set correctly after ArgoCD is installed
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,15 +10,12 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
-  # External URL for ArgoCD (important for ingress to work correctly)
-  url: https://{{ .Values.argocd.domain }}
-
-  # Add Git repositories here if using private repos
-  # repositories: |
-  #   - url: https://github.com/your-org/your-repo
-
   # Timeout settings
   timeout.reconciliation: 180s
 
   # Application settings
   application.instanceLabelKey: argocd.argoproj.io/instance
+
+  # Add Git repositories here if using private repos
+  # repositories: |
+  #   - url: https://github.com/your-org/your-repo

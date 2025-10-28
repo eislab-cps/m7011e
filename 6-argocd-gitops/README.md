@@ -119,7 +119,7 @@ cd argocd-install
 helm install argocd -f values.yaml -n argocd --create-namespace .
 ```
 
-### 3. Wait for Pods to be Ready
+### 3. Wait for Installation to Complete
 
 ```bash
 kubectl get pods -n argocd -w
@@ -127,24 +127,13 @@ kubectl get pods -n argocd -w
 
 Wait until all pods show `Running` and `Ready` (Ctrl+C to stop watching).
 
-### 4. Configure ArgoCD for Traefik (Important!)
+The installation takes 2-3 minutes. The Helm chart automatically:
+- Installs ArgoCD from official manifests
+- Configures ArgoCD for Traefik ingress (TLS termination)
+- Sets the external URL from your `values.yaml`
+- No manual configuration needed!
 
-After installation, configure ArgoCD to work behind Traefik ingress:
-
-```bash
-# Set the external URL (replace with your domain)
-kubectl patch configmap argocd-cm -n argocd --type merge -p '{"data":{"url":"https://argocd.ltu-m7011e-johan.se"}}'
-
-# Enable insecure mode (HTTP, TLS terminated by Traefik)
-kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
-
-# Restart server to apply changes
-kubectl rollout restart deployment argocd-server -n argocd
-```
-
-**Note**: Replace `argocd.ltu-m7011e-johan.se` with your actual domain from `values.yaml`.
-
-### 5. Access Argo CD UI
+### 4. Access Argo CD UI
 
 #### Get Initial Admin Password
 
@@ -173,7 +162,7 @@ Open browser to: `https://localhost:8080`
 
 **Note**: Accept the self-signed certificate warning in your browser.
 
-### 6. Install Argo CD CLI (Optional but Recommended)
+### 5. Install Argo CD CLI (Optional but Recommended)
 
 The ArgoCD CLI provides a powerful command-line interface for managing applications.
 

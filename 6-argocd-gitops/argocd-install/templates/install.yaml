@@ -42,8 +42,22 @@ spec:
         - |
           echo "Installing Argo CD..."
           kubectl apply -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ .Values.image.tag }}/manifests/install.yaml
+
           echo "Waiting for Argo CD to be ready..."
           kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n {{ .Release.Namespace }}
-          echo "Argo CD installation complete!"
+
+          echo "Configuring Argo CD for Traefik ingress..."
+          # Set external URL for Argo CD
+          kubectl patch configmap argocd-cm -n {{ .Release.Namespace }} --type merge -p '{"data":{"url":"https://{{ .Values.argocd.domain }}"}}'
+
+          # Enable insecure mode (HTTP) - Traefik handles TLS termination
+          kubectl patch configmap argocd-cmd-params-cm -n {{ .Release.Namespace }} --type merge -p '{"data":{"server.insecure":"true"}}'
+
+          echo "Restarting Argo CD server to apply configuration..."
+          kubectl rollout restart deployment/argocd-server -n {{ .Release.Namespace }}
+          kubectl rollout status deployment/argocd-server -n {{ .Release.Namespace }} --timeout=120s
+
+          echo "Argo CD installation and configuration complete!"
+          echo "Access Argo CD at: https://{{ .Values.argocd.domain }}"
       restartPolicy: OnFailure
   backoffLimit: 3

@@ -30,9 +30,17 @@ argocd:
 # Install Argo CD (namespace will be created automatically)
 helm install argocd -f values.yaml -n argocd --create-namespace .
 
-# Wait for installation to complete
+# Wait for installation to complete (this may take 2-3 minutes)
 kubectl get pods -n argocd -w
 ```
+
+The installation job will automatically:
+1. Install ArgoCD from official manifests
+2. Configure ArgoCD for Traefik ingress (insecure mode with TLS termination)
+3. Set the external URL from your `values.yaml`
+4. Restart the server to apply configuration
+
+No manual configuration needed!
 
 ## Access Argo CD
 
@@ -116,12 +124,12 @@ kubectl describe certificate argocd-tls -n argocd
 - SSL certificates use Let's Encrypt staging by default
 - The installation job may take a few minutes to complete
 
-## Post-Installation Configuration
+## How It Works
 
-After installation, ArgoCD needs to be configured to run in insecure mode for Traefik:
+The Helm chart uses a Kubernetes Job to:
+1. Apply the official ArgoCD installation manifests
+2. Automatically configure ArgoCD for Traefik ingress
+3. Set up TLS termination at the ingress level
+4. Restart the server with the correct configuration
 
-```bash
-# Enable insecure mode (already done if you installed recently)
-kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
-kubectl rollout restart deployment argocd-server -n argocd
-```
+This means you don't need any manual post-installation steps!
