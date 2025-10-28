@@ -54,3 +54,16 @@ Rebuild the Tutorial 1 todo list using React and Claude Code, learning effective
 - Tailwind CSS styling
 - Iterative development workflow
 - Common issues and troubleshooting
+
+### [6-argocd-gitops](./6-argocd-gitops/)
+Implement continuous deployment with Argo CD and GitOps principles for automated Kubernetes deployments.
+
+**Covers:**
+- GitOps principles and declarative deployment
+- Argo CD installation and configuration
+- Automated synchronization from Git repositories
+- Application health monitoring and self-healing
+- Multi-environment deployment strategies (dev, staging, production)
+- Rollback and version control for infrastructure
+- Integration with Helm charts
+- Troubleshooting and debugging GitOps deployments

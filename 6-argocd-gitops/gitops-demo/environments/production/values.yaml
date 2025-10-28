@@ -1,0 +1,29 @@
+# Production Environment Configuration
+
+app:
+  name: hello-world
+  # More replicas for high availability in production
+  replicas: 3
+
+# Production domain - change to your assigned domain
+domain: helloworld-prod.ltu-m7011e-johan.se
+
+# Email for Let's Encrypt certificates
+email: johan.kristiansson@ltu.se
+
+# Environment identifier
+environment: Production
+
+# Custom message for this environment
+message: "Hello from Production Environment - Live Site"
+
+# Container image
+image:
+  repository: nginx
+  tag: alpine
+
+# Ingress configuration
+ingress:
+  # Use production issuer for trusted certificates
+  # Note: Only switch to prod after testing with staging!
+  certIssuer: letsencrypt-prod

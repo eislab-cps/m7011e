@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-html
+  labels:
+    app: {{ .Values.app.name }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ .Values.app.name }}</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .container {
+                background: white;
+                padding: 3rem;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                text-align: center;
+                max-width: 500px;
+            }
+            h1 {
+                color: #667eea;
+                margin-bottom: 1rem;
+            }
+            .message {
+                font-size: 1.2rem;
+                color: #333;
+                margin: 1rem 0;
+            }
+            .badge {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                margin-top: 1rem;
+            }
+            .info {
+                margin-top: 2rem;
+                padding-top: 2rem;
+                border-top: 1px solid #eee;
+                color: #666;
+                font-size: 0.9rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 GitOps with Argo CD</h1>
+            <div class="message">{{ .Values.message }}</div>
+            <div class="badge">Environment: {{ .Values.environment }}</div>
+            <div class="info">
+                <p><strong>Application:</strong> {{ .Values.app.name }}</p>
+                <p><strong>Version:</strong> {{ .Chart.Version }}</p>
+                <p><strong>Deployed via:</strong> Argo CD</p>
+            </div>
+        </div>
+    </body>
+    </html>

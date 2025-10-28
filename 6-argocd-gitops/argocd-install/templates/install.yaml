@@ -1,0 +1,49 @@
+# This uses the official Argo CD installation manifest
+# We fetch it from the official GitHub repository
+# This is equivalent to: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# For simplicity, we'll use the official manifests via a Job that applies them
+# In a production setup, you might want to vendor these files or use the official Helm chart
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-installer
+  namespace: argocd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-installer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: argocd-installer
+    namespace: argocd
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-install
+  namespace: argocd
+spec:
+  template:
+    spec:
+      serviceAccountName: argocd-installer
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Installing Argo CD..."
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v{{ .Values.image.tag }}/manifests/install.yaml
+          echo "Waiting for Argo CD to be ready..."
+          kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+          echo "Argo CD installation complete!"
+      restartPolicy: OnFailure
+  backoffLimit: 3
