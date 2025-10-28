@@ -114,20 +114,14 @@ argocd:
   email: your.email@ltu.se            # Change to your email
 ```
 
-#### 2. Create Namespace
-
-```bash
-kubectl create namespace argocd
-```
-
-#### 3. Install Argo CD
+#### 2. Install Argo CD
 
 ```bash
 cd argocd-install
-helm install argocd -f values.yaml -n argocd .
+helm install argocd -f values.yaml -n argocd --create-namespace .
 ```
 
-#### 4. Wait for Pods to be Ready
+#### 3. Wait for Pods to be Ready
 
 ```bash
 kubectl get pods -n argocd -w
@@ -148,7 +142,7 @@ helm repo update
 helm install argocd argo/argo-cd -n argocd --create-namespace
 ```
 
-### 5. Access Argo CD UI
+### 4. Access Argo CD UI
 
 #### Get Initial Admin Password
 
@@ -173,7 +167,7 @@ Open browser to: `https://localhost:8080`
 
 If you used our Helm chart with a domain, access at: `https://argocd.ltu-m7011e-johan.se`
 
-### 6. Install Argo CD CLI (Optional but Recommended)
+### 5. Install Argo CD CLI (Optional but Recommended)
 
 **macOS:**
 ```bash

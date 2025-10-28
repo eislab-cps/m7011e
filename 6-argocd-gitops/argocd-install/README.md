@@ -28,11 +28,8 @@ argocd:
 ## Installation
 
 ```bash
-# Create namespace
-kubectl create namespace argocd
-
-# Install Argo CD
-helm install argocd -f values.yaml -n argocd .
+# Install Argo CD (namespace will be created automatically)
+helm install argocd -f values.yaml -n argocd --create-namespace .
 
 # Wait for installation to complete
 kubectl get pods -n argocd -w
