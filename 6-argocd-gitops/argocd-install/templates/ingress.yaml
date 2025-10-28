@@ -6,8 +6,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.ingress.certIssuer }}
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: traefik
   rules:
@@ -20,7 +21,7 @@ spec:
           service:
             name: argocd-server
             port:
-              name: https
+              number: 80
   tls:
   - hosts:
     - {{ .Values.argocd.domain }}

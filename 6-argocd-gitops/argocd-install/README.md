@@ -4,10 +4,9 @@ This Helm chart simplifies the installation of Argo CD on the LTU Kubernetes clu
 
 ## What This Chart Does
 
-1. Creates the `argocd` namespace
-2. Installs Argo CD using the official manifests
-3. Configures ingress for web UI access with SSL certificates
-4. Sets up resource limits appropriate for the course environment
+1. Installs Argo CD using the official manifests (namespace created via Helm)
+2. Configures ingress for web UI access with SSL certificates
+3. Sets up resource limits appropriate for the course environment
 
 ## Prerequisites
 
@@ -110,7 +109,19 @@ kubectl describe certificate argocd-tls -n argocd
 ## Notes
 
 - This chart uses the official Argo CD installation manifests
+- The namespace is created by Helm using the `--create-namespace` flag
+- ArgoCD server runs in insecure mode (HTTP) - TLS is terminated by Traefik
 - Resource limits are set for course usage - adjust for production
 - Ingress is configured for Traefik (default on LTU cluster)
 - SSL certificates use Let's Encrypt staging by default
 - The installation job may take a few minutes to complete
+
+## Post-Installation Configuration
+
+After installation, ArgoCD needs to be configured to run in insecure mode for Traefik:
+
+```bash
+# Enable insecure mode (already done if you installed recently)
+kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
+kubectl rollout restart deployment argocd-server -n argocd
+```

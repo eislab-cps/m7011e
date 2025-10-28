@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
+  # External URL for ArgoCD (important for ingress to work correctly)
+  url: https://{{ .Values.argocd.domain }}
+
   # Add Git repositories here if using private repos
   # repositories: |
   #   - url: https://github.com/your-org/your-repo

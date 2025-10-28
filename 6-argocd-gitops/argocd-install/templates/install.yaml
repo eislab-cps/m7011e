@@ -41,7 +41,7 @@ spec:
         - -c
         - |
           echo "Installing Argo CD..."
-          kubectl apply -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/v{{ .Values.image.tag }}/manifests/install.yaml
+          kubectl apply -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ .Values.image.tag }}/manifests/install.yaml
           echo "Waiting for Argo CD to be ready..."
           kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n {{ .Release.Namespace }}
           echo "Argo CD installation complete!"

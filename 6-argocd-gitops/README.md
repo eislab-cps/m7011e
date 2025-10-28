@@ -95,11 +95,9 @@ Developer → Push Code → Git Repository
 
 ## Part 1: Install Argo CD
 
-### Option A: Using Our Helm Chart (Recommended)
-
 We provide a simplified Helm chart for installing Argo CD on the LTU cluster.
 
-#### 1. Review the Configuration
+### 1. Review the Configuration
 
 Check the `argocd-install/values.yaml` file:
 ```bash
@@ -114,14 +112,14 @@ argocd:
   email: your.email@ltu.se            # Change to your email
 ```
 
-#### 2. Install Argo CD
+### 2. Install Argo CD
 
 ```bash
 cd argocd-install
 helm install argocd -f values.yaml -n argocd --create-namespace .
 ```
 
-#### 3. Wait for Pods to be Ready
+### 3. Wait for Pods to be Ready
 
 ```bash
 kubectl get pods -n argocd -w
@@ -129,20 +127,24 @@ kubectl get pods -n argocd -w
 
 Wait until all pods show `Running` and `Ready` (Ctrl+C to stop watching).
 
-### Option B: Using Official Helm Chart
+### 4. Configure ArgoCD for Traefik (Important!)
 
-Alternatively, install using the official Argo CD Helm chart:
+After installation, configure ArgoCD to work behind Traefik ingress:
 
 ```bash
-# Add Helm repository
-helm repo add argo https://argoproj.github.io/argo-helm
-helm repo update
+# Set the external URL (replace with your domain)
+kubectl patch configmap argocd-cm -n argocd --type merge -p '{"data":{"url":"https://argocd.ltu-m7011e-johan.se"}}'
 
-# Install Argo CD
-helm install argocd argo/argo-cd -n argocd --create-namespace
+# Enable insecure mode (HTTP, TLS terminated by Traefik)
+kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
+
+# Restart server to apply changes
+kubectl rollout restart deployment argocd-server -n argocd
 ```
 
-### 4. Access Argo CD UI
+**Note**: Replace `argocd.ltu-m7011e-johan.se` with your actual domain from `values.yaml`.
+
+### 5. Access Argo CD UI
 
 #### Get Initial Admin Password
 
@@ -150,7 +152,18 @@ helm install argocd argo/argo-cd -n argocd --create-namespace
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
-#### Access via Port Forwarding
+#### Access via Ingress (Recommended)
+
+Access ArgoCD at your configured domain: `https://argocd.ltu-m7011e-johan.se`
+
+- Username: `admin`
+- Password: (from previous command)
+
+**Note**: You're using a Let's Encrypt staging certificate, so your browser will show a security warning. This is expected for testing. Switch to production certificates in `values.yaml` when ready.
+
+#### Alternative: Access via Port Forwarding
+
+If ingress isn't working or for local testing:
 
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
@@ -158,16 +171,11 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 Open browser to: `https://localhost:8080`
 
-- Username: `admin`
-- Password: (from previous command)
-
 **Note**: Accept the self-signed certificate warning in your browser.
 
-#### Or Access via Ingress (if configured with domain)
+### 6. Install Argo CD CLI (Optional but Recommended)
 
-If you used our Helm chart with a domain, access at: `https://argocd.ltu-m7011e-johan.se`
-
-### 5. Install Argo CD CLI (Optional but Recommended)
+The ArgoCD CLI provides a powerful command-line interface for managing applications.
 
 **macOS:**
 ```bash
@@ -176,15 +184,51 @@ brew install argocd
 
 **Linux:**
 ```bash
+# Download the latest ArgoCD CLI
 curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+
+# Make it executable
 chmod +x argocd
+
+# Move to system path
 sudo mv argocd /usr/local/bin/
+
+# Verify installation
+argocd version --client
 ```
 
+**Windows:**
+
+Option 1 - Using PowerShell:
+```powershell
+# Download the latest release
+$version = (Invoke-RestMethod https://api.github.com/repos/argoproj/argo-cd/releases/latest).tag_name
+$url = "https://github.com/argoproj/argo-cd/releases/download/$version/argocd-windows-amd64.exe"
+Invoke-WebRequest -Uri $url -OutFile "$env:USERPROFILE\Downloads\argocd.exe"
+
+# Move to a directory in your PATH (e.g., C:\Program Files\argocd\)
+# Or add the Downloads folder to your PATH
+```
+
+Option 2 - Manual Download:
+1. Go to https://github.com/argoproj/argo-cd/releases/latest
+2. Download `argocd-windows-amd64.exe`
+3. Rename to `argocd.exe`
+4. Move to a directory in your PATH or add the directory to PATH
+
 **Login via CLI:**
+
+If using ingress:
+```bash
+argocd login argocd.ltu-m7011e-johan.se --username admin --password <your-password> --insecure
+```
+
+If using port-forward (localhost):
 ```bash
 argocd login localhost:8080 --username admin --password <your-password> --insecure
 ```
+
+**Note**: The `--insecure` flag is needed because we're using Let's Encrypt staging certificates.
 
 ## Part 2: Deploy Your First Application
 
