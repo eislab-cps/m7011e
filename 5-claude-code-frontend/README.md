@@ -2,6 +2,9 @@
 
 Learn how to use Claude Code to rebuild the Todo List from Tutorial 1 using React, demonstrating effective prompting techniques and iterative development.
 
+Example of a generated React Todo List app below:
+![React Todo List Example](./example.png)
+
 ## Prerequisites
 
 - Completed Tutorial 1 (basic web app with Flask backend)
