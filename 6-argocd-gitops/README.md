@@ -359,6 +359,18 @@ EOF
 
 The application is created but not yet deployed. Let's sync it!
 
+Disclaimer! ArgoCD does not create new namespaces so we must create them if we haven't already. The needed namespaces for this tutorial can be created by running:
+```bash
+# dev environment
+kubectl create namespace hello-world-dev
+
+# staging environment
+kubectl create namespace hello-world-staging
+
+# prod environment
+kubectl create namespace hello-world-prod
+```
+
 **Via UI:**
 1. Click on the `hello-world-dev` application
 2. Click "Sync" button
