@@ -80,7 +80,7 @@ Developer → Push Code → Git Repository
 
 ### Key Concepts
 
-- **Application**: A CRD representing a deployed application
+- **Application**: A Custom Resource Definition (CRD) representing a deployed application
 - **Project**: Logical grouping of applications
 - **Sync**: Process of making cluster state match Git state
 - **Health**: Status of deployed resources (Healthy, Progressing, Degraded)
@@ -264,15 +264,15 @@ cp -r /path/to/6-argocd-gitops/gitops-demo/* .
 
 # Edit dev environment values
 nano environments/dev/values.yaml
-# Change domain to: helloworld-dev.ltu-m7011e-johan.se
+# Change domain and email to your assigned domain and your email 
 
 # Edit staging environment values
 nano environments/staging/values.yaml
-# Change domain to: helloworld-staging.ltu-m7011e-johan.se
+# Change domain and email to your assigned domain and your email 
 
 # Edit production environment values
 nano environments/production/values.yaml
-# Change domain to: helloworld-prod.ltu-m7011e-johan.se
+# Change domain and email to your assigned domain and your email 
 ```
 
 #### Push to Git
@@ -559,6 +559,7 @@ git push origin main
 ```
 
 #### 3. Watch it fail
+Wait for automatic sync or sync manually before running the commands
 
 ```bash
 argocd app get hello-world-dev
