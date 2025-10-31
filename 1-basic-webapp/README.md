@@ -204,7 +204,7 @@ Our simple todo list application:
 
 ```
 ┌───────────────────────────────────┐
-│         Frontend (Browser)         │
+│         Frontend (Browser)        │
 │  ┌─────────────────────────────┐  │
 │  │  index.html                 │  │
 │  │  - HTML structure           │  │
@@ -219,7 +219,7 @@ Our simple todo list application:
                 │ HTTP Requests (Fetch API)
                 │
 ┌───────────────┴───────────────────┐
-│        Backend (Flask Server)      │
+│        Backend (Flask Server)     │
 │  ┌─────────────────────────────┐  │
 │  │  app.py                     │  │
 │  │  REST API Endpoints:        │  │
