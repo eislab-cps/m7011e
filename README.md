@@ -67,3 +67,18 @@ Implement continuous deployment with Argo CD and GitOps principles for automated
 - Rollback and version control for infrastructure
 - Integration with Helm charts
 - Troubleshooting and debugging GitOps deployments
+
+### [7-keycloak](./7-keycloak/)
+Deploy Keycloak for centralized Identity and Access Management (IAM) with OAuth 2.0 and OpenID Connect.
+
+**Covers:**
+- Understanding OAuth 2.0, OpenID Connect (OIDC), and JWT
+- Keycloak deployment on Kubernetes with PostgreSQL
+- Realm, client, user, and role configuration
+- Authentication flows (Authorization Code, Client Credentials)
+- Integrating Keycloak with React and Flask applications
+- Role-Based Access Control (RBAC)
+- Social login integration (GitHub, Google)
+- Multi-factor authentication (MFA)
+- Token verification and API security
+- Production security best practices
