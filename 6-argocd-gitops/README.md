@@ -19,23 +19,25 @@ This tutorial introduces GitOps principles and automated continuous deployment u
 ```mermaid
 flowchart LR
     Dev[Developer] -->|1. Push code| Git[Git Repository]
-    Git -->|2. Trigger| CI[CI/CD System<br/>GitHub Actions, Jenkins]
-    CI -->|3. Build & Test| CI
-    CI ==>|4. PUSH deployment<br/>requires cluster credentials| K8s[Kubernetes Cluster]
+    Git -->|2. Trigger| Build[CI Build]
+    Build -->|3. Build & Test| Deploy[CI Deploy]
+    Deploy ==>|4. PUSH deployment<br/>requires cluster credentials| K8s[Kubernetes Cluster]
 
-    style CI fill:#f96,stroke:#333,stroke-width:2px
+    style Deploy fill:#f96,stroke:#333,stroke-width:2px
 ```
+*One-way: CI/CD only pushes, doesn't monitor actual state*
 
-**GitOps (Pull-based):**
+**GitOps (Pull-based with Reconciliation Loop):**
 ```mermaid
 flowchart LR
     Dev[Developer] -->|1. Push code| Git[Git Repository]
-    ArgoCD[Argo CD<br/>in cluster]
-    ArgoCD -.->|2. PULL/Poll<br/>every 3 min| Git
-    ArgoCD ==>|3. Sync changes| K8s[Kubernetes Cluster]
+    Git -.->|2. PULL desired state<br/>poll every 3 min| ArgoCD[Argo CD<br/>runs in cluster]
+    K8s[Kubernetes Cluster] -.->|3. PULL actual state<br/>continuous monitoring| ArgoCD
+    ArgoCD ==>|4. PUSH changes<br/>if drift detected| K8s
 
     style ArgoCD fill:#9f6,stroke:#333,stroke-width:2px
 ```
+*Two-way: Argo CD pulls from both Git (desired) and K8s (actual), then pushes corrections*
 
 ### Benefits of GitOps
 
