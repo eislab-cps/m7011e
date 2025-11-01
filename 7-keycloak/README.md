@@ -320,13 +320,16 @@ sequenceDiagram
 **Relationship:**
 ```mermaid
 flowchart TB
-    subgraph OIDC["OpenID Connect (OIDC)<br/>Authentication - Who are you?"]
-        subgraph OAuth["OAuth 2.0<br/>Authorization - What can you access?"]
-            subgraph JWT["JWT<br/>Token Format"]
-                Uses["Used for:<br/>- ID Tokens (OIDC)<br/>- Access Tokens (OAuth/OIDC)"]
-            end
-        end
-    end
+    OIDC["OpenID Connect (OIDC)<br/>Authentication - Who are you?<br/><br/>Built on top of OAuth 2.0"]
+    OAuth["OAuth 2.0<br/>Authorization - What can you access?<br/><br/>Uses JWT for tokens"]
+    JWT["JWT (JSON Web Token)<br/>Token Format<br/><br/>Used for:<br/>• ID Tokens (OIDC)<br/>• Access Tokens (OAuth/OIDC)"]
+
+    OIDC -->|extends| OAuth
+    OAuth -->|uses| JWT
+
+    style OIDC fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style OAuth fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style JWT fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
 ```
 
 **Example:**
