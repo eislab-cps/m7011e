@@ -16,21 +16,25 @@ This tutorial introduces GitOps principles and automated continuous deployment u
 ### Traditional CI/CD vs GitOps
 
 **Traditional CI/CD:**
-```
-Developer → Push Code → CI Build → CI Deploy → Kubernetes Cluster
-                                      ↓
-                               (Push-based, requires credentials)
+```mermaid
+flowchart LR
+    Dev[Developer] --> Push[Push Code]
+    Push --> Build[CI Build]
+    Build --> Deploy[CI Deploy]
+    Deploy --> K8s[Kubernetes Cluster]
+
+    Deploy -.->|Push-based<br/>requires credentials| K8s
 ```
 
 **GitOps:**
-```
-Developer → Push Code → Git Repository
-                           ↓
-                    Argo CD watches Git
-                           ↓
-                    Pulls & Syncs → Kubernetes Cluster
-                           ↓
-                    (Pull-based, self-healing)
+```mermaid
+flowchart TB
+    Dev[Developer] --> Push[Push Code]
+    Push --> Git[Git Repository]
+    Git -->|Argo CD watches Git| Watches[Argo CD Controller]
+    Watches -->|Pulls & Syncs| K8s[Kubernetes Cluster]
+
+    Watches -.->|Pull-based<br/>self-healing| K8s
 ```
 
 ### Benefits of GitOps
@@ -56,26 +60,14 @@ Developer → Push Code → Git Repository
 
 ### How Argo CD Works
 
-```
-┌─────────────────┐
-│  Git Repository │ ← Source of Truth
-└────────┬────────┘
-         │
-    Polls every 3min
-         │
-         ↓
-┌─────────────────┐
-│  Argo CD        │ ← Compares desired vs actual state
-│  Controller     │
-└────────┬────────┘
-         │
-    Syncs if different
-         │
-         ↓
-┌─────────────────┐
-│  Kubernetes     │ ← Actual running state
-│  Cluster        │
-└─────────────────┘
+```mermaid
+flowchart TB
+    Git[Git Repository<br/>Source of Truth]
+    ArgoCD[Argo CD Controller<br/>Compares desired vs actual state]
+    K8s[Kubernetes Cluster<br/>Actual running state]
+
+    Git -->|Polls every 3 min| ArgoCD
+    ArgoCD -->|Syncs if different| K8s
 ```
 
 ### Key Concepts

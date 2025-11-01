@@ -13,41 +13,33 @@ A secure todo application with:
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Browser (React App)                     │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  1. User clicks "Login"                                │ │
-│  │  2. Redirect to Keycloak                               │ │
-│  │  3. User authenticates                                 │ │
-│  │  4. Redirect back with tokens (Access + ID + Refresh) │ │
-│  │  5. Store tokens, show todo interface                  │ │
-│  └────────────────────────────────────────────────────────┘ │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      │ HTTP Requests with JWT
-                      │ Authorization: Bearer <token>
-                      │
-┌─────────────────────▼───────────────────────────────────────┐
-│               Flask Backend API                             │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  1. Receive request with JWT token                     │ │
-│  │  2. Verify token signature (using Keycloak public key) │ │
-│  │  3. Extract user ID and roles from token               │ │
-│  │  4. Process request (filter by user if not admin)      │ │
-│  │  5. Return response                                    │ │
-│  └────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
-                      ▲
-                      │
-                      │ Fetch public keys for token verification
-                      │
-┌─────────────────────┴───────────────────────────────────────┐
-│                      Keycloak Server                        │
-│  - Issues JWT tokens                                        │
-│  - Manages users and sessions                               │
-│  - Provides public keys for verification                    │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Browser["Browser (React App)"]
+        A[1. User clicks 'Login']
+        B[2. Redirect to Keycloak]
+        C[3. User authenticates]
+        D[4. Redirect back with tokens<br/>Access + ID + Refresh]
+        E[5. Store tokens, show todo interface]
+        A --> B --> C --> D --> E
+    end
+
+    subgraph Backend["Flask Backend API"]
+        F[1. Receive request with JWT token]
+        G[2. Verify token signature<br/>using Keycloak public key]
+        H[3. Extract user ID and roles from token]
+        I[4. Process request<br/>filter by user if not admin]
+        J[5. Return response]
+        F --> G --> H --> I --> J
+    end
+
+    subgraph Keycloak["Keycloak Server"]
+        K[Issues JWT tokens<br/>Manages users and sessions<br/>Provides public keys for verification]
+    end
+
+    Browser -->|"HTTP Requests with JWT<br/>Authorization: Bearer &lt;token&gt;"| Backend
+    Backend -->|Fetch public keys<br/>for token verification| Keycloak
+    Browser -.->|Authentication| Keycloak
 ```
 
 ## Prerequisites

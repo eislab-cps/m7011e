@@ -81,36 +81,20 @@ Problems:
 #### OAuth 2.0 Flows (Grant Types)
 
 **1. Authorization Code Flow** (Most secure for web apps)
-```
-┌──────┐                                           ┌───────┐
-│ User │                                           │  App  │
-└──┬───┘                                           └───┬───┘
-   │                                                   │
-   │ 1. Click "Login with Google"                     │
-   ├──────────────────────────────────────────────────>│
-   │                                                   │
-   │ 2. Redirect to Authorization Server              │
-   │<──────────────────────────────────────────────────┤
-   │                                                   │
-┌──▼────────────────┐                                 │
-│ Authorization     │                                 │
-│ Server (Google)   │                                 │
-└──┬────────────────┘                                 │
-   │ 3. User logs in and approves                     │
-   │                                                   │
-   │ 4. Redirect back with authorization CODE         │
-   ├──────────────────────────────────────────────────>│
-   │                                                   │
-   │              5. App exchanges CODE for TOKEN     │
-   │              (this happens server-side, securely)│
-   │<──────────────────────────────────────────────────┤
-   │                                                   │
-   │ 6. Return Access Token                           │
-   ├──────────────────────────────────────────────────>│
-   │                                                   │
-   │              7. App uses token to access API     │
-   │              GET /api/photos                     │
-   │              Authorization: Bearer <token>       │
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant AuthServer as Authorization Server<br/>(Google)
+
+    User->>App: 1. Click "Login with Google"
+    App->>User: 2. Redirect to Authorization Server
+    User->>AuthServer: 3. User logs in and approves
+    AuthServer->>App: 4. Redirect back with authorization CODE
+    App->>AuthServer: 5. Exchange CODE for TOKEN<br/>(server-side, secure)
+    AuthServer->>App: 6. Return Access Token
+    Note over App: 7. App uses token to access API<br/>GET /api/photos<br/>Authorization: Bearer <token>
 ```
 
 **Why the code exchange step?**
@@ -124,31 +108,17 @@ Problems:
 - Less secure, no longer recommended
 
 **3. Client Credentials Flow** (For server-to-server)
-```
-┌─────────┐                          ┌──────────────────┐
-│Service A│                          │Authorization     │
-│         │                          │Server (Keycloak) │
-└────┬────┘                          └────┬─────────────┘
-     │                                    │
-     │ 1. Request token                   │
-     │    POST /token                     │
-     │    client_id=serviceA              │
-     │    client_secret=xxx               │
-     │    grant_type=client_credentials   │
-     ├───────────────────────────────────>│
-     │                                    │
-     │ 2. Return access token             │
-     │<───────────────────────────────────┤
-     │                                    │
-     │ 3. Call Service B with token       │
-     │    GET /api/data                   │
-     │    Authorization: Bearer <token>   │
-     ├───────────────────────────────────>│
-                                    ┌─────▼──────┐
-                                    │ Service B  │
-                                    │ (validates │
-                                    │  token)    │
-                                    └────────────┘
+
+```mermaid
+sequenceDiagram
+    participant ServiceA as Service A
+    participant AuthServer as Authorization Server<br/>(Keycloak)
+    participant ServiceB as Service B
+
+    ServiceA->>AuthServer: 1. Request token<br/>POST /token<br/>client_id=serviceA<br/>client_secret=xxx<br/>grant_type=client_credentials
+    AuthServer->>ServiceA: 2. Return access token
+    ServiceA->>ServiceB: 3. Call Service B with token<br/>GET /api/data<br/>Authorization: Bearer <token>
+    Note over ServiceB: Validates token
 ```
 
 **4. Resource Owner Password Credentials** (Use only for trusted apps)
@@ -184,39 +154,19 @@ Problems:
 
 #### OIDC Flow
 
-```
-┌──────┐                                    ┌─────────────────┐
-│ User │                                    │  Application    │
-└──┬───┘                                    └────┬────────────┘
-   │                                             │
-   │ 1. Visit app, click "Login"                │
-   ├────────────────────────────────────────────>│
-   │                                             │
-   │ 2. Redirect to Keycloak (OIDC Provider)    │
-   │<────────────────────────────────────────────┤
-   │                                             │
-┌──▼──────────┐                                 │
-│  Keycloak   │                                 │
-│ (OIDC       │                                 │
-│  Provider)  │                                 │
-└──┬──────────┘                                 │
-   │ 3. User authenticates                      │
-   │                                             │
-   │ 4. Redirect with authorization code        │
-   ├────────────────────────────────────────────>│
-   │                                             │
-   │           5. Exchange code for tokens      │
-   │           (Access + ID + Refresh)          │
-   │<────────────────────────────────────────────┤
-   │                                             │
-   │ 6. Return three tokens:                    │
-   │    - Access Token (for API access)         │
-   │    - ID Token (user identity)              │
-   │    - Refresh Token (get new tokens)        │
-   ├────────────────────────────────────────────>│
-   │                                             │
-   │           7. App extracts user info from   │
-   │              ID token and logs user in     │
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application
+    participant Keycloak as Keycloak<br/>(OIDC Provider)
+
+    User->>App: 1. Visit app, click "Login"
+    App->>User: 2. Redirect to Keycloak (OIDC Provider)
+    User->>Keycloak: 3. User authenticates
+    Keycloak->>App: 4. Redirect with authorization code
+    App->>Keycloak: 5. Exchange code for tokens<br/>(Access + ID + Refresh)
+    Keycloak->>App: 6. Return three tokens:<br/>- Access Token (API access)<br/>- ID Token (user identity)<br/>- Refresh Token (get new tokens)
+    Note over App: 7. App extracts user info from<br/>ID token and logs user in
 ```
 
 #### OIDC ID Token vs Access Token
@@ -319,38 +269,20 @@ RSASHA256(
 
 #### How JWT Verification Works
 
-```
-┌──────────────┐                           ┌──────────────┐
-│ Application  │                           │  Keycloak    │
-│              │                           │ (Issuer)     │
-└──────┬───────┘                           └──────┬───────┘
-       │                                          │
-       │ 1. User logs in, gets JWT               │
-       │<────────────────────────────────────────┤
-       │                                          │
-       │ 2. User makes API request               │
-       │    Authorization: Bearer <JWT>          │
-       ├─────────────────────>│                  │
-       │                      │                  │
-    ┌──▼─────────────────┐   │                  │
-    │  Resource Server   │   │                  │
-    │  (Your API)        │   │                  │
-    └──┬─────────────────┘   │                  │
-       │                      │                  │
-       │ 3. Fetch public key (cached)           │
-       ├────────────────────────────────────────>│
-       │                                         │
-       │ 4. Return public key                   │
-       │<────────────────────────────────────────┤
-       │                                         │
-       │ 5. Verify signature using public key   │
-       │    - Check signature matches            │
-       │    - Check expiration (exp claim)       │
-       │    - Check issuer (iss claim)           │
-       │    - Check audience (aud claim)         │
-       │                                         │
-       │ 6. If valid, extract user info & roles │
-       │    Allow/deny request based on roles   │
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application
+    participant API as Resource Server<br/>(Your API)
+    participant Keycloak as Keycloak<br/>(Issuer)
+
+    Keycloak->>User: 1. User logs in, gets JWT
+    User->>API: 2. Make API request<br/>Authorization: Bearer <JWT>
+    API->>Keycloak: 3. Fetch public key (cached)
+    Keycloak->>API: 4. Return public key
+    Note over API: 5. Verify signature using public key<br/>- Check signature matches<br/>- Check expiration (exp claim)<br/>- Check issuer (iss claim)<br/>- Check audience (aud claim)
+    Note over API: 6. If valid, extract user info & roles<br/>Allow/deny request based on roles
+    API->>User: Response
 ```
 
 #### Benefits of JWT
@@ -477,51 +409,33 @@ A collection of users. Groups can have roles, making it easy to manage permissio
 Keycloak supports multiple standard authentication flows:
 
 #### Authorization Code Flow (Most Common for Web Apps)
-```
-┌─────────┐                                          ┌──────────┐
-│ Browser │                                          │ Web App  │
-└────┬────┘                                          └─────┬────┘
-     │                                                      │
-     │ 1. Visit protected page                             │
-     ├─────────────────────────────────────────────────────>│
-     │                                                      │
-     │ 2. Redirect to Keycloak login                       │
-     │<─────────────────────────────────────────────────────┤
-     │                                                      │
-┌────▼────┐                                                │
-│Keycloak │                                                │
-└────┬────┘                                                │
-     │ 3. User enters credentials                          │
-     │                                                      │
-     │ 4. Redirect back with authorization code            │
-     ├─────────────────────────────────────────────────────>│
-     │                                                      │
-     │                                 5. Exchange code for │
-     │                                    tokens (backend)  │
-     │<─────────────────────────────────────────────────────┤
-     │                                                      │
-     │ 6. Return access & ID tokens                        │
-     ├─────────────────────────────────────────────────────>│
-     │                                                      │
-     │ 7. Show protected page                              │
-     │<─────────────────────────────────────────────────────┤
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant WebApp as Web App
+    participant Keycloak
+
+    Browser->>WebApp: 1. Visit protected page
+    WebApp->>Browser: 2. Redirect to Keycloak login
+    Browser->>Keycloak: 3. User enters credentials
+    Keycloak->>WebApp: 4. Redirect back with authorization code
+    WebApp->>Keycloak: 5. Exchange code for tokens (backend)
+    Keycloak->>WebApp: 6. Return access & ID tokens
+    WebApp->>Browser: 7. Show protected page
 ```
 
 #### Client Credentials Flow (For Service-to-Service)
-```
-┌─────────┐                      ┌──────────┐
-│Service A│                      │ Keycloak │
-└────┬────┘                      └─────┬────┘
-     │                                 │
-     │ 1. Request token with           │
-     │    client ID + secret           │
-     ├────────────────────────────────>│
-     │                                 │
-     │ 2. Return access token          │
-     │<────────────────────────────────┤
-     │                                 │
-     │ 3. Call Service B with token    │
-     ├────────────────────────────────>│
+
+```mermaid
+sequenceDiagram
+    participant ServiceA as Service A
+    participant Keycloak
+    participant ServiceB as Service B
+
+    ServiceA->>Keycloak: 1. Request token with<br/>client ID + secret
+    Keycloak->>ServiceA: 2. Return access token
+    ServiceA->>ServiceB: 3. Call Service B with token
 ```
 
 ### OpenID Connect vs OAuth 2.0

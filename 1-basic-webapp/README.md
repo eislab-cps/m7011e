@@ -23,13 +23,13 @@ By completing this tutorial, you will understand:
 
 A web application typically consists of two parts:
 
-```
-┌─────────────┐         HTTP/HTTPS          ┌─────────────┐
-│             │    ──────────────────►      │             │
-│  Client     │         Request             │   Server    │
-│ (Browser)   │                             │  (Backend)  │
-│             │    ◄──────────────────      │             │
-└─────────────┘         Response            └─────────────┘
+```mermaid
+sequenceDiagram
+    participant Client as Client<br/>(Browser)
+    participant Server as Server<br/>(Backend)
+
+    Client->>Server: HTTP/HTTPS Request
+    Server->>Client: Response
 ```
 
 - **Client (Frontend)**: The user interface running in the browser (HTML, CSS, JavaScript)
@@ -202,36 +202,21 @@ CORS(app, resources={
 
 Our simple todo list application:
 
-```
-┌───────────────────────────────────┐
-│         Frontend (Browser)        │
-│  ┌─────────────────────────────┐  │
-│  │  index.html                 │  │
-│  │  - HTML structure           │  │
-│  │  - CSS styling              │  │
-│  │  - JavaScript logic         │  │
-│  │    * Fetch todos            │  │
-│  │    * Add new todo           │  │
-│  │    * Delete todo            │  │
-│  └─────────────────────────────┘  │
-└───────────────┬───────────────────┘
-                │
-                │ HTTP Requests (Fetch API)
-                │
-┌───────────────┴───────────────────┐
-│        Backend (Flask Server)     │
-│  ┌─────────────────────────────┐  │
-│  │  app.py                     │  │
-│  │  REST API Endpoints:        │  │
-│  │  - GET    /api/todos        │  │
-│  │  - POST   /api/todos        │  │
-│  │  - DELETE /api/todos/<id>   │  │
-│  │                             │  │
-│  │  Data Storage:              │  │
-│  │  - In-memory list           │  │
-│  │    (resets on restart)      │  │
-│  └─────────────────────────────┘  │
-└───────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend (Browser)"]
+        HTML["index.html<br/>- HTML structure<br/>- CSS styling<br/>- JavaScript logic"]
+        Features["Features:<br/>* Fetch todos<br/>* Add new todo<br/>* Delete todo"]
+        HTML --> Features
+    end
+
+    subgraph Backend["Backend (Flask Server)"]
+        API["app.py<br/>REST API Endpoints:<br/>- GET /api/todos<br/>- POST /api/todos<br/>- DELETE /api/todos/&lt;id&gt;"]
+        Storage["Data Storage:<br/>- In-memory list<br/>(resets on restart)"]
+        API --> Storage
+    end
+
+    Frontend -->|HTTP Requests<br/>(Fetch API)| Backend
 ```
 
 **Data Flow Example - Adding a Todo:**
