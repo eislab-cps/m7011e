@@ -15,26 +15,26 @@ This tutorial introduces GitOps principles and automated continuous deployment u
 
 ### Traditional CI/CD vs GitOps
 
-**Traditional CI/CD:**
+**Traditional CI/CD (Push-based):**
 ```mermaid
 flowchart LR
-    Dev[Developer] --> Push[Push Code]
-    Push --> Build[CI Build]
-    Build --> Deploy[CI Deploy]
-    Deploy --> K8s[Kubernetes Cluster]
+    Dev[Developer] -->|1. Push code| Git[Git Repository]
+    Git -->|2. Trigger| CI[CI/CD System<br/>GitHub Actions, Jenkins]
+    CI -->|3. Build & Test| CI
+    CI ==>|4. PUSH deployment<br/>requires cluster credentials| K8s[Kubernetes Cluster]
 
-    Deploy -.->|Push-based<br/>requires credentials| K8s
+    style CI fill:#f96,stroke:#333,stroke-width:2px
 ```
 
-**GitOps:**
+**GitOps (Pull-based):**
 ```mermaid
-flowchart TB
-    Dev[Developer] --> Push[Push Code]
-    Push --> Git[Git Repository]
-    Git -->|Argo CD watches Git| Watches[Argo CD Controller]
-    Watches -->|Pulls & Syncs| K8s[Kubernetes Cluster]
+flowchart LR
+    Dev[Developer] -->|1. Push code| Git[Git Repository]
+    ArgoCD[Argo CD<br/>in cluster]
+    ArgoCD -.->|2. PULL/Poll<br/>every 3 min| Git
+    ArgoCD ==>|3. Sync changes| K8s[Kubernetes Cluster]
 
-    Watches -.->|Pull-based<br/>self-healing| K8s
+    style ArgoCD fill:#9f6,stroke:#333,stroke-width:2px
 ```
 
 ### Benefits of GitOps

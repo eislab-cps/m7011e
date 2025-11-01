@@ -211,12 +211,12 @@ flowchart TB
     end
 
     subgraph Backend["Backend (Flask Server)"]
-        API["app.py<br/>REST API Endpoints:<br/>- GET /api/todos<br/>- POST /api/todos<br/>- DELETE /api/todos/&lt;id&gt;"]
+        API["app.py<br/>REST API Endpoints:<br/>- GET /api/todos<br/>- POST /api/todos<br/>- DELETE /api/todos/id"]
         Storage["Data Storage:<br/>- In-memory list<br/>(resets on restart)"]
         API --> Storage
     end
 
-    Frontend -->|HTTP Requests<br/>(Fetch API)| Backend
+    Frontend -->|"HTTP Requests (Fetch API)"| Backend
 ```
 
 **Data Flow Example - Adding a Todo:**
