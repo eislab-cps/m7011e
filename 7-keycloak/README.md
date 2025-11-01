@@ -318,25 +318,15 @@ sequenceDiagram
 | **JWT** | Token format | Container for claims and user info |
 
 **Relationship:**
-```
-┌─────────────────────────────────────────────────┐
-│           OpenID Connect (OIDC)                 │
-│  (Authentication - Who are you?)                │
-│                                                 │
-│  ┌───────────────────────────────────────────┐ │
-│  │         OAuth 2.0                         │ │
-│  │  (Authorization - What can you access?)   │ │
-│  │                                           │ │
-│  │  ┌─────────────────────────────────────┐ │ │
-│  │  │          JWT                        │ │ │
-│  │  │  (Token Format)                     │ │ │
-│  │  │                                     │ │ │
-│  │  │  Used for:                          │ │ │
-│  │  │  - ID Tokens (OIDC)                 │ │ │
-│  │  │  - Access Tokens (OAuth/OIDC)       │ │ │
-│  │  └─────────────────────────────────────┘ │ │
-│  └───────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph OIDC["OpenID Connect (OIDC)<br/>Authentication - Who are you?"]
+        subgraph OAuth["OAuth 2.0<br/>Authorization - What can you access?"]
+            subgraph JWT["JWT<br/>Token Format"]
+                Uses["Used for:<br/>- ID Tokens (OIDC)<br/>- Access Tokens (OAuth/OIDC)"]
+            end
+        end
+    end
 ```
 
 **Example:**

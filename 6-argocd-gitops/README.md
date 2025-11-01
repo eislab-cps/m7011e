@@ -31,8 +31,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     Dev[Developer] -->|1. Push code| Git[Git Repository]
-    Git -.->|2. PULL desired state<br/>poll every 3 min| ArgoCD[Argo CD<br/>runs in cluster]
-    K8s[Kubernetes Cluster] -.->|3. PULL actual state<br/>continuous monitoring| ArgoCD
+    ArgoCD[Argo CD<br/>runs in cluster] -.->|2. PULL desired state<br/>poll every 3 min| Git
+    ArgoCD -.->|3. PULL actual state<br/>continuous monitoring| K8s[Kubernetes Cluster]
     ArgoCD ==>|4. PUSH changes<br/>if drift detected| K8s
 
     style ArgoCD fill:#9f6,stroke:#333,stroke-width:2px
