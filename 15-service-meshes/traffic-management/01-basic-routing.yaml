@@ -1,0 +1,14 @@
+# Basic VirtualService - Route all traffic to backend
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend
+spec:
+  hosts:
+  - backend
+  http:
+  - route:
+    - destination:
+        host: backend
+        port:
+          number: 5678

@@ -1,0 +1,63 @@
+# This uses the official Argo CD installation manifest
+# We fetch it from the official GitHub repository
+# This is equivalent to: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# For simplicity, we'll use the official manifests via a Job that applies them
+# In a production setup, you might want to vendor these files or use the official Helm chart
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-installer
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-installer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: argocd-installer
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-install
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      serviceAccountName: argocd-installer
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Installing Argo CD..."
+          kubectl apply -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ .Values.image.tag }}/manifests/install.yaml
+
+          echo "Waiting for Argo CD to be ready..."
+          kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n {{ .Release.Namespace }}
+
+          echo "Configuring Argo CD for Traefik ingress..."
+          # Set external URL for Argo CD
+          kubectl patch configmap argocd-cm -n {{ .Release.Namespace }} --type merge -p '{"data":{"url":"https://{{ .Values.argocd.domain }}"}}'
+
+          # Enable insecure mode (HTTP) - Traefik handles TLS termination
+          kubectl patch configmap argocd-cmd-params-cm -n {{ .Release.Namespace }} --type merge -p '{"data":{"server.insecure":"true"}}'
+
+          echo "Restarting Argo CD server to apply configuration..."
+          kubectl rollout restart deployment/argocd-server -n {{ .Release.Namespace }}
+          kubectl rollout status deployment/argocd-server -n {{ .Release.Namespace }} --timeout=120s
+
+          echo "Argo CD installation and configuration complete!"
+          echo "Access Argo CD at: https://{{ .Values.argocd.domain }}"
+      restartPolicy: OnFailure
+  backoffLimit: 3

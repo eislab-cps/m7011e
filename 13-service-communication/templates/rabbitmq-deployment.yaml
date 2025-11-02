@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+     metadata:
+       labels:
+          app: rabbitmq
+     spec:
+         containers:
+           - name: rabbitmq
+             image: {{ .Values.Image | quote }} 
+             imagePullPolicy: "Always"
+             ports:
+               - containerPort: 15672
+               - containerPort: 5672
+             envFrom:
+               - configMapRef:
+                   name: rabbitmq-config

@@ -1,0 +1,28 @@
+# Staging Environment Configuration
+
+app:
+  name: hello-world
+  # More replicas for staging to test load balancing
+  replicas: 2
+
+# Staging domain - change to your assigned domain
+domain: helloworld-staging.ltu-m7011e-johan.se
+
+# Email for Let's Encrypt certificates
+email: johan.kristiansson@ltu.se
+
+# Environment identifier
+environment: Staging
+
+# Custom message for this environment
+message: "Hello from Staging Environment - Pre-Production Testing"
+
+# Container image
+image:
+  repository: nginx
+  tag: alpine
+
+# Ingress configuration
+ingress:
+  # Use staging for testing to avoid rate limits
+  certIssuer: letsencrypt-staging

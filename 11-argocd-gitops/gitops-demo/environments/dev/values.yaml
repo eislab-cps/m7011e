@@ -1,0 +1,27 @@
+# Development Environment Configuration
+
+app:
+  name: hello-world
+  replicas: 1
+
+# Development domain - change to your assigned domain
+domain: helloworld-dev.ltu-m7011e-johan.se
+
+# Email for Let's Encrypt certificates
+email: johan.kristiansson@ltu.se
+
+# Environment identifier
+environment: Development
+
+# Custom message for this environment
+message: "Hello from Development Environment!"
+
+# Container image
+image:
+  repository: nginx
+  tag: alpine
+
+# Ingress configuration
+ingress:
+  # Use staging for testing to avoid rate limits
+  certIssuer: letsencrypt-staging

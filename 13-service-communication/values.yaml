@@ -1,0 +1,7 @@
+# RabbitMQ Configuration
+Image: "rabbitmq:3-management"
+
+# RabbitMQ Credentials
+# ⚠️ IMPORTANT: Change these for production!
+RabbitMQUser: "admin"
+RabbitMQPassword: "changeme123"

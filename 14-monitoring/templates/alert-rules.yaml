@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alerts
+  namespace: monitoring
+  labels:
+    app: prometheus
+data:
+  alerts.yml: |
+    groups:
+    - name: microservices
+      interval: 30s
+      rules:
+
+      # High error rate (> 5%)
+      - alert: HighErrorRate
+        expr: |
+          (sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+          / sum(rate(http_requests_total[5m])) by (service)) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected in {{ `{{ $labels.service }}` }}"
+          description: "Error rate is {{ `{{ $value | humanizePercentage }}` }} for {{ `{{ $labels.service }}` }}"
+
+      # Slow response time (p95 > 1 second)
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow response time in {{ `{{ $labels.service }}` }}"
+          description: "95th percentile response time is {{ `{{ $value }}` }}s for {{ `{{ $labels.service }}` }}"
+
+      # Service down
+      - alert: ServiceDown
+        expr: up{job=~"kubernetes-.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ `{{ $labels.kubernetes_name }}` }} is down"
+          description: "{{ `{{ $labels.kubernetes_name }}` }} in namespace {{ `{{ $labels.kubernetes_namespace }}` }} has been down for 2 minutes"
+
+      # High CPU usage (> 80%)
+      - alert: HighCPUUsage
+        expr: |
+          sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, namespace)
+          / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, namespace)
+          > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage in {{ `{{ $labels.pod }}` }}"
+          description: "Pod {{ `{{ $labels.pod }}` }} in {{ `{{ $labels.namespace }}` }} is using {{ `{{ $value | humanizePercentage }}` }} CPU"
+
+      # High memory usage (> 90%)
+      - alert: HighMemoryUsage
+        expr: |
+          (sum(container_memory_working_set_bytes{container!=""}) by (pod, namespace)
+          / sum(container_spec_memory_limit_bytes{container!=""}) by (pod, namespace)) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage in {{ `{{ $labels.pod }}` }}"
+          description: "Pod {{ `{{ $labels.pod }}` }} in {{ `{{ $labels.namespace }}` }} is using {{ `{{ $value | humanizePercentage }}` }} memory"
+
+      # Pod restart count high
+      - alert: PodRestarting
+        expr: |
+          rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod {{ `{{ $labels.pod }}` }} is restarting"
+          description: "Pod {{ `{{ $labels.pod }}` }} in {{ `{{ $labels.namespace }}` }} has restarted {{ `{{ $value }}` }} times in the last 15 minutes"
+
+    - name: rabbitmq
+      interval: 30s
+      rules:
+
+      # RabbitMQ queue backing up (> 1000 messages)
+      - alert: RabbitMQQueueBacklog
+        expr: rabbitmq_queue_messages > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RabbitMQ queue {{ `{{ $labels.queue }}` }} backing up"
+          description: "Queue {{ `{{ $labels.queue }}` }} has {{ `{{ $value }}` }} messages waiting"
+
+      # RabbitMQ no consumers
+      - alert: RabbitMQNoConsumers
+        expr: rabbitmq_queue_consumers == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RabbitMQ queue {{ `{{ $labels.queue }}` }} has no consumers"
+          description: "Queue {{ `{{ $labels.queue }}` }} has no active consumers"
+
+      # RabbitMQ high message rate but low consumption
+      - alert: RabbitMQConsumerLag
+        expr: |
+          (rate(rabbitmq_queue_messages_published_total[5m])
+          - rate(rabbitmq_queue_messages_acked_total[5m])) > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RabbitMQ consumer lag in queue {{ `{{ $labels.queue }}` }}"
+          description: "Messages are being published faster than consumed in {{ `{{ $labels.queue }}` }}"
+
+      # RabbitMQ down
+      - alert: RabbitMQDown
+        expr: up{service="rabbitmq"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RabbitMQ is down"
+          description: "RabbitMQ has been down for 2 minutes"

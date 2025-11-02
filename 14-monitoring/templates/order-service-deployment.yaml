@@ -1,0 +1,60 @@
+{{- if .Values.exampleServices.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: monitoring
+  labels:
+    app: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: order-service
+        image: {{ .Values.images.orderService.repository }}:{{ .Values.images.orderService.tag }}
+        imagePullPolicy: {{ .Values.images.orderService.pullPolicy }}
+        ports:
+        - containerPort: 8001
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "order-service"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: monitoring
+  labels:
+    app: order-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8001"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    app: order-service
+  ports:
+  - port: 8001
+    targetPort: 8001
+    name: http
+{{- end }}

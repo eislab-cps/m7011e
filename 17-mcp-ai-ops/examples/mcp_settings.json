@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "python3",
+      "args": [
+        "/path/to/m7011e/16-mcp/servers/postgres-mcp/postgres_server.py"
+      ],
+      "env": {
+        "DB_HOST": "localhost",
+        "DB_PORT": "5432",
+        "DB_NAME": "tododb",
+        "DB_USER": "postgres",
+        "DB_PASSWORD": "postgres"
+      }
+    },
+    "prometheus": {
+      "command": "python3",
+      "args": [
+        "/path/to/m7011e/16-mcp/servers/prometheus-mcp/prometheus_server.py"
+      ],
+      "env": {
+        "PROMETHEUS_URL": "http://localhost:9090"
+      }
+    },
+    "kubernetes": {
+      "command": "python3",
+      "args": [
+        "/path/to/m7011e/16-mcp/servers/kubernetes-mcp/kubernetes_server.py"
+      ]
+    }
+  }
+}

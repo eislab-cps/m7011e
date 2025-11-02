@@ -1,0 +1,17 @@
+# Inject HTTP 500 errors on 10% of requests
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend
+spec:
+  hosts:
+  - backend
+  http:
+  - fault:
+      abort:
+        percentage:
+          value: 10.0
+        httpStatus: 500
+    route:
+    - destination:
+        host: backend

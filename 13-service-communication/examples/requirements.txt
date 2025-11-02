@@ -1,0 +1,2 @@
+# RabbitMQ Python Client Library
+pika>=1.3.0

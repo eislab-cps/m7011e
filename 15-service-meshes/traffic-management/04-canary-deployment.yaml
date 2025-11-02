@@ -1,0 +1,43 @@
+# Canary deployment - 90% v1, 10% v2
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend
+spec:
+  hosts:
+  - backend
+  http:
+  # Beta users get 100% v2
+  - match:
+    - headers:
+        x-beta-user:
+          exact: "true"
+    route:
+    - destination:
+        host: backend
+        subset: v2
+      weight: 100
+  # Regular users: 90% v1, 10% v2
+  - route:
+    - destination:
+        host: backend
+        subset: v1
+      weight: 90
+    - destination:
+        host: backend
+        subset: v2
+      weight: 10
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: backend
+spec:
+  host: backend
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2

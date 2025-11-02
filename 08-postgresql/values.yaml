@@ -1,0 +1,10 @@
+StorageClassName: local-path 
+Timezone: "Europe/Stockholm"
+
+DBUser: "postgres"
+DBPassword: "TODO"
+DBImage: postgres:16
+DBResourceLimit: false
+DBCPU: "1000m"
+DBMemory: "1000Mi"
+DBStorage: 10Gi

@@ -1,0 +1,63 @@
+{{- if .Values.exampleServices.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer
+  namespace: monitoring
+  labels:
+    app: rabbitmq-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: consumer
+        image: {{ .Values.images.rabbitmqConsumer.repository }}:{{ .Values.images.rabbitmqConsumer.tag }}
+        imagePullPolicy: {{ .Values.images.rabbitmqConsumer.pullPolicy }}
+        command: ["python", "rabbitmq-consumer-monitored.py"]
+        ports:
+        - containerPort: 8000
+          name: metrics
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq"
+        - name: SERVICE_NAME
+          value: "notification-consumer"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-consumer
+  namespace: monitoring
+  labels:
+    app: rabbitmq-consumer
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    app: rabbitmq-consumer
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: metrics
+{{- end }}

@@ -1,0 +1,145 @@
+# Simple Istio Demo - All in One File
+# This deploys a simple application with two versions and demonstrates traffic splitting
+#
+# Quick Start:
+#   1. kubectl label namespace default istio-injection=enabled
+#   2. kubectl apply -f simple-demo.yaml
+#   3. Wait for pods: kubectl get pods
+#   4. Test it: kubectl exec deploy/client -- sh -c 'for i in $(seq 1 20); do curl -s http://hello:8080; done'
+#
+# You should see a mix of "Hello from v1" and "Hello from v2" responses
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: hello
+---
+# Version 1 Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v1
+  labels:
+    app: hello
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v1
+    spec:
+      containers:
+      - name: hello
+        image: hashicorp/http-echo
+        args:
+        - "-text=Hello from v1! 🟢"
+        - "-listen=:8080"
+        ports:
+        - containerPort: 8080
+---
+# Version 2 Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v2
+  labels:
+    app: hello
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v2
+    spec:
+      containers:
+      - name: hello
+        image: hashicorp/http-echo
+        args:
+        - "-text=Hello from v2! 🔵 NEW VERSION!"
+        - "-listen=:8080"
+        ports:
+        - containerPort: 8080
+---
+# Client Deployment (for testing)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: curlimages/curl
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "Client ready. Use this pod to test the hello service."
+          echo "Example: curl http://hello:8080"
+          sleep infinity
+---
+# Istio VirtualService - 70% v1, 30% v2 traffic split
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello
+spec:
+  hosts:
+  - hello
+  http:
+  - route:
+    - destination:
+        host: hello
+        subset: v1
+      weight: 70
+    - destination:
+        host: hello
+        subset: v2
+      weight: 30
+---
+# Istio DestinationRule - Define v1 and v2 subsets
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: hello
+spec:
+  host: hello
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2

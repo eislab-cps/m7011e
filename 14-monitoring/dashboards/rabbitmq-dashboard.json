@@ -1,0 +1,117 @@
+{
+  "dashboard": {
+    "title": "RabbitMQ Monitoring Dashboard",
+    "tags": ["rabbitmq", "messaging"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Queue Depth (Messages Waiting)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "rabbitmq_queue_messages",
+            "legendFormat": "{{queue}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Messages"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Message Rate (msg/sec)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(rabbitmq_queue_messages_published_total[1m])",
+            "legendFormat": "{{queue}} - published"
+          },
+          {
+            "expr": "rate(rabbitmq_queue_messages_acked_total[1m])",
+            "legendFormat": "{{queue}} - consumed"
+          }
+        ],
+        "yaxes": [
+          {"format": "msg/s", "label": "Messages/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Consumer Count",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "rabbitmq_queue_consumers",
+            "legendFormat": "{{queue}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Consumers"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Unacked Messages",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "rabbitmq_queue_messages_unacked",
+            "legendFormat": "{{queue}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Unacked"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "RabbitMQ Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "rabbitmq_process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Memory (MB)"
+          }
+        ],
+        "yaxes": [
+          {"format": "decmbytes", "label": "Memory"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Connection Count",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "rabbitmq_connections"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Channel Count",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+        "targets": [
+          {
+            "expr": "rabbitmq_channels"
+          }
+        ]
+      }
+    ],
+    "refresh": "30s",
+    "time": {"from": "now-1h", "to": "now"}
+  }
+}
