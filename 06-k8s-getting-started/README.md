@@ -1,4 +1,4 @@
-# Tutorial 5 - Getting started using Kubernetes
+# Tutorial 6 - Getting started using Kubernetes
 
 This guide provides step-by-step instructions to help you begin working with Kubernetes on the LTU-Rancher cluster.
 

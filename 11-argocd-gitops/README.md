@@ -1,4 +1,4 @@
-# Tutorial 9 - Continuous Deployment with Argo CD GitOps
+# Tutorial 11 - Continuous Deployment with Argo CD GitOps
 
 This tutorial introduces GitOps principles and automated continuous deployment using Argo CD. You'll learn how to manage application deployments declaratively through Git, enabling automated synchronization, rollbacks, and multi-environment management.
 
@@ -82,8 +82,8 @@ flowchart TB
 
 ## Prerequisites
 
-- Completed Tutorial 5 (Kubernetes Getting Started)
-- Completed Tutorial 6 (Helm deployment)
+- Completed Tutorial 6 (Kubernetes Getting Started)
+- Completed Tutorial 7 (Helm deployment)
 - kubectl configured and connected to LTU cluster
 - Git installed locally
 
@@ -798,7 +798,7 @@ Now it's your turn! Deploy an application from a previous tutorial using GitOps.
 
 ### Goal
 
-Deploy your Tutorial 8 React application (or Tutorial 1 Flask app) using Argo CD.
+Deploy your Tutorial 9 React application (or Tutorial 1 Flask app) using Argo CD.
 
 ### Steps
 
@@ -813,7 +813,7 @@ Deploy your Tutorial 8 React application (or Tutorial 1 Flask app) using Argo CD
 
 ### Bonus Challenges
 
-- Add a database (PostgreSQL from Tutorial 7) using App of Apps pattern
+- Add a database (PostgreSQL from Tutorial 8) using App of Apps pattern
 - Implement sync hooks for database migrations
 - Set up sync waves for ordered deployment
 - Create a CI pipeline that updates image tags in Git

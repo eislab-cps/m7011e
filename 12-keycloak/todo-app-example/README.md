@@ -44,7 +44,7 @@ flowchart TB
 
 ## Prerequisites
 
-1. **Completed Tutorial 10 Parts 1-3**: Keycloak must be deployed and configured
+1. **Completed Tutorial 12 Parts 1-3**: Keycloak must be deployed and configured
 2. **Node.js and npm**: For React frontend
 3. **Python 3.7+**: For Flask backend
 4. **Keycloak Realm**: `m7011e` realm created with a client configured
@@ -394,9 +394,9 @@ keycloak.updateToken(70).then(refreshed => {
 
 ## Next Steps
 
-- Deploy this app to Kubernetes (Tutorial 8)
+- Deploy this app to Kubernetes (Tutorial 7)
 - Add PostgreSQL database instead of in-memory storage (Tutorial 8)
-- Set up GitOps deployment with Argo CD (Tutorial 10)
+- Set up GitOps deployment with Argo CD (Tutorial 11)
 - Add social login (GitHub/Google)
 - Implement multi-factor authentication
 - Add more complex authorization rules

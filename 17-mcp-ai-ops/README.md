@@ -1,4 +1,4 @@
-# Tutorial 16: MCP - Connecting AI to Your Microservices
+# Tutorial 17: MCP - Connecting AI to Your Microservices
 
 Learn how to build Model Context Protocol (MCP) servers that make your entire microservices platform accessible to AI assistants like Claude Code.
 
@@ -13,7 +13,7 @@ Learn how to build Model Context Protocol (MCP) servers that make your entire mi
 ## Prerequisites
 
 - Completed Tutorial 8 (PostgreSQL)
-- Completed Tutorial 13 (Prometheus monitoring)
+- Completed Tutorial 14 (Prometheus monitoring)
 - Python 3.10+ installed
 - Claude Code or another MCP client
 
@@ -110,7 +110,7 @@ graph LR
 - 👤 Human-initiated via Claude Code
 - 🎯 Understanding and operating the platform
 
-### What We're NOT Building (See Tutorial 17)
+### What We're NOT Building (See Tutorial 18)
 
 **Dynamic AI-powered services** where services themselves call AI at runtime:
 
@@ -127,7 +127,7 @@ graph LR
     style D fill:#e8f5e9
 ```
 
-**Examples (Tutorial 17):**
+**Examples (Tutorial 18):**
 - ❌ Content generation in a blog service
 - ❌ Real-time content moderation
 - ❌ Dynamic pricing calculations
@@ -135,10 +135,10 @@ graph LR
 - ❌ AI-powered routing decisions
 
 **Key difference:**
-- **Tutorial 16 (this)**: Humans use AI to operate the platform
-- **Tutorial 17 (next)**: Services use AI to enhance their features
+- **Tutorial 17 (this)**: Humans use AI to operate the platform
+- **Tutorial 18 (next)**: Services use AI to enhance their features
 
-If you want to make your services more intelligent at runtime (not just monitor them), continue to Tutorial 17 after completing this one.
+If you want to make your services more intelligent at runtime (not just monitor them), continue to Tutorial 18 after completing this one.
 
 ---
 

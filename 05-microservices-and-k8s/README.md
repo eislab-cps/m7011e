@@ -1793,7 +1793,7 @@ graph LR
 
 **Challenge:** How to get data from multiple services?
 - API calls between services (synchronous)
-- Event-driven architecture (asynchronous) - covered in Tutorial 12
+- Event-driven architecture (asynchronous) - covered in Tutorial 13
 
 ### 3. API Gateway Pattern
 
@@ -2428,7 +2428,7 @@ If Product Service crashes:
 ### 4. Monitoring & Logging
 - Logs scattered across services
 - Need centralized logging (ELK, Loki)
-- Distributed tracing (Jaeger) - covered in Tutorial 12
+- Distributed tracing (Jaeger) - covered in Tutorial 15
 
 ### 5. Deployment Orchestration
 - Managing many services manually is impossible
@@ -2580,11 +2580,12 @@ In the following tutorials, you will:
 - **Tutorial 7**: Deploy applications with Helm and Ingress
 - **Tutorial 8**: Deploy PostgreSQL with StatefulSets
 - **Tutorial 9**: Build a React frontend
-- **Tutorial 10**: Implement GitOps with ArgoCD
-- **Tutorial 11**: Add authentication with Keycloak (OAuth 2.0, JWT)
-- **Tutorial 12**: Implement asynchronous communication with RabbitMQ
-- **Tutorial 13**: Monitor microservices with Prometheus and Grafana
-- **Tutorial 14**: Advanced traffic management with Istio service mesh
+- **Tutorial 10**: Testing and CI pipelines
+- **Tutorial 11**: Implement GitOps with ArgoCD
+- **Tutorial 12**: Add authentication with Keycloak (OAuth 2.0, JWT)
+- **Tutorial 13**: Implement asynchronous communication with RabbitMQ
+- **Tutorial 14**: Monitor microservices with Prometheus and Grafana
+- **Tutorial 15**: Advanced traffic management with Istio service mesh
 
 ---
 

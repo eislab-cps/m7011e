@@ -615,7 +615,7 @@ python3 -m pip install -r requirements.txt
 
 After completing this tutorial:
 
-1. **Add a database**: Replace in-memory list with PostgreSQL (see Tutorial 6)
+1. **Add a database**: Replace in-memory list with PostgreSQL (see Tutorial 8)
 2. **Containerize with Docker**: Package your app in containers (Tutorial 2)
 3. **Learn about databases**: Understand different database types (Tutorial 3)
 4. **Deploy to Kubernetes**: Learn orchestration (Tutorials 4-5)

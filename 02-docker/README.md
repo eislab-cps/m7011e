@@ -691,7 +691,7 @@ To make our todo app production-ready, you would:
 1. **Add a database** (PostgreSQL, MySQL, MongoDB)
 2. **Use a named volume** to persist database data
 3. **Update backend code** to use database instead of in-memory list
-4. **See Tutorial 6** for PostgreSQL deployment on Kubernetes
+4. **See Tutorial 8** for PostgreSQL deployment on Kubernetes
 
 **Example docker-compose.yml with database** (for reference):
 ```yaml

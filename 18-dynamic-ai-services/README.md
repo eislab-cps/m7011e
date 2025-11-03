@@ -1,4 +1,4 @@
-# Tutorial 17: Dynamic AI-Powered Services
+# Tutorial 18: Dynamic AI-Powered Services
 
 Learn how to build microservices that use AI at runtime to provide intelligent, dynamic features to your users.
 
@@ -15,9 +15,9 @@ Learn how to build microservices that use AI at runtime to provide intelligent, 
 
 ## Prerequisites
 
-- Completed Tutorial 16 (MCP basics)
+- Completed Tutorial 17 (MCP basics)
 - Completed Tutorial 8 (PostgreSQL)
-- Completed Tutorial 13 (Prometheus monitoring)
+- Completed Tutorial 14 (Prometheus monitoring)
 - Python 3.10+ installed
 - **AI Provider** (choose one):
   - **Option A: Local Models** (Recommended for learning) - FREE, no API key needed
@@ -94,9 +94,9 @@ You can easily switch between providers by changing the AI_SERVER_URL!
 
 ---
 
-## Tutorial 16 vs Tutorial 17
+## Tutorial 17 vs Tutorial 18
 
-### Tutorial 16: Platform Operations
+### Tutorial 17: Platform Operations
 
 ```mermaid
 graph LR
@@ -116,7 +116,7 @@ graph LR
 - **Operations**: Read-only queries
 - **Initiated by**: Humans
 
-### Tutorial 17: Dynamic Services (This Tutorial)
+### Tutorial 18: Dynamic Services (This Tutorial)
 
 ```mermaid
 graph LR

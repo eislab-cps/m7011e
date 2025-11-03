@@ -1,10 +1,10 @@
-# Tutorial 15: AI-Powered Personalization
+# Tutorial 16: AI-Powered Personalization
 
 Learn how to add intelligent, personalized recommendations to your microservices using machine learning.
 
 ## Why This Tutorial Matters
 
-In Tutorial 13, you learned to monitor your services. In Tutorial 14, you learned advanced traffic management with Istio. Now it's time to make your services **intelligent** and **personalized**.
+In Tutorial 14, you learned to monitor your services. In Tutorial 15, you learned advanced traffic management with Istio. Now it's time to make your services **intelligent** and **personalized**.
 
 **Without AI/ML:**
 - ❌ Everyone sees the same products
@@ -47,7 +47,7 @@ By the end of this tutorial, you will understand:
 
 ## Prerequisites
 
-- Completed Tutorial 13 (Monitoring with Prometheus and Grafana)
+- Completed Tutorial 14 (Monitoring with Prometheus and Grafana)
 - Kubernetes cluster access
 - kubectl configured
 - Python 3.8+ installed locally (for model training)
@@ -867,6 +867,6 @@ def diversify_recommendations(items, top_n=10):
 - [Feature Stores](https://www.featurestore.org/)
 
 **Integration:**
-- Tutorial 13: Monitoring with Prometheus/Grafana
-- Tutorial 14: Service Mesh with Istio
-- Tutorial 12: RabbitMQ for real-time event streaming
+- Tutorial 14: Monitoring with Prometheus/Grafana
+- Tutorial 15: Service Mesh with Istio
+- Tutorial 13: RabbitMQ for real-time event streaming

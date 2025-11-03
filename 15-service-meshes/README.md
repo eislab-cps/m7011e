@@ -1,10 +1,10 @@
-# Tutorial 14: Service Meshes with Istio
+# Tutorial 15: Service Meshes with Istio
 
 Learn how to implement advanced traffic management, security, and observability with Istio service mesh.
 
 ## Why This Tutorial Matters
 
-In Tutorial 13, you learned to monitor microservices with Prometheus and Grafana. But as your microservices architecture grows, you face new challenges:
+In Tutorial 14, you learned to monitor microservices with Prometheus and Grafana. But as your microservices architecture grows, you face new challenges:
 
 **Without a service mesh:**
 - ❌ Each service implements its own retry logic, timeouts, and circuit breakers
@@ -80,7 +80,7 @@ By the end of this tutorial, you will understand:
 
 ## Prerequisites
 
-- Completed Tutorial 13 (Monitoring with Prometheus and Grafana)
+- Completed Tutorial 14 (Monitoring with Prometheus and Grafana)
 - Kubernetes cluster access
 - kubectl configured
 - Basic understanding of Kubernetes Services and Deployments
@@ -767,7 +767,7 @@ spec:
 
 ## Part 9: Integration with Existing Monitoring
 
-Istio integrates seamlessly with Tutorial 13's Prometheus/Grafana setup.
+Istio integrates seamlessly with Tutorial 14's Prometheus/Grafana setup.
 
 ### Istio Metrics in Prometheus
 

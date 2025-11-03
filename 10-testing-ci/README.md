@@ -1772,4 +1772,3 @@ Now that you have comprehensive testing and CI/CD:
 1. **Tutorial 11 (ArgoCD GitOps)**: Automate deployment when tests pass
 2. **Tutorial 12 (Keycloak)**: Add authentication (with tests!)
 3. **Tutorial 14 (Monitoring)**: Monitor test execution times
-4. **Tutorial 19 (AI Documentation)**: Generate test documentation with AI

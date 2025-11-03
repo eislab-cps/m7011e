@@ -4,7 +4,7 @@ These examples demonstrate RabbitMQ message queues with **automatic retry on cra
 
 ## Prerequisites
 
-1. **Deploy RabbitMQ** to your Kubernetes cluster (see main Tutorial 12 README)
+1. **Deploy RabbitMQ** to your Kubernetes cluster (see main Tutorial 13 README)
 2. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
@@ -114,7 +114,7 @@ kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 
 ## Next Steps
 
-See the main Tutorial 12 README for:
+See the main Tutorial 13 README for:
 - Dead letter queues
 - Production best practices
 - Deploying consumers to Kubernetes

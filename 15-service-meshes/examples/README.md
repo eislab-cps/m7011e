@@ -350,4 +350,4 @@ kubectl label namespace default istio-injection-
 2. Try the advanced examples in `../traffic-management/`
 3. Explore security with `../security/mtls-strict.yaml`
 4. Set up authorization policies
-5. Integrate with your Tutorial 13 monitoring stack
+5. Integrate with your Tutorial 14 monitoring stack

@@ -1,4 +1,4 @@
-# Tutorial 10 - Identity and Access Management with Keycloak
+# Tutorial 12 - Identity and Access Management with Keycloak
 
 This tutorial introduces Keycloak, an open-source Identity and Access Management (IAM) solution. You'll learn how to deploy Keycloak on Kubernetes, configure authentication and authorization, and integrate it with web applications to implement secure user management.
 
@@ -1286,7 +1286,7 @@ Now it's your turn! Add Keycloak authentication to a previous tutorial project.
 
 ### Goal
 
-Integrate Keycloak authentication with your Tutorial 8 React application or Tutorial 1 Flask app.
+Integrate Keycloak authentication with your Tutorial 9 React application or Tutorial 1 Flask app.
 
 ### Steps
 
@@ -1307,7 +1307,7 @@ Integrate Keycloak authentication with your Tutorial 8 React application or Tuto
 - Set up user self-registration with email verification
 - Implement fine-grained authorization policies
 - Add session management and "active sessions" page
-- Deploy with Argo CD from Tutorial 9
+- Deploy with Argo CD from Tutorial 11
 
 ## Additional Resources
 

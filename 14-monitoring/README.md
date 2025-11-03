@@ -1,10 +1,10 @@
-# Tutorial 13: Monitoring Microservices with Prometheus and Grafana
+# Tutorial 14: Monitoring Microservices with Prometheus and Grafana
 
 Learn how to monitor microservices and message queues with Prometheus metrics and Grafana dashboards for real-time observability.
 
 ## Why This Tutorial Matters
 
-In Tutorial 12, you built microservices with RabbitMQ for reliable communication. But now you need to answer critical questions:
+In Tutorial 13, you built microservices with RabbitMQ for reliable communication. But now you need to answer critical questions:
 
 **Without monitoring, you're flying blind:**
 - ❌ Is my service healthy right now?
@@ -979,9 +979,9 @@ prometheus:
 
 ### Next Steps
 
-- **Tutorial 14**: Logging and Distributed Tracing
-- **Tutorial 15**: Auto-scaling based on metrics
-- **Tutorial 16**: Production deployment patterns
+- **Tutorial 15**: Service Mesh with Istio (includes distributed tracing with Jaeger)
+- **Tutorial 16**: AI-Powered Personalization
+- **Tutorial 17**: MCP - Connecting AI to Your Microservices
 
 ---
 

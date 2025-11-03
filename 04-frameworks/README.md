@@ -450,7 +450,7 @@ Modern frameworks like **Next.js**, **Nuxt.js**, and **SvelteKit** support **hyb
 | **Svelte** | SPA | Via SvelteKit | Via SvelteKit | SvelteKit |
 | **Angular** | SPA | Angular Universal | Angular Universal | Limited |
 
-**Recommendation for this course:** Start with **SPA** (Tutorial 8 uses React SPA) to understand fundamentals, then explore Next.js/Nuxt.js/SvelteKit for production projects.
+**Recommendation for this course:** Start with **SPA** (Tutorial 9 uses React SPA) to understand fundamentals, then explore Next.js/Nuxt.js/SvelteKit for production projects.
 
 ---
 
@@ -2707,7 +2707,7 @@ In this tutorial series, we use:
 
 - **Frontend:**
   - Tutorial 1: Vanilla JavaScript (fundamentals)
-  - Tutorial 8: React (modern framework)
+  - Tutorial 9: React (modern framework)
 
 - **Backend:**
   - Flask (simple, Python-based, easy to learn)
@@ -2723,7 +2723,7 @@ In this tutorial series, we use:
 2. **Tutorial 2**: Containerize with Docker
 3. **Tutorial 3**: Understand databases
 4. **Tutorial 5**: Deploy to Kubernetes
-5. **Tutorial 8**: Rebuild with React (see framework benefits)
+5. **Tutorial 9**: Rebuild with React (see framework benefits)
 
 ## Further Reading
 

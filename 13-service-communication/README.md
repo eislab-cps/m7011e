@@ -1,4 +1,4 @@
-# Tutorial 12: RabbitMQ for Resilient Microservices Communication
+# Tutorial 13: RabbitMQ for Resilient Microservices Communication
 
 Learn how to use RabbitMQ message queues for reliable asynchronous communication between microservices, with automatic retry on failure.
 

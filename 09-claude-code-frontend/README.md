@@ -1,4 +1,4 @@
-# Tutorial 8: Building React Frontends with Claude Code
+# Tutorial 9: Building React Frontends with Claude Code
 
 Learn how to use Claude Code to rebuild the Todo List from Tutorial 1 using React, demonstrating effective prompting techniques and iterative development.
 
