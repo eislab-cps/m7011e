@@ -254,6 +254,12 @@ Monitor microservices and message queues with Prometheus metrics and Grafana das
 - Kubernetes service discovery with Prometheus
 - Production monitoring patterns
 
+---
+
+## Optional Advanced Tutorials
+
+The following tutorials are **optional** and cover advanced topics. You can complete the core course (Tutorials 1-14) and come back to these later.
+
 ### [15-service-meshes](./15-service-meshes/)
 Implement advanced traffic management, security, and observability with Istio service mesh.
 
@@ -273,7 +279,7 @@ Implement advanced traffic management, security, and observability with Istio se
 - Integration with Prometheus and Grafana
 - Production best practices and performance considerations
 
-### [16-ai-personalization](./16-ai-personalization/)
+### [16-ai-personalization](./16-ai-personalization/) 
 Add intelligent, personalized recommendations to your microservices using machine learning.
 
 **Covers:**
@@ -289,7 +295,7 @@ Add intelligent, personalized recommendations to your microservices using machin
 - Continuous training pipelines
 - Integration with existing microservices stack
 
-### [17-mcp-ai-ops](./17-mcp-ai-ops/)
+### [17-mcp-ai-ops](./17-mcp-ai-ops/) 
 Connect your entire microservices platform to AI assistants using the Model Context Protocol (MCP) for AI-powered operations.
 
 **Covers:**
@@ -320,26 +326,13 @@ Build microservices that use AI at runtime to provide intelligent, dynamic featu
 - Prometheus metrics for AI usage monitoring
 - Production deployment with Docker and Kubernetes
 
-### [19-ai-documentation](./19-ai-documentation/)
-Automate documentation generation using AI to create Mermaid diagrams, API specifications, and comprehensive guides from your code.
-
-**Covers:**
-- AI-powered Mermaid diagram generation (architecture, sequence, data flow)
-- Automatic OpenAPI/Swagger specification generation
-- README and user guide generation from code
-- Prompt engineering techniques for documentation
-- Automation scripts and CI/CD integration
-- Documentation quality validation
-- Pre-commit hooks for auto-documentation
-- Using local AI models (Ollama) vs cloud APIs
-- Multiple documentation tools (Mermaid, PlantUML, Sphinx, MkDocs)
-- Real-world examples with working prompts and outputs
-
 ---
 
 ## Learning Path
 
-The tutorials are designed to be completed in order:
+### Core Tutorials (Required)
+
+The core tutorials are designed to be completed in order:
 
 1. **Foundation** (Tutorial 1): Build a basic web application
 2. **Containerization** (Tutorial 2): Package your application with Docker
@@ -354,10 +347,14 @@ The tutorials are designed to be completed in order:
 11. **Security** (Tutorial 12): Add authentication and authorization with Keycloak
 12. **Messaging** (Tutorial 13): Implement asynchronous communication with RabbitMQ
 13. **Observability** (Tutorial 14): Monitor services with Prometheus and Grafana
-14. **Service Mesh** (Tutorial 15): Advanced traffic management and security with Istio
-15. **AI/ML** (Tutorial 16): Add intelligent personalization with machine learning
-16. **AI Ops** (Tutorial 17): AI-powered platform operations with MCP for DevOps
-17. **AI Services** (Tutorial 18): Build services that use AI to enhance user features
-18. **Documentation** (Tutorial 19): Automate documentation with AI-generated diagrams and guides
 
-Each tutorial builds on concepts from previous ones, creating a complete production-ready, enterprise-grade, intelligent, and AI-native microservices platform.
+**After completing tutorials 1-14, you will have a complete production-ready, enterprise-grade microservices platform.**
+
+### Optional Advanced Tutorials
+
+These tutorials are **optional** and cover advanced topics. You can explore them based on your interests:
+
+- **Tutorial 15 (Service Mesh)**: Advanced traffic management and security with Istio
+- **Tutorial 16 (AI/ML)**: Add intelligent personalization with machine learning
+- **Tutorial 17 (AI Ops)**: AI-powered platform operations with MCP for DevOps
+- **Tutorial 18 (AI Services)**: Build services that use AI to enhance user features
