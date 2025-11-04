@@ -709,9 +709,13 @@ python app.py
 
 Now let's call the protected API from React. We'll organize the code properly:
 
-#### Step 1: Create API Helper File
+#### Step 1: Create or Update API Helper File
 
-Create `src/api.js` to handle all API calls:
+**Following Part 4?** In Part 4 above, we only created `keycloak.js` and `App.js`. Now create a new file `src/api.js`:
+
+**Already using the complete todo example (Part 9)?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
+
+**Complete `src/api.js` code:**
 
 ```javascript
 // src/api.js
@@ -736,27 +740,97 @@ const authFetch = async (url, token, options = {}) => {
   return response.json();
 };
 
-// Call the protected endpoint
+// ← ADD THIS if you already have api.js, OR include it in your new file
+// Call the protected endpoint to test JWT authentication
 export const callProtectedAPI = async (token) => {
   return authFetch(`${API_BASE_URL}/protected`, token);
 };
+
+// Your existing functions (getTodos, createTodo, etc.) stay here if you have them
 ```
 
 #### Step 2: Update App.js to Use the API
 
-Update your `src/App.js`:
+Your existing `src/App.js` should already have the basic Keycloak setup. **Add these specific changes**:
+
+**Changes to make:**
+
+1. **Add the new import** (at the top):
+```javascript
+import { callProtectedAPI } from './api';  // ← ADD THIS LINE
+```
+
+2. **Add new state variables** (inside the `App` function, after existing state):
+```javascript
+const [apiResponse, setApiResponse] = useState(null);  // ← ADD THIS
+const [error, setError] = useState(null);               // ← ADD THIS
+```
+
+3. **Add the API call handler function** (after the `useEffect`, before the `return`):
+```javascript
+// ← ADD THIS ENTIRE FUNCTION
+const handleCallAPI = async () => {
+  try {
+    setError(null);
+
+    // Refresh token if needed (within 30 seconds of expiry)
+    await keycloak.updateToken(30);
+
+    // Call the protected API with the current token
+    const data = await callProtectedAPI(keycloak.token);
+
+    setApiResponse(data);
+    console.log('API response:', data);
+  } catch (err) {
+    console.error('API call failed:', err);
+    setError(err.message);
+  }
+};
+```
+
+4. **Add the button and response display** (inside the `return` statement, after the user info):
+```javascript
+{/* ← ADD THIS BUTTON */}
+<button onClick={handleCallAPI}>
+  Call Protected API
+</button>
+
+{/* ← ADD THIS: Display API response */}
+{apiResponse && (
+  <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9' }}>
+    <h3>API Response:</h3>
+    <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+  </div>
+)}
+
+{/* ← ADD THIS: Display errors */}
+{error && (
+  <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
+    <strong>Error:</strong> {error}
+  </div>
+)}
+```
+
+**Complete example of the updated App.js:**
+
+<details>
+<summary>Click to see full App.js code</summary>
 
 ```javascript
 import React, { useState, useEffect } from 'react';
 import keycloak from './keycloak';
-import { callProtectedAPI } from './api';
+import { callProtectedAPI } from './api';  // ← NEW IMPORT
 
 function App() {
+  // Existing state
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+
+  // NEW: State for API testing
   const [apiResponse, setApiResponse] = useState(null);
   const [error, setError] = useState(null);
 
+  // Existing useEffect (no changes)
   useEffect(() => {
     keycloak.init({
       onLoad: 'login-required',
@@ -772,17 +846,12 @@ function App() {
     });
   }, []);
 
-  // This function is called when button is clicked
+  // NEW: Function to call the protected API
   const handleCallAPI = async () => {
     try {
       setError(null);
-
-      // Refresh token if needed (within 30 seconds of expiry)
       await keycloak.updateToken(30);
-
-      // Call the protected API with the current token
       const data = await callProtectedAPI(keycloak.token);
-
       setApiResponse(data);
       console.log('API response:', data);
     } catch (err) {
@@ -800,12 +869,12 @@ function App() {
       <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
       <p>Email: {user?.email}</p>
 
-      {/* Button with onClick handler */}
+      {/* NEW: Button to test API */}
       <button onClick={handleCallAPI}>
         Call Protected API
       </button>
 
-      {/* Display API response */}
+      {/* NEW: Display API response */}
       {apiResponse && (
         <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9' }}>
           <h3>API Response:</h3>
@@ -813,13 +882,14 @@ function App() {
         </div>
       )}
 
-      {/* Display errors */}
+      {/* NEW: Display errors */}
       {error && (
         <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
           <strong>Error:</strong> {error}
         </div>
       )}
 
+      {/* Existing logout button */}
       <button onClick={() => keycloak.logout()}>Logout</button>
     </div>
   );
@@ -827,6 +897,7 @@ function App() {
 
 export default App;
 ```
+</details>
 
 #### How onClick Works:
 
