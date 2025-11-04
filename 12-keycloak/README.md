@@ -753,7 +753,7 @@ Now let's call the protected API from React. We'll organize the code properly:
 
 **Following Part 4?** In Part 4 above, we only created `keycloak.js` and `App.js`. Now create a new file `src/api.js`:
 
-**Already using the complete todo example (Part 9)?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
+**Already using the complete todo example (Part 3)?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
 
 **Complete `src/api.js` code:**
 
@@ -1088,7 +1088,7 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 ---
 
-## Part 9: Example Applications
+## Part 3: Example Applications
 
 We provide **three self-contained, progressively more complex examples** to help you learn step-by-step. Each example is completely independent and can be run on its own.
 
@@ -1418,7 +1418,7 @@ cd example-part-2-todo-secure
 
 4. **Verify**: You should see "✓ Successfully fetched Keycloak public keys" when the backend starts.
 
-**See also**: Configuration Required section in Part 9 above for complete setup instructions.
+**See also**: Configuration Required section in Part 3 above for complete setup instructions.
 
 ### Flask Backend Error: "module 'jwt' has no attribute 'ExpiredSignatureError'"
 
