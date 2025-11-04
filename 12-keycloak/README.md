@@ -542,11 +542,32 @@ export default App;
 
 ### Run Your App
 
+**Using the example (recommended):**
 ```bash
+# See the working example first!
+cd example-part-1-todo-basic
+
+# Terminal 1: Start backend
+./start-backend.sh
+
+# Terminal 2: Start frontend
+./start-frontend.sh
+```
+
+**Or manually if building from scratch:**
+```bash
+# Terminal 1: Start backend
+cd backend
+pip install -r requirements.txt
+python3 app.py
+
+# Terminal 2: Start frontend
+cd frontend
+npm install
 npm start
 ```
 
-Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Login with `testuser` / `testpass123` and you'll be redirected back to your app!
+Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Login with your Keycloak user and you'll be redirected back to your app!
 
 ![Login](./login.png)
 
@@ -706,9 +727,24 @@ if __name__ == '__main__':
 
 ### Test Your Protected API
 
+**Using the example (recommended):**
 ```bash
-# Run Flask app
-python app.py
+# See the working example with full todo app!
+cd example-part-2-todo-secure
+
+# Terminal 1: Start backend (with signature verification)
+./start-backend.sh
+
+# Terminal 2: Start frontend
+./start-frontend.sh
+```
+
+**Or manually if building from scratch:**
+```bash
+# Start Flask backend
+cd backend
+pip install -r requirements.txt
+python3 app.py
 ```
 
 Now let's call the protected API from React. We'll organize the code properly:
