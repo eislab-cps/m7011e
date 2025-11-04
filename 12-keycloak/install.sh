@@ -1,66 +1,54 @@
 #!/bin/bash
 
 # Installation script for Keycloak tutorial
+# Self-contained deployment with PostgreSQL and Keycloak
+
+NAMESPACE="keycloak"
 
 echo "Keycloak Installation Script"
 echo "============================"
 echo ""
 
-# Step 1: Create database namespace
-echo "Step 1: Creating database namespace..."
-kubectl create namespace keycloak-db 2>/dev/null || echo "Namespace keycloak-db already exists"
+# Step 1: Create namespace
+echo "Step 1: Creating namespace..."
+kubectl create namespace $NAMESPACE 2>/dev/null || echo "Namespace $NAMESPACE already exists"
 
-# Step 2: Deploy PostgreSQL
+# Step 2: Deploy PostgreSQL and Keycloak
 echo ""
-echo "Step 2: Deploying PostgreSQL database..."
-if [ ! -d "../08-postgresql" ]; then
-    echo "Error: PostgreSQL Helm chart not found. Please ensure Tutorial 8 exists."
-    exit 1
-fi
+echo "Step 2: Deploying PostgreSQL and Keycloak..."
+helm install keycloak \
+    -n $NAMESPACE \
+    ./keycloak-chart
 
-helm install keycloak-db \
-    -f keycloak-db-values.yaml \
-    -n keycloak-db \
-    ../08-postgresql
-
+echo ""
 echo "Waiting for PostgreSQL to be ready..."
-kubectl wait --for=condition=ready pod -l app=postgres -n keycloak-db --timeout=180s
+kubectl wait --for=condition=ready pod -l app=postgres -n $NAMESPACE --timeout=180s
 
 # Step 3: Create Keycloak database
 echo ""
 echo "Step 3: Creating Keycloak database..."
 echo "Starting port-forward in background..."
-kubectl port-forward -n keycloak-db svc/postgres-service 5432:5432 &
+kubectl port-forward -n $NAMESPACE svc/postgres-service 5432:5432 &
 PORT_FORWARD_PID=$!
 sleep 5
 
-PGPASSWORD=$(grep DBPassword keycloak-db-values.yaml | awk '{print $2}' | tr -d '"')
+PGPASSWORD=$(grep password keycloak-chart/values.yaml | head -1 | awk '{print $2}' | tr -d '"')
 PGPASSWORD=$PGPASSWORD psql -h localhost -p 5432 -U keycloak -d postgres -c "CREATE DATABASE keycloak;" 2>/dev/null || echo "Database might already exist"
 
 # Stop port-forward
 kill $PORT_FORWARD_PID 2>/dev/null
 
-# Step 4: Create Keycloak namespace
 echo ""
-echo "Step 4: Creating Keycloak namespace..."
-kubectl create namespace keycloak 2>/dev/null || echo "Namespace keycloak already exists"
-
-# Step 5: Install Keycloak
-echo ""
-echo "Step 5: Installing Keycloak..."
-helm install keycloak \
-    -f keycloak-chart/values.yaml \
-    -n keycloak \
-    ./keycloak-chart
+echo "Waiting for Keycloak to be ready..."
+kubectl wait --for=condition=ready pod -l app=keycloak -n $NAMESPACE --timeout=300s
 
 echo ""
 echo "============================"
-echo "Installation in progress!"
+echo "Installation complete!"
 echo "============================"
 echo ""
 echo "Monitor the deployment with:"
-echo "  kubectl get pods -n keycloak-db"
-echo "  kubectl get pods -n keycloak"
+echo "  kubectl get pods -n $NAMESPACE"
 echo ""
 echo "Once running, access Keycloak at the domain configured in keycloak-chart/values.yaml"
 echo ""

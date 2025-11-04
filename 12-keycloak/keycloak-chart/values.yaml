@@ -1,3 +1,16 @@
+# PostgreSQL Database Configuration
+postgres:
+  storageClassName: "local-path"
+  timezone: "Europe/Stockholm"
+  user: "keycloak"
+  password: "keycloak-secure-password-123"  # CHANGE THIS!
+  image: "postgres:16"
+  resourceLimit: false
+  cpu: "1000m"
+  memory: "1000Mi"
+  storage: "5Gi"
+
+# Keycloak Configuration
 keycloak:
   replicas: 1
   image: quay.io/keycloak/keycloak:23.0
@@ -9,7 +22,7 @@ keycloak:
   # Database configuration
   database:
     vendor: postgres
-    host: postgres-service.keycloak-db.svc.cluster.local
+    host: postgres-service  # Same namespace - simplified
     port: 5432
     database: keycloak
     username: keycloak
