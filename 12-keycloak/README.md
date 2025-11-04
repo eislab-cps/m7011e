@@ -1048,31 +1048,156 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 ---
 
-## Part 9: Complete Example Application
+## Part 9: Example Applications
 
-Want to see everything working together? Check out the `todo-app-example/` directory!
+We provide **three self-contained, progressively more complex examples** to help you learn step-by-step. Each example is completely independent and can be run on its own.
 
-### What's Included
+### 📁 Example 1: Basic Login (`example-part-4-basic-login/`)
 
-- **Full React frontend** with Keycloak authentication
-- **Flask backend** with JWT token validation
-- **Role-based access control** (admins see all todos, users see only their own)
-- **Automatic token refresh**
-- **Protected API endpoints**
+**What it demonstrates:** Part 4 of the tutorial
+- ✅ Keycloak login/logout
+- ✅ Display user information
+- ✅ Show JWT access token
+- ❌ NO backend (frontend only!)
+- ❌ NO API calls
 
-### Quick Start
+**Perfect for:** Learning Keycloak authentication basics
 
+**Self-contained structure:**
+```
+example-part-4-basic-login/
+├── frontend/
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── keycloak.js
+│   │   └── *.css
+│   └── package.json
+└── start-frontend.sh
+```
+
+**Quick start:**
 ```bash
-cd todo-app-example
-
-# Start backend (Terminal 1)
-./start-backend.sh
-
-# Start frontend (Terminal 2)
+cd example-part-4-basic-login
 ./start-frontend.sh
 ```
 
-See `todo-app-example/README.md` for detailed documentation.
+### 📁 Example 2: Protected API (`example-part-5-protected-api/`)
+
+**What it demonstrates:** Part 5 of the tutorial (builds on Part 4)
+- ✅ Everything from Example 1
+- ✅ **NEW:** Flask backend with JWT validation
+- ✅ **NEW:** Call protected API endpoint
+- ✅ **NEW:** Send JWT token in Authorization header
+- ✅ **NEW:** Display API response/errors
+- ❌ NO todo functionality yet
+
+**Perfect for:** Learning how to secure backend APIs with JWT
+
+**Self-contained structure:**
+```
+example-part-5-protected-api/
+├── frontend/
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── api.js           ← NEW
+│   │   └── keycloak.js
+│   └── package.json
+├── backend/                  ← NEW
+│   ├── app.py
+│   └── requirements.txt
+├── start-frontend.sh
+└── start-backend.sh
+```
+
+**Quick start:**
+```bash
+# Terminal 1: Start backend
+cd example-part-5-protected-api
+./start-backend.sh
+
+# Terminal 2: Start frontend (in a new terminal)
+cd example-part-5-protected-api
+./start-frontend.sh
+```
+
+### 📁 Example 3: Complete Todo App (`example-part-9-complete-todo-app/`)
+
+**What it demonstrates:** Complete production-ready application
+- ✅ Everything from Example 2
+- ✅ **NEW:** Full CRUD operations (Create, Read, Update, Delete todos)
+- ✅ **NEW:** Role-based access control (admin vs user)
+- ✅ **NEW:** Per-user data isolation
+- ✅ **NEW:** Automatic token refresh
+- ✅ **NEW:** Production-ready error handling
+
+**Perfect for:** See a complete real-world application
+
+**Self-contained structure:**
+```
+example-part-9-complete-todo-app/
+├── frontend/
+│   ├── src/
+│   │   ├── App.js           (Complete todo UI)
+│   │   ├── api.js           (Full CRUD operations)
+│   │   └── keycloak-config.js
+│   └── package.json
+├── backend/
+│   ├── app.py               (Full todo API)
+│   └── requirements.txt
+├── start-frontend.sh
+└── start-backend.sh
+```
+
+**Quick start:**
+```bash
+# Terminal 1: Start backend
+cd example-part-9-complete-todo-app
+./start-backend.sh
+
+# Terminal 2: Start frontend (in a new terminal)
+cd example-part-9-complete-todo-app
+./start-frontend.sh
+```
+
+### 🎯 Which Example Should I Use?
+
+| Learning Goal | Use This Example |
+|--------------|------------------|
+| Just learning Keycloak auth | **Example 1** (Part 4) |
+| Learning to secure APIs with JWT | **Example 2** (Part 5) |
+| Building a real application | **Example 3** (Complete Todo App) |
+| Following the tutorial step-by-step | **Example 1** → **Example 2** → **Example 3** |
+
+### 📊 Progression Chart
+
+```
+Example 1: example-part-4-basic-login/
+└── Basic Keycloak Login (Frontend Only)
+    ├── Login/Logout
+    ├── User Profile Display
+    └── JWT Token Display
+
+    ↓ ADD: Backend API + JWT Validation
+
+Example 2: example-part-5-protected-api/
+└── Protected API Calls (Frontend + Backend)
+    ├── Everything from Example 1
+    ├── Flask Backend with JWT
+    ├── JWT Signature Verification
+    └── Protected Endpoint
+
+    ↓ ADD: Todo CRUD + RBAC + Production Features
+
+Example 3: example-part-9-complete-todo-app/
+└── Full Todo Application (Production Ready)
+    ├── Everything from Example 2
+    ├── Create/Read/Update/Delete Todos
+    ├── Role-Based Access Control
+    ├── Per-User Data Isolation
+    └── Automatic Token Refresh
+```
+
+**Note:** Each example is completely self-contained with its own frontend, backend (if needed), and start scripts. You can run any example independently without the others.
 
 ---
 
