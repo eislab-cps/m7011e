@@ -93,7 +93,7 @@ Open your browser to: `https://keycloak.ltu-m7011e-YOUR-NAME.se`
 
 A **realm** is like a tenant - it manages a set of users, applications, roles, and settings. Let's create one for your project.
 
-### Step 1: Create Realm
+### Option A: Create Realm via UI
 
 1. In Keycloak Admin Console, click the dropdown in the top-left (shows "master")
 2. Click **"Create Realm"**
@@ -101,6 +101,37 @@ A **realm** is like a tenant - it manages a set of users, applications, roles, a
    - Realm name: `myapp`
    - Enabled: ON
 4. Click **"Create"**
+
+### Option B: Create Realm Automatically (via API)
+
+Want to automate everything? Use the realm creation scripts!
+
+**Bash version:**
+```bash
+# Edit the script to set your credentials
+nano create-realm.sh
+
+# Run it
+./create-realm.sh
+```
+
+**Python version:**
+```bash
+# Edit the script to set your credentials
+nano create-realm.py
+
+# Run it
+python3 create-realm.py
+```
+
+The scripts will:
+- Create the realm `myapp`
+- Enable login with email
+- Enable password reset
+- Enable brute force protection
+- Configure sensible defaults
+
+**Note**: All automation scripts have an `INSECURE` flag at the top that controls SSL certificate verification. Set to `true` for staging certificates (default), or `false` when using production Let's Encrypt certificates.
 
 ### Step 2: Create a Test User
 
@@ -334,7 +365,9 @@ python3 create-user.py
 
 A **client** is an application that uses Keycloak for authentication (like your React app or Flask API).
 
-### Step 1: Create a Public Client (for Frontend Apps)
+### Option A: Create Client via UI
+
+#### Step 1: Create a Public Client (for Frontend Apps)
 
 1. Click **"Clients"** in left sidebar
 2. Click **"Create client"**
@@ -358,6 +391,43 @@ A **client** is an application that uses Keycloak for authentication (like your 
 - Redirect users to Keycloak for login
 - Receive authentication tokens
 - Make CORS requests from the browser
+
+### Option B: Create Client Automatically (via API)
+
+Automate client creation with scripts!
+
+**Configure the script** by editing variables at the top:
+- `CLIENT_ID`: Your application's client ID
+- `CLIENT_NAME`: Display name
+- `CLIENT_TYPE`: `"public"` for frontend, `"confidential"` for backend
+- `ROOT_URL`: Your application URL (e.g., `http://localhost:3000`)
+
+**Bash version:**
+```bash
+# Edit configuration
+nano create-client.sh
+
+# Create a public client (frontend)
+./create-client.sh
+
+# For a confidential client (backend API), edit CLIENT_TYPE="confidential" first
+```
+
+**Python version:**
+```bash
+# Edit configuration
+nano create-client.py
+
+# Run it
+python3 create-client.py
+```
+
+The script will:
+- Create the client with proper redirect URIs
+- Configure CORS settings
+- For confidential clients: retrieve and display the client secret
+
+**Note**: Save the client secret immediately - it won't be shown again!
 
 ---
 
@@ -797,6 +867,23 @@ This is normal with Let's Encrypt staging certificates! For production:
 1. Change `certIssuer: letsencrypt-prod` in values.yaml
 2. Redeploy: `helm upgrade keycloak -n keycloak ./keycloak-chart`
 3. Wait for certificate to be issued (1-2 minutes)
+4. **Update automation scripts**: Change the `INSECURE` flag in all scripts
+
+**Bash scripts** - Change at the top of each file:
+```bash
+INSECURE=false  # Was: INSECURE=true
+```
+
+**Python scripts** - Change at the top of each file:
+```python
+INSECURE = False  # Was: INSECURE = True
+```
+
+**Why?** Staging certificates are self-signed (untrusted), so scripts use `INSECURE=true` to bypass verification. Production certificates are properly trusted, so you should set `INSECURE=false` for better security.
+
+The flag automatically controls:
+- Bash: `-k` curl option (insecure mode)
+- Python: `verify=False` in requests (SSL verification)
 
 ---
 

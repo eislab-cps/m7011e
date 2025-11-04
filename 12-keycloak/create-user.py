@@ -6,6 +6,16 @@ Automates user creation via Keycloak Admin REST API
 
 import requests
 import sys
+import urllib3
+
+# SSL/TLS Configuration
+# Use INSECURE=True for staging/self-signed certificates
+# Use INSECURE=False for production Let's Encrypt certificates
+INSECURE = True
+
+if INSECURE:
+    # Disable SSL warnings when using self-signed certificates
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration - CHANGE THESE VALUES
 KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"
@@ -34,7 +44,7 @@ def get_admin_token():
     }
 
     try:
-        response = requests.post(url, data=data)
+        response = requests.post(url, data=data, verify=not INSECURE)
         response.raise_for_status()
         print("✅ Admin token obtained\n")
         return response.json()["access_token"]
@@ -66,7 +76,7 @@ def create_user(token, username, email, first_name, last_name, password):
     url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/users"
 
     try:
-        response = requests.post(url, json=user_data, headers=headers)
+        response = requests.post(url, json=user_data, headers=headers, verify=not INSECURE)
 
         if response.status_code == 201:
             # Get user ID from Location header
@@ -81,7 +91,7 @@ def create_user(token, username, email, first_name, last_name, password):
                 "temporary": False
             }
             pwd_url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/users/{user_id}/reset-password"
-            pwd_response = requests.put(pwd_url, json=password_data, headers=headers)
+            pwd_response = requests.put(pwd_url, json=password_data, headers=headers, verify=not INSECURE)
 
             if pwd_response.status_code == 204:
                 print("✅ Password set successfully\n")

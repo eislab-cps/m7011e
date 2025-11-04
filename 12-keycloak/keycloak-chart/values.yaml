@@ -31,11 +31,11 @@ keycloak:
   # Resource limits (optional)
   resources:
     limits:
-      cpu: 1000m
+      cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
 
 # Ingress configuration
 domain: keycloak.ltu-m7011e-johan.se  # Change to your domain

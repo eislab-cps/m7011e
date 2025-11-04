@@ -3,6 +3,12 @@
 # Keycloak User Creation Script
 # Automates user creation via Keycloak Admin REST API
 
+# SSL/TLS Configuration
+# Use INSECURE=true for staging/self-signed certificates
+# Use INSECURE=false for production Let's Encrypt certificates
+INSECURE=true
+CURL_OPTS=$([ "$INSECURE" = "true" ] && echo "-k" || echo "")
+
 # Configuration - CHANGE THESE VALUES
 KEYCLOAK_URL="https://keycloak.ltu-m7011e-johan.se"
 REALM="myapp"
@@ -23,7 +29,7 @@ echo ""
 
 # Get admin access token
 echo "Step 1: Authenticating as admin..."
-TOKEN=$(curl -s -X POST "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" \
+TOKEN=$(curl $CURL_OPTS -s -X POST "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=$ADMIN_USER" \
   -d "password=$ADMIN_PASSWORD" \
@@ -41,7 +47,7 @@ echo ""
 
 # Create user
 echo "Step 2: Creating user '$USERNAME'..."
-RESPONSE=$(curl -s -i -X POST "$KEYCLOAK_URL/admin/realms/$REALM/users" \
+RESPONSE=$(curl $CURL_OPTS -s -i -X POST "$KEYCLOAK_URL/admin/realms/$REALM/users" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "{
@@ -73,7 +79,7 @@ echo ""
 
 # Set password
 echo "Step 3: Setting password..."
-curl -s -X PUT "$KEYCLOAK_URL/admin/realms/$REALM/users/$USER_ID/reset-password" \
+curl $CURL_OPTS -s -X PUT "$KEYCLOAK_URL/admin/realms/$REALM/users/$USER_ID/reset-password" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "{
