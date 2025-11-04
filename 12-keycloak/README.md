@@ -462,6 +462,28 @@ Now let's connect a React app to use Keycloak for login.
 
 > 💡 **Quick Start:** Want to see a working example first? Check out `example-part-1-todo-basic/` - run `./start-frontend.sh` to see it in action, then come back here to understand how it works.
 
+### ⚙️ Configuration Required
+
+Before running the examples, you **MUST** update the Keycloak URL to match your deployment:
+
+**Frontend** - Edit `frontend/src/keycloak-config.js` in each example:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-YOUR-NAME.se',  // ← Change YOUR-NAME
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+**Backend** (example-part-2 & example-part-3 only) - Edit `backend/app.py`:
+```python
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"  # ← Change YOUR-NAME
+```
+
+**⚠️ Common Error**: If you see `Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`, you forgot to update the URL!
+
+---
+
 ### Install Keycloak JavaScript Library
 
 ```bash
@@ -753,7 +775,7 @@ Now let's call the protected API from React. We'll organize the code properly:
 
 **Following Part 4?** In Part 4 above, we only created `keycloak.js` and `App.js`. Now create a new file `src/api.js`:
 
-**Already using the complete todo example (Part 3)?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
+**Already using the complete todo examples?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
 
 **Complete `src/api.js` code:**
 
@@ -1088,222 +1110,7 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 ---
 
-## Part 3: Example Applications
-
-We provide **three self-contained, progressively more complex examples** to help you learn step-by-step. Each example is completely independent and can be run on its own.
-
-### ⚙️ Configuration Required
-
-Before running the examples, you **MUST** update the Keycloak URL to match your deployment:
-
-**Frontend** - Edit `frontend/src/keycloak-config.js` in each example:
-```javascript
-export const keycloakConfig = {
-  url: 'https://keycloak.ltu-m7011e-YOUR-NAME.se',  // ← Change YOUR-NAME
-  realm: 'myapp',
-  clientId: 'my-frontend-app'
-};
-```
-
-**Backend** (Parts 2 & 3 only) - Edit `backend/app.py`:
-```python
-KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"  # ← Change YOUR-NAME
-```
-
-**⚠️ Common Error**: If you see `Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`, you forgot to update the URL!
-
----
-
-### 📁 Example 1: Todo App WITHOUT Signature Verification (`example-part-1-todo-basic/`)
-
-**What it demonstrates:** Part 4 of the tutorial
-- ✅ Keycloak login/logout
-- ✅ Full todo CRUD operations (Create, Read, Update, Delete)
-- ✅ Backend accepts JWT tokens
-- ⚠️  Backend does **NOT** verify JWT signatures (insecure but simple!)
-- ❌ NO cryptographic verification
-
-**Perfect for:** Learning how todo apps work before adding security
-
-**Self-contained structure:**
-```
-example-part-1-todo-basic/
-├── frontend/
-│   ├── src/
-│   │   ├── App.js              (Complete todo UI)
-│   │   ├── api.js              (Todo CRUD operations)
-│   │   └── keycloak-config.js
-│   └── package.json
-├── backend/
-│   ├── app.py                  (⚠️ NO signature verification!)
-│   └── requirements.txt
-├── start-frontend.sh
-└── start-backend.sh
-```
-
-**Quick start:**
-```bash
-# Terminal 1: Start backend
-cd example-part-1-todo-basic
-./start-backend.sh
-
-# Terminal 2: Start frontend
-cd example-part-1-todo-basic
-./start-frontend.sh
-```
-
-**⚠️ Security Note:** This backend does NOT verify JWT signatures! Anyone can forge tokens. This is intentionally insecure for learning purposes. See Example 2 for proper security.
-
-### 📁 Example 2: Todo App WITH Signature Verification (`example-part-2-todo-secure/`)
-
-**What it demonstrates:** Part 5 of the tutorial (builds on Example 1)
-- ✅ Everything from Example 1
-- ✅ **NEW:** Backend verifies JWT signatures using Keycloak public keys
-- ✅ **NEW:** Cryptographically secure - cannot forge tokens
-- ✅ **NEW:** Validates token expiration, issuer, audience
-- ✅ Full todo CRUD operations (same as Example 1)
-
-**Perfect for:** Learning proper JWT security with signature verification
-
-**What changed from Example 1:**
-- **Backend:** Now fetches public keys from Keycloak and verifies JWT signatures
-- **Backend:** Validates all JWT claims (expiration, issuer, audience)
-- **Security:** Cryptographically secure - forged tokens are rejected
-
-**Self-contained structure:**
-```
-example-part-2-todo-secure/
-├── frontend/
-│   ├── src/
-│   │   ├── App.js              (Same todo UI)
-│   │   ├── api.js              (Same todo operations)
-│   │   └── keycloak.js
-│   └── package.json
-├── backend/
-│   ├── app.py                  (✅ WITH signature verification!)
-│   └── requirements.txt
-├── start-frontend.sh
-└── start-backend.sh
-```
-
-**Quick start:**
-```bash
-# Terminal 1: Start backend
-cd example-part-2-todo-secure
-./start-backend.sh
-
-# Terminal 2: Start frontend (in a new terminal)
-cd example-part-2-todo-secure
-./start-frontend.sh
-```
-
-**🔒 Security Note:** This backend properly verifies JWT signatures! Forged or tampered tokens are rejected. This is production-ready security.
-
-### 📁 Example 3: Todo App WITH RBAC (`example-part-3-todo-rbac/`)
-
-**What it demonstrates:** Complete production-ready application with role-based access control
-- ✅ Everything from Example 2
-- ✅ **NEW:** Role-Based Access Control (RBAC)
-  - Admin users can see ALL todos from all users
-  - Admin users can edit/delete anyone's todos
-  - Regular users see only their own todos
-- ✅ **NEW:** Role detection and display (admin badge)
-- ✅ **NEW:** Production-ready error handling
-- ✅ Full todo CRUD operations (same as Examples 1 & 2)
-
-**Perfect for:** Learning RBAC and building production applications
-
-**What changed from Example 2:**
-- **Backend:** Added `is_admin()` function to check user roles
-- **Backend:** Admins can see/edit all todos, users see only their own
-- **Frontend:** Shows admin badge for admin users
-- **Frontend:** Displays todo owner username
-
-**Self-contained structure:**
-```
-example-part-3-todo-rbac/
-├── frontend/
-│   ├── src/
-│   │   ├── App.js           (Complete todo UI)
-│   │   ├── api.js           (Full CRUD operations)
-│   │   └── keycloak-config.js
-│   └── package.json
-├── backend/
-│   ├── app.py               (Full todo API)
-│   └── requirements.txt
-├── start-frontend.sh
-└── start-backend.sh
-```
-
-**Quick start:**
-```bash
-# Terminal 1: Start backend
-cd example-part-3-todo-rbac
-./start-backend.sh
-
-# Terminal 2: Start frontend (in a new terminal)
-cd example-part-3-todo-rbac
-./start-frontend.sh
-```
-
-### 🎯 Which Example Should I Use?
-
-| Learning Goal | Use This Example |
-|--------------|------------------|
-| Understanding todo apps + Keycloak basics | **Example 1** - Todo WITHOUT signature verification |
-| Learning JWT signature verification | **Example 2** - Todo WITH signature verification |
-| Learning role-based access control (RBAC) | **Example 3** - Todo WITH RBAC |
-| Following the tutorial step-by-step | **Example 1** → **Example 2** → **Example 3** |
-
-### 📊 Feature Comparison
-
-| Feature | Example 1 | Example 2 | Example 3 |
-|---------|-----------|-----------|-----------|
-| **Keycloak Login** | ✅ | ✅ | ✅ |
-| **Todo CRUD** | ✅ | ✅ | ✅ |
-| **JWT Token Accepted** | ✅ | ✅ | ✅ |
-| **Signature Verification** | ❌ **NO** | ✅ **YES** | ✅ **YES** |
-| **Public Key Validation** | ❌ | ✅ | ✅ |
-| **Token Expiry Check** | ❌ | ✅ | ✅ |
-| **RBAC (Admin Role)** | ❌ | ❌ | ✅ **YES** |
-| **Security Level** | ⚠️ Insecure | 🔒 Secure | 🔒 Secure + RBAC |
-
-### 📊 Progression Chart
-
-```
-Example 1: example-part-1-todo-basic/
-└── Todo App WITHOUT Signature Verification
-    ├── ✅ Keycloak Login/Logout
-    ├── ✅ Full Todo CRUD
-    ├── ✅ Backend accepts JWT tokens
-    └── ⚠️  NO signature verification (insecure!)
-
-    ↓ ADD: JWT Signature Verification with Public Keys
-
-Example 2: example-part-2-todo-secure/
-└── Todo App WITH Signature Verification
-    ├── ✅ Everything from Example 1
-    ├── ✅ Verifies JWT signatures
-    ├── ✅ Uses Keycloak public keys
-    ├── ✅ Validates expiration/issuer/audience
-    └── ❌ No RBAC (all users have same permissions)
-
-    ↓ ADD: Role-Based Access Control (RBAC)
-
-Example 3: example-part-3-todo-rbac/
-└── Todo App WITH RBAC
-    ├── ✅ Everything from Example 2
-    ├── ✅ Admin users see ALL todos
-    ├── ✅ Admin users can edit anyone's todos
-    ├── ✅ Regular users see only their own todos
-    └── ✅ Role badges and visual indicators
-```
-
-**Note:** Each example is completely self-contained with its own frontend, backend, and start scripts. You can run any example independently without the others.
-
----
-
-## Part 10: Troubleshooting
+## Part 9: Troubleshooting
 
 ### Keycloak Won't Start
 
@@ -1418,7 +1225,7 @@ cd example-part-2-todo-secure
 
 4. **Verify**: You should see "✓ Successfully fetched Keycloak public keys" when the backend starts.
 
-**See also**: Configuration Required section in Part 3 above for complete setup instructions.
+**See also**: Configuration Required section in Part 4 above for complete setup instructions.
 
 ### Flask Backend Error: "module 'jwt' has no attribute 'ExpiredSignatureError'"
 
@@ -1480,7 +1287,7 @@ The flag automatically controls:
 
 ---
 
-## Part 11: Cleanup
+## Part 10: Cleanup
 
 ### Remove Everything
 
