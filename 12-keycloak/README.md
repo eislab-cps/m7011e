@@ -59,7 +59,7 @@ cd 12-keycloak
 ./install.sh
 ```
 
-This deploys both PostgreSQL and Keycloak in the `keycloak` namespace. It takes about 3-5 minutes.
+This deploys both PostgreSQL and Keycloak in the `keycloak` namespace. NOTE!!! It takes about 3-5 minutes.
 
 ### Step 3: Monitor the Deployment
 
@@ -79,13 +79,15 @@ Press `Ctrl+C` when both pods show `Running` and `1/1` ready.
 
 Open your browser to: `https://keycloak.ltu-m7011e-YOUR-NAME.se`
 
+![Keycloak](./keycloak.png)
+
 **Login credentials:**
 - Username: `admin`
 - Password: (the adminPassword you set in values.yaml)
 
 **Note**: You'll see a certificate warning because we're using Let's Encrypt staging certificates. Click "Advanced" → "Proceed" to continue.
 
-**🎉 Congratulations!** You now have Keycloak running.
+** Congratulations!** You now have Keycloak running.
 
 ---
 
@@ -101,6 +103,8 @@ A **realm** is like a tenant - it manages a set of users, applications, roles, a
    - Realm name: `myapp`
    - Enabled: ON
 4. Click **"Create"**
+
+![Realm](./realm.png)
 
 ### Option B: Create Realm Automatically (via API)
 
@@ -145,6 +149,8 @@ The scripts will:
    - Email verified: ON
    - Enabled: ON
 4. Click **"Create"**
+
+![User](./user.png)
 
 ### Step 3: Set User Password
 
@@ -365,6 +371,8 @@ python3 create-user.py
 
 A **client** is an application that uses Keycloak for authentication (like your React app or Flask API).
 
+![Client](./client.png)
+
 ### Option A: Create Client via UI
 
 #### Step 1: Create a Public Client (for Frontend Apps)
@@ -538,6 +546,9 @@ npm start
 
 Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Login with `testuser` / `testpass123` and you'll be redirected back to your app!
 
+![Login](./login.png)
+
+![App](./app.png)
 ---
 
 ## Part 5: Protect a Flask Backend API
@@ -2342,26 +2353,4 @@ Now it's your turn! Add Keycloak authentication to one of your previous tutorial
 
 ---
 
-## Summary
-
-You've learned how to:
-
-✅ Deploy Keycloak on Kubernetes with PostgreSQL
-✅ Create realms, users, and roles
-✅ Configure client applications for web and mobile
-✅ Integrate Keycloak with React (frontend) and Flask (backend)
-✅ Implement role-based access control
-✅ Add social login (GitHub, Google, etc.)
-✅ Enable multi-factor authentication
-✅ Validate JWT tokens in your API
-✅ Handle token refresh and expiration
-
 **Key Takeaway**: Keycloak provides enterprise-grade authentication with minimal code. Instead of building your own auth system (and making security mistakes), you get industry-standard protocols, best practices, and features out of the box.
-
-## What's Next?
-
-- Explore fine-grained authorization with policies and permissions
-- Create custom authentication flows
-- Set up user federation with LDAP/Active Directory
-- Build a microservices architecture with centralized auth
-- Learn about Keycloak clustering for high availability
