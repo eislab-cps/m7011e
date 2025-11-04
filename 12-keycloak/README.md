@@ -557,8 +557,25 @@ Now let's protect your backend API by validating JWT tokens from Keycloak.
 
 ### Install Dependencies
 
+**IMPORTANT**: Only install `PyJWT` (not the old `jwt` package, as they conflict!)
+
 ```bash
-pip install flask pyjwt cryptography requests
+pip install flask flask-cors pyjwt cryptography requests urllib3
+```
+
+Or use requirements.txt:
+```txt
+Flask==3.0.0
+flask-cors==4.0.0
+PyJWT==2.8.0
+cryptography==41.0.7
+requests==2.31.0
+urllib3==2.0.7
+```
+
+Then install:
+```bash
+pip install -r requirements.txt
 ```
 
 ### Create Flask App with JWT Validation
@@ -567,11 +584,35 @@ Create `app.py`:
 
 ```python
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import jwt
 import requests
+import urllib3
+import json
 from functools import wraps
 
 app = Flask(__name__)
+
+# Configure CORS to allow requests from React frontend
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
+# SSL/TLS Configuration
+# Use INSECURE=True for staging/self-signed certificates
+# Use INSECURE=False for production Let's Encrypt certificates
+INSECURE = True
+
+if INSECURE:
+    # Disable SSL warnings when using self-signed certificates
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Keycloak configuration
 KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
@@ -585,7 +626,7 @@ def get_public_keys():
     """Fetch public keys from Keycloak for token verification"""
     global public_keys
     if not public_keys:
-        response = requests.get(CERTS_URL)
+        response = requests.get(CERTS_URL, verify=not INSECURE)
         public_keys = response.json()
     return public_keys
 
@@ -614,7 +655,8 @@ def require_auth(f):
             rsa_key = None
             for key in keys['keys']:
                 if key['kid'] == unverified_header['kid']:
-                    rsa_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+                    # Convert JWK to RSA key (must be JSON string)
+                    rsa_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
 
             if not rsa_key:
                 return jsonify({'error': 'Public key not found'}), 401
@@ -892,6 +934,39 @@ Always access your frontend at `http://localhost:3000`.
 ```javascript
 // Refresh if expires in < 30 seconds
 await keycloak.updateToken(30);
+```
+
+### Flask Backend Error: "module 'jwt' has no attribute 'ExpiredSignatureError'"
+
+**Problem**: You have both `PyJWT` and `jwt` packages installed, which conflict with each other. The old `jwt` package is unmaintained and incompatible with PyJWT.
+
+**Symptoms**:
+- `AttributeError: module 'jwt' has no attribute 'ExpiredSignatureError'`
+- `AttributeError: module 'jwt' has no attribute 'get_unverified_header'`
+- JWT token verification fails
+
+**Solution**:
+
+```bash
+# 1. Uninstall the conflicting jwt package
+pip uninstall -y jwt
+
+# 2. Ensure only PyJWT is installed
+pip install PyJWT==2.8.0
+
+# 3. Verify the correct package is installed
+python3 -c "import jwt; print(jwt.__version__)"
+# Should output: 2.8.0
+
+# 4. Test that all required attributes exist
+python3 -c "import jwt; print(hasattr(jwt, 'ExpiredSignatureError'))"
+# Should output: True
+```
+
+**Prevention**: Always use `PyJWT` (not `jwt`) in your requirements.txt:
+```txt
+PyJWT==2.8.0  # ✓ Correct
+jwt           # ✗ Wrong - causes conflicts!
 ```
 
 ### Certificate Warnings
