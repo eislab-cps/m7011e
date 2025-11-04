@@ -1,6 +1,7 @@
 // API helper functions for communicating with the backend
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Use the same hostname as the frontend, but port 5001
+const API_BASE_URL = `http://${window.location.hostname}:5001/api`;
 
 // Helper function to make authenticated requests
 const authFetch = async (url, token, options = {}) => {

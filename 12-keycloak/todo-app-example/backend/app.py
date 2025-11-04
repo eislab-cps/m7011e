@@ -8,24 +8,39 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import jwt
 import requests
+import urllib3
 from functools import wraps
 from datetime import datetime
 
 app = Flask(__name__)
 
 # Configure CORS to allow requests from React frontend
+# Add all URLs where your frontend might be accessed
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:3000"],
+        "origins": [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://10.0.0.200:3000"  # Change to your machine's IP
+        ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
 
+# SSL/TLS Configuration
+# Use INSECURE=True for staging/self-signed certificates
+# Use INSECURE=False for production Let's Encrypt certificates
+INSECURE = True
+
+if INSECURE:
+    # Disable SSL warnings when using self-signed certificates
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 # Keycloak configuration - UPDATE THESE VALUES
-KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"  # Change to your Keycloak URL
-REALM = "m7011e"
-CLIENT_ID = "todo-app"
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"  # Change to your Keycloak URL
+REALM = "myapp"  # Change this to match your realm
+CLIENT_ID = "my-frontend-app"  # Change this to match your client
 
 # Keycloak endpoints
 KEYCLOAK_ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
@@ -49,7 +64,7 @@ def get_public_keys():
 
     if public_keys_cache is None:
         try:
-            response = requests.get(KEYCLOAK_CERTS_URL, timeout=10)
+            response = requests.get(KEYCLOAK_CERTS_URL, timeout=10, verify=not INSECURE)
             response.raise_for_status()
             public_keys_cache = response.json()
             print(f"✓ Fetched public keys from Keycloak")
@@ -339,9 +354,12 @@ if __name__ == '__main__':
     print("  PUT    /api/todos/<id>/toggle - Toggle todo (auth required)")
     print("  DELETE /api/todos/<id>      - Delete todo (auth required)")
     print("")
-    print("CORS enabled for: http://localhost:3000")
+    print("CORS enabled for:")
+    print("  - http://localhost:3000")
+    print("  - http://127.0.0.1:3000")
+    print("  - http://10.0.0.200:3000")
     print("")
-    print("Server starting on http://localhost:5000")
+    print("Server starting on http://localhost:5001")
     print("=" * 60)
     print("")
 
@@ -353,4 +371,4 @@ if __name__ == '__main__':
         print("Make sure Keycloak is running and the URL is correct!")
         print("")
 
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=5001, host='0.0.0.0')

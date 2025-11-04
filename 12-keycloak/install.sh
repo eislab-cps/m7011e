@@ -27,16 +27,8 @@ kubectl wait --for=condition=ready pod -l app=postgres -n $NAMESPACE --timeout=1
 # Step 3: Create Keycloak database
 echo ""
 echo "Step 3: Creating Keycloak database..."
-echo "Starting port-forward in background..."
-kubectl port-forward -n $NAMESPACE svc/postgres-service 5432:5432 &
-PORT_FORWARD_PID=$!
-sleep 5
-
-PGPASSWORD=$(grep password keycloak-chart/values.yaml | head -1 | awk '{print $2}' | tr -d '"')
-PGPASSWORD=$PGPASSWORD psql -h localhost -p 5432 -U keycloak -d postgres -c "CREATE DATABASE keycloak;" 2>/dev/null || echo "Database might already exist"
-
-# Stop port-forward
-kill $PORT_FORWARD_PID 2>/dev/null
+kubectl exec -n $NAMESPACE postgres-statefulset-0 -- \
+    psql -U keycloak -d postgres -c "CREATE DATABASE keycloak;" 2>/dev/null || echo "Database already exists (this is fine)"
 
 echo ""
 echo "Waiting for Keycloak to be ready..."

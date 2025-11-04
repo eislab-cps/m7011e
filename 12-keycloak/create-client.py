@@ -15,7 +15,7 @@ INSECURE = True
 
 if INSECURE:
     # Disable SSL warnings when using self-signed certificates
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration - CHANGE THESE VALUES
 KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"
@@ -27,7 +27,15 @@ ADMIN_PASSWORD = "admin-change-this-password"
 CLIENT_ID = "my-frontend-app"
 CLIENT_NAME = "My Frontend Application"
 CLIENT_TYPE = "public"  # "public" for frontend apps, "confidential" for backend APIs
-ROOT_URL = "http://localhost:3000"
+
+# Frontend URLs - Add all URLs where your frontend might be accessed
+# This is needed because OAuth redirect URIs must match exactly
+FRONTEND_URLS = [
+    "http://localhost:3000",      # Standard localhost
+    "http://127.0.0.1:3000",      # IPv4 loopback
+    "http://10.0.0.200:3000",     # Your machine's local network IP (change this!)
+]
+ROOT_URL = FRONTEND_URLS[0]  # Primary URL
 
 
 def get_admin_token():
@@ -65,6 +73,10 @@ def create_client(token, client_id, client_name, client_type, root_url):
         "Content-Type": "application/json"
     }
 
+    # Build redirect URIs and web origins from FRONTEND_URLS
+    redirect_uris = [f"{url}/*" for url in FRONTEND_URLS]
+    web_origins = FRONTEND_URLS.copy()
+
     client_data = {
         "clientId": client_id,
         "name": client_name,
@@ -73,8 +85,8 @@ def create_client(token, client_id, client_name, client_type, root_url):
         "protocol": "openid-connect",
         "rootUrl": root_url,
         "baseUrl": root_url,
-        "redirectUris": [f"{root_url}/*"],
-        "webOrigins": [root_url],
+        "redirectUris": redirect_uris,
+        "webOrigins": web_origins,
         "standardFlowEnabled": True,
         "directAccessGrantsEnabled": True,
         "serviceAccountsEnabled": client_type == "confidential",
@@ -167,14 +179,24 @@ def main():
     print(f"Client ID: {CLIENT_ID}")
     print(f"Client Type: {CLIENT_TYPE}")
     print(f"Root URL: {ROOT_URL}")
-    print(f"Valid Redirect URIs: {ROOT_URL}/*")
-    print(f"Web Origins: {ROOT_URL}")
+    print()
+    print("Valid Redirect URIs:")
+    for url in FRONTEND_URLS:
+        print(f"  - {url}/*")
+    print()
+    print("Web Origins:")
+    for url in FRONTEND_URLS:
+        print(f"  - {url}")
     print()
     print("Use this client in your application:")
     if CLIENT_TYPE == "public":
         print("  - Frontend (React, Vue, etc.)")
         print(f"  - Client ID: {CLIENT_ID}")
         print("  - No client secret needed (public client)")
+        print()
+        print("Access your frontend at any of these URLs:")
+        for url in FRONTEND_URLS:
+            print(f"  - {url}")
     else:
         print("  - Backend API (Flask, Express, etc.)")
         print(f"  - Client ID: {CLIENT_ID}")

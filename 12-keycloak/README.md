@@ -400,7 +400,21 @@ Automate client creation with scripts!
 - `CLIENT_ID`: Your application's client ID
 - `CLIENT_NAME`: Display name
 - `CLIENT_TYPE`: `"public"` for frontend, `"confidential"` for backend
-- `ROOT_URL`: Your application URL (e.g., `http://localhost:3000`)
+- `FRONTEND_URLS`: List of all URLs where your frontend can be accessed
+
+**Important**: The `FRONTEND_URLS` list must include **all URLs** you'll use to access your frontend. OAuth requires exact matches for redirect URIs. Common URLs to include:
+- `http://localhost:3000` - Standard localhost
+- `http://127.0.0.1:3000` - IPv4 loopback
+- `http://YOUR-IP:3000` - Your machine's local network IP (find it with `hostname -I`)
+
+Example configuration in `create-client.py`:
+```python
+FRONTEND_URLS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://10.0.0.200:3000",  # Change to your machine's IP
+]
+```
 
 **Bash version:**
 ```bash
@@ -831,13 +845,29 @@ kubectl logs -n keycloak -l app=keycloak
 
 ### "Invalid Redirect URI" Error
 
-**Problem**: Client not configured with correct redirect URI.
+**Problem**: Client not configured with correct redirect URI. This happens when the URL you're accessing your frontend from doesn't match the configured redirect URIs in Keycloak.
 
-**Solution**:
-1. Go to Clients → Your client
-2. Check "Valid Redirect URIs" includes your app URL
-3. Use `http://localhost:3000/*` for development
-4. Use `https://yourdomain.com/*` for production
+**Common scenario**: You configured `http://localhost:3000/*` but accessed via `http://10.0.0.200:3000` or `http://127.0.0.1:3000`.
+
+**Solution 1 - Add all URLs to configuration**:
+Edit `create-client.py` and add all URLs you'll use:
+```python
+FRONTEND_URLS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://10.0.0.200:3000",  # Your machine's IP
+]
+```
+Then run `python3 create-client.py` to update the client.
+
+**Solution 2 - Use only localhost**:
+Always access your frontend at `http://localhost:3000` (not via IP or 127.0.0.1).
+
+**Solution 3 - Manual configuration**:
+1. Go to Keycloak Admin Console → Clients → Your client
+2. Check "Valid Redirect URIs" includes the URL shown in the error
+3. Add `http://YOUR-IP:3000/*` if needed
+4. Save changes
 
 ### CORS Errors
 

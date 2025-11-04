@@ -4,8 +4,14 @@ import { keycloakConfig } from './keycloak-config';
 import { getTodos, createTodo, deleteTodo, toggleTodo } from './api';
 import './App.css';
 
-// Initialize Keycloak
-const keycloak = new Keycloak(keycloakConfig);
+// Initialize Keycloak outside component to prevent multiple instances
+let keycloakInstance = null;
+const getKeycloak = () => {
+  if (!keycloakInstance) {
+    keycloakInstance = new Keycloak(keycloakConfig);
+  }
+  return keycloakInstance;
+};
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -17,6 +23,15 @@ function App() {
 
   // Initialize Keycloak
   useEffect(() => {
+    const keycloak = getKeycloak();
+
+    // Check if already initialized
+    if (keycloak.authenticated !== undefined) {
+      setAuthenticated(keycloak.authenticated);
+      setLoading(false);
+      return;
+    }
+
     keycloak.init({
       onLoad: 'login-required',
       checkLoginIframe: false
@@ -60,7 +75,7 @@ function App() {
 
   const loadTodos = async () => {
     try {
-      const data = await getTodos(keycloak.token);
+      const data = await getTodos(getKeycloak().token);
       setTodos(data);
       setError(null);
     } catch (err) {
@@ -74,7 +89,7 @@ function App() {
     if (!newTodoText.trim()) return;
 
     try {
-      await createTodo(keycloak.token, newTodoText);
+      await createTodo(getKeycloak().token, newTodoText);
       setNewTodoText('');
       await loadTodos();
       setError(null);
@@ -86,7 +101,7 @@ function App() {
 
   const handleDeleteTodo = async (todoId) => {
     try {
-      await deleteTodo(keycloak.token, todoId);
+      await deleteTodo(getKeycloak().token, todoId);
       await loadTodos();
       setError(null);
     } catch (err) {
@@ -97,7 +112,7 @@ function App() {
 
   const handleToggleTodo = async (todoId) => {
     try {
-      await toggleTodo(keycloak.token, todoId);
+      await toggleTodo(getKeycloak().token, todoId);
       await loadTodos();
       setError(null);
     } catch (err) {
@@ -107,7 +122,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    keycloak.logout({
+    getKeycloak().logout({
       redirectUri: window.location.origin
     });
   };
@@ -129,6 +144,12 @@ function App() {
         <div className="error-container">
           <h2>Authentication Required</h2>
           <p>Please log in to access the todo app.</p>
+          <button
+            onClick={() => getKeycloak().login()}
+            className="login-button"
+          >
+            Log In
+          </button>
         </div>
       </div>
     );
@@ -239,9 +260,9 @@ function App() {
 
             <details className="token-details">
               <summary>View Access Token (for debugging)</summary>
-              <pre className="token-display">{keycloak.token}</pre>
+              <pre className="token-display">{getKeycloak().token}</pre>
               <a
-                href={`https://jwt.io/#debugger-io?token=${keycloak.token}`}
+                href={`https://jwt.io/#debugger-io?token=${getKeycloak().token}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="jwt-link"

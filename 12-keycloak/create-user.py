@@ -15,7 +15,7 @@ INSECURE = True
 
 if INSECURE:
     # Disable SSL warnings when using self-signed certificates
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration - CHANGE THESE VALUES
 KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"
