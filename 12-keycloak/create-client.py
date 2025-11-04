@@ -33,7 +33,6 @@ CLIENT_TYPE = "public"  # "public" for frontend apps, "confidential" for backend
 FRONTEND_URLS = [
     "http://localhost:3000",      # Standard localhost
     "http://127.0.0.1:3000",      # IPv4 loopback
-    "http://10.0.0.200:3000",     # Your machine's local network IP (change this!)
 ]
 ROOT_URL = FRONTEND_URLS[0]  # Primary URL
 

