@@ -31,7 +31,7 @@ source venv/bin/activate
 
 # Install dependencies
 echo "📦 Installing Python dependencies..."
-pip install -q -r requirements.txt
+./venv/bin/pip install -q -r requirements.txt
 
 echo ""
 echo "🚀 Starting Flask backend on http://localhost:5001"
@@ -43,4 +43,4 @@ echo ""
 echo "=========================================="
 echo ""
 
-python3 app.py
+./venv/bin/python app.py

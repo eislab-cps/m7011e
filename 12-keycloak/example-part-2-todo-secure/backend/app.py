@@ -31,7 +31,7 @@ if INSECURE:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Keycloak configuration
-KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"
 REALM = "myapp"
 CERTS_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs"
 

@@ -1092,6 +1092,28 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 We provide **three self-contained, progressively more complex examples** to help you learn step-by-step. Each example is completely independent and can be run on its own.
 
+### ⚙️ Configuration Required
+
+Before running the examples, you **MUST** update the Keycloak URL to match your deployment:
+
+**Frontend** - Edit `frontend/src/keycloak-config.js` in each example:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-YOUR-NAME.se',  // ← Change YOUR-NAME
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+**Backend** (Parts 2 & 3 only) - Edit `backend/app.py`:
+```python
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"  # ← Change YOUR-NAME
+```
+
+**⚠️ Common Error**: If you see `Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`, you forgot to update the URL!
+
+---
+
 ### 📁 Example 1: Todo App WITHOUT Signature Verification (`example-part-1-todo-basic/`)
 
 **What it demonstrates:** Part 4 of the tutorial
@@ -1334,6 +1356,69 @@ Always access your frontend at `http://localhost:3000`.
 // Refresh if expires in < 30 seconds
 await keycloak.updateToken(30);
 ```
+
+### Backend Error: "Failed to resolve 'keycloak.ltu-m7011e-your-name.se'" or "Could not fetch public keys"
+
+**Problem**: The backend cannot connect to Keycloak because you're using the placeholder URL instead of your actual Keycloak domain.
+
+**Symptoms**:
+- `WARNING: Could not fetch public keys: HTTPSConnectionPool(host='keycloak.ltu-m7011e-your-name.se', port=443): Max retries exceeded`
+- `NameResolutionError: Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`
+- Frontend loads but API calls fail with 401 or 500 errors
+- Backend shows connection errors on startup
+
+**Solution**:
+
+1. **Update Backend Configuration** (example-part-2 and example-part-3):
+
+```bash
+# Edit backend/app.py
+nano example-part-2-todo-secure/backend/app.py
+nano example-part-3-todo-rbac/backend/app.py
+```
+
+Change the KEYCLOAK_URL line:
+```python
+# Change this:
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
+
+# To your actual domain:
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"  # ← Use YOUR name
+```
+
+2. **Update Frontend Configuration** (all examples):
+
+```bash
+# Edit frontend/src/keycloak-config.js in each example
+nano example-part-1-todo-basic/frontend/src/keycloak-config.js
+nano example-part-2-todo-secure/frontend/src/keycloak-config.js
+nano example-part-3-todo-rbac/frontend/src/keycloak-config.js
+```
+
+Change the url field:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-johan.se',  // ← Use YOUR name
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+3. **Restart Both Backend and Frontend**:
+
+```bash
+# Stop the backend (Ctrl+C) and restart
+cd example-part-2-todo-secure
+./start-backend.sh
+
+# In another terminal, restart frontend
+cd example-part-2-todo-secure
+./start-frontend.sh
+```
+
+4. **Verify**: You should see "✓ Successfully fetched Keycloak public keys" when the backend starts.
+
+**See also**: Configuration Required section in Part 9 above for complete setup instructions.
 
 ### Flask Backend Error: "module 'jwt' has no attribute 'ExpiredSignatureError'"
 

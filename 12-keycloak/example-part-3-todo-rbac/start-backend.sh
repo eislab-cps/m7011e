@@ -20,14 +20,14 @@ fi
 echo "Activating virtual environment..."
 source venv/bin/activate
 
-# Install dependencies
+# Install dependencies (use explicit path to ensure correct pip)
 echo "Installing dependencies..."
-pip install -r requirements.txt
+./venv/bin/pip install -r requirements.txt
 echo ""
 
 # Start the server
 echo "Starting Flask server..."
-echo "Backend will be available at: http://localhost:5000"
+echo "Backend will be available at: http://localhost:5001"
 echo ""
 
-python app.py
+./venv/bin/python app.py
