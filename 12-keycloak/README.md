@@ -548,7 +548,7 @@ Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Lo
 
 ![Login](./login.png)
 
-![App](./app.png)
+![App](./todoapp.png)
 ---
 
 ## Part 5: Protect a Flask Backend API
