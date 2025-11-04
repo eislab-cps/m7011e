@@ -1,7 +1,7 @@
 {
-  "name": "keycloak-react-basic",
+  "name": "todo-app-keycloak",
   "version": "1.0.0",
-  "description": "Part 4: Basic Keycloak authentication with React",
+  "description": "Todo app with Keycloak authentication",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

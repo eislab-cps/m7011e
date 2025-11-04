@@ -460,6 +460,8 @@ The script will:
 
 Now let's connect a React app to use Keycloak for login.
 
+> 💡 **Quick Start:** Want to see a working example first? Check out `example-part-1-todo-basic/` - run `./start-frontend.sh` to see it in action, then come back here to understand how it works.
+
 ### Install Keycloak JavaScript Library
 
 ```bash
@@ -554,6 +556,8 @@ Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Lo
 ## Part 5: Protect a Flask Backend API
 
 Now let's protect your backend API by validating JWT tokens from Keycloak.
+
+> 💡 **Quick Start:** Want to see a working example first? Check out `example-part-2-todo-secure/` - run `./start-backend.sh` and `./start-frontend.sh` to see API protection in action, then come back here to understand how it works.
 
 ### Install Dependencies
 
@@ -1052,58 +1056,28 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 We provide **three self-contained, progressively more complex examples** to help you learn step-by-step. Each example is completely independent and can be run on its own.
 
-### 📁 Example 1: Basic Login (`example-part-4-basic-login/`)
+### 📁 Example 1: Todo App WITHOUT Signature Verification (`example-part-1-todo-basic/`)
 
 **What it demonstrates:** Part 4 of the tutorial
 - ✅ Keycloak login/logout
-- ✅ Display user information
-- ✅ Show JWT access token
-- ❌ NO backend (frontend only!)
-- ❌ NO API calls
+- ✅ Full todo CRUD operations (Create, Read, Update, Delete)
+- ✅ Backend accepts JWT tokens
+- ⚠️  Backend does **NOT** verify JWT signatures (insecure but simple!)
+- ❌ NO cryptographic verification
 
-**Perfect for:** Learning Keycloak authentication basics
-
-**Self-contained structure:**
-```
-example-part-4-basic-login/
-├── frontend/
-│   ├── src/
-│   │   ├── App.js
-│   │   ├── keycloak.js
-│   │   └── *.css
-│   └── package.json
-└── start-frontend.sh
-```
-
-**Quick start:**
-```bash
-cd example-part-4-basic-login
-./start-frontend.sh
-```
-
-### 📁 Example 2: Protected API (`example-part-5-protected-api/`)
-
-**What it demonstrates:** Part 5 of the tutorial (builds on Part 4)
-- ✅ Everything from Example 1
-- ✅ **NEW:** Flask backend with JWT validation
-- ✅ **NEW:** Call protected API endpoint
-- ✅ **NEW:** Send JWT token in Authorization header
-- ✅ **NEW:** Display API response/errors
-- ❌ NO todo functionality yet
-
-**Perfect for:** Learning how to secure backend APIs with JWT
+**Perfect for:** Learning how todo apps work before adding security
 
 **Self-contained structure:**
 ```
-example-part-5-protected-api/
+example-part-1-todo-basic/
 ├── frontend/
 │   ├── src/
-│   │   ├── App.js
-│   │   ├── api.js           ← NEW
-│   │   └── keycloak.js
+│   │   ├── App.js              (Complete todo UI)
+│   │   ├── api.js              (Todo CRUD operations)
+│   │   └── keycloak-config.js
 │   └── package.json
-├── backend/                  ← NEW
-│   ├── app.py
+├── backend/
+│   ├── app.py                  (⚠️ NO signature verification!)
 │   └── requirements.txt
 ├── start-frontend.sh
 └── start-backend.sh
@@ -1112,29 +1086,84 @@ example-part-5-protected-api/
 **Quick start:**
 ```bash
 # Terminal 1: Start backend
-cd example-part-5-protected-api
+cd example-part-1-todo-basic
 ./start-backend.sh
 
-# Terminal 2: Start frontend (in a new terminal)
-cd example-part-5-protected-api
+# Terminal 2: Start frontend
+cd example-part-1-todo-basic
 ./start-frontend.sh
 ```
 
-### 📁 Example 3: Complete Todo App (`example-part-9-complete-todo-app/`)
+**⚠️ Security Note:** This backend does NOT verify JWT signatures! Anyone can forge tokens. This is intentionally insecure for learning purposes. See Example 2 for proper security.
 
-**What it demonstrates:** Complete production-ready application
-- ✅ Everything from Example 2
-- ✅ **NEW:** Full CRUD operations (Create, Read, Update, Delete todos)
-- ✅ **NEW:** Role-based access control (admin vs user)
-- ✅ **NEW:** Per-user data isolation
-- ✅ **NEW:** Automatic token refresh
-- ✅ **NEW:** Production-ready error handling
+### 📁 Example 2: Todo App WITH Signature Verification (`example-part-2-todo-secure/`)
 
-**Perfect for:** See a complete real-world application
+**What it demonstrates:** Part 5 of the tutorial (builds on Example 1)
+- ✅ Everything from Example 1
+- ✅ **NEW:** Backend verifies JWT signatures using Keycloak public keys
+- ✅ **NEW:** Cryptographically secure - cannot forge tokens
+- ✅ **NEW:** Validates token expiration, issuer, audience
+- ✅ Full todo CRUD operations (same as Example 1)
+
+**Perfect for:** Learning proper JWT security with signature verification
+
+**What changed from Example 1:**
+- **Backend:** Now fetches public keys from Keycloak and verifies JWT signatures
+- **Backend:** Validates all JWT claims (expiration, issuer, audience)
+- **Security:** Cryptographically secure - forged tokens are rejected
 
 **Self-contained structure:**
 ```
-example-part-9-complete-todo-app/
+example-part-2-todo-secure/
+├── frontend/
+│   ├── src/
+│   │   ├── App.js              (Same todo UI)
+│   │   ├── api.js              (Same todo operations)
+│   │   └── keycloak.js
+│   └── package.json
+├── backend/
+│   ├── app.py                  (✅ WITH signature verification!)
+│   └── requirements.txt
+├── start-frontend.sh
+└── start-backend.sh
+```
+
+**Quick start:**
+```bash
+# Terminal 1: Start backend
+cd example-part-2-todo-secure
+./start-backend.sh
+
+# Terminal 2: Start frontend (in a new terminal)
+cd example-part-2-todo-secure
+./start-frontend.sh
+```
+
+**🔒 Security Note:** This backend properly verifies JWT signatures! Forged or tampered tokens are rejected. This is production-ready security.
+
+### 📁 Example 3: Todo App WITH RBAC (`example-part-3-todo-rbac/`)
+
+**What it demonstrates:** Complete production-ready application with role-based access control
+- ✅ Everything from Example 2
+- ✅ **NEW:** Role-Based Access Control (RBAC)
+  - Admin users can see ALL todos from all users
+  - Admin users can edit/delete anyone's todos
+  - Regular users see only their own todos
+- ✅ **NEW:** Role detection and display (admin badge)
+- ✅ **NEW:** Production-ready error handling
+- ✅ Full todo CRUD operations (same as Examples 1 & 2)
+
+**Perfect for:** Learning RBAC and building production applications
+
+**What changed from Example 2:**
+- **Backend:** Added `is_admin()` function to check user roles
+- **Backend:** Admins can see/edit all todos, users see only their own
+- **Frontend:** Shows admin badge for admin users
+- **Frontend:** Displays todo owner username
+
+**Self-contained structure:**
+```
+example-part-3-todo-rbac/
 ├── frontend/
 │   ├── src/
 │   │   ├── App.js           (Complete todo UI)
@@ -1151,11 +1180,11 @@ example-part-9-complete-todo-app/
 **Quick start:**
 ```bash
 # Terminal 1: Start backend
-cd example-part-9-complete-todo-app
+cd example-part-3-todo-rbac
 ./start-backend.sh
 
 # Terminal 2: Start frontend (in a new terminal)
-cd example-part-9-complete-todo-app
+cd example-part-3-todo-rbac
 ./start-frontend.sh
 ```
 
@@ -1163,41 +1192,56 @@ cd example-part-9-complete-todo-app
 
 | Learning Goal | Use This Example |
 |--------------|------------------|
-| Just learning Keycloak auth | **Example 1** (Part 4) |
-| Learning to secure APIs with JWT | **Example 2** (Part 5) |
-| Building a real application | **Example 3** (Complete Todo App) |
+| Understanding todo apps + Keycloak basics | **Example 1** - Todo WITHOUT signature verification |
+| Learning JWT signature verification | **Example 2** - Todo WITH signature verification |
+| Learning role-based access control (RBAC) | **Example 3** - Todo WITH RBAC |
 | Following the tutorial step-by-step | **Example 1** → **Example 2** → **Example 3** |
+
+### 📊 Feature Comparison
+
+| Feature | Example 1 | Example 2 | Example 3 |
+|---------|-----------|-----------|-----------|
+| **Keycloak Login** | ✅ | ✅ | ✅ |
+| **Todo CRUD** | ✅ | ✅ | ✅ |
+| **JWT Token Accepted** | ✅ | ✅ | ✅ |
+| **Signature Verification** | ❌ **NO** | ✅ **YES** | ✅ **YES** |
+| **Public Key Validation** | ❌ | ✅ | ✅ |
+| **Token Expiry Check** | ❌ | ✅ | ✅ |
+| **RBAC (Admin Role)** | ❌ | ❌ | ✅ **YES** |
+| **Security Level** | ⚠️ Insecure | 🔒 Secure | 🔒 Secure + RBAC |
 
 ### 📊 Progression Chart
 
 ```
-Example 1: example-part-4-basic-login/
-└── Basic Keycloak Login (Frontend Only)
-    ├── Login/Logout
-    ├── User Profile Display
-    └── JWT Token Display
+Example 1: example-part-1-todo-basic/
+└── Todo App WITHOUT Signature Verification
+    ├── ✅ Keycloak Login/Logout
+    ├── ✅ Full Todo CRUD
+    ├── ✅ Backend accepts JWT tokens
+    └── ⚠️  NO signature verification (insecure!)
 
-    ↓ ADD: Backend API + JWT Validation
+    ↓ ADD: JWT Signature Verification with Public Keys
 
-Example 2: example-part-5-protected-api/
-└── Protected API Calls (Frontend + Backend)
-    ├── Everything from Example 1
-    ├── Flask Backend with JWT
-    ├── JWT Signature Verification
-    └── Protected Endpoint
+Example 2: example-part-2-todo-secure/
+└── Todo App WITH Signature Verification
+    ├── ✅ Everything from Example 1
+    ├── ✅ Verifies JWT signatures
+    ├── ✅ Uses Keycloak public keys
+    ├── ✅ Validates expiration/issuer/audience
+    └── ❌ No RBAC (all users have same permissions)
 
-    ↓ ADD: Todo CRUD + RBAC + Production Features
+    ↓ ADD: Role-Based Access Control (RBAC)
 
-Example 3: example-part-9-complete-todo-app/
-└── Full Todo Application (Production Ready)
-    ├── Everything from Example 2
-    ├── Create/Read/Update/Delete Todos
-    ├── Role-Based Access Control
-    ├── Per-User Data Isolation
-    └── Automatic Token Refresh
+Example 3: example-part-3-todo-rbac/
+└── Todo App WITH RBAC
+    ├── ✅ Everything from Example 2
+    ├── ✅ Admin users see ALL todos
+    ├── ✅ Admin users can edit anyone's todos
+    ├── ✅ Regular users see only their own todos
+    └── ✅ Role badges and visual indicators
 ```
 
-**Note:** Each example is completely self-contained with its own frontend, backend (if needed), and start scripts. You can run any example independently without the others.
+**Note:** Each example is completely self-contained with its own frontend, backend, and start scripts. You can run any example independently without the others.
 
 ---
 
