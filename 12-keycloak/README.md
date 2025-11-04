@@ -697,7 +697,7 @@ def protected():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001, host='0.0.0.0')
 ```
 
 ### Test Your Protected API
@@ -707,37 +707,160 @@ if __name__ == '__main__':
 python app.py
 ```
 
-In your React app, make an API call with the token:
+Now let's call the protected API from React. We'll organize the code properly:
+
+#### Step 1: Create API Helper File
+
+Create `src/api.js` to handle all API calls:
 
 ```javascript
-// Add this function to your React App.js
-const callProtectedAPI = async () => {
-  try {
-    // Refresh token if needed (within 30 seconds of expiry)
-    await keycloak.updateToken(30);
+// src/api.js
+const API_BASE_URL = 'http://localhost:5001/api';
 
-    const response = await fetch('http://localhost:5000/api/protected', {
-      headers: {
-        'Authorization': `Bearer ${keycloak.token}`
-      }
-    });
+// Helper function to make authenticated requests
+const authFetch = async (url, token, options = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
 
-    const data = await response.json();
-    console.log('Protected API response:', data);
-  } catch (error) {
-    console.error('API call failed:', error);
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || `HTTP ${response.status}`);
   }
+
+  return response.json();
 };
 
-// Add button to trigger it
-<button onClick={callProtectedAPI}>Call Protected API</button>
+// Call the protected endpoint
+export const callProtectedAPI = async (token) => {
+  return authFetch(`${API_BASE_URL}/protected`, token);
+};
 ```
 
+#### Step 2: Update App.js to Use the API
+
+Update your `src/App.js`:
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import keycloak from './keycloak';
+import { callProtectedAPI } from './api';
+
+function App() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [apiResponse, setApiResponse] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    keycloak.init({
+      onLoad: 'login-required',
+      checkLoginIframe: false
+    }).then(authenticated => {
+      setAuthenticated(authenticated);
+
+      if (authenticated) {
+        keycloak.loadUserProfile().then(profile => {
+          setUser(profile);
+        });
+      }
+    });
+  }, []);
+
+  // This function is called when button is clicked
+  const handleCallAPI = async () => {
+    try {
+      setError(null);
+
+      // Refresh token if needed (within 30 seconds of expiry)
+      await keycloak.updateToken(30);
+
+      // Call the protected API with the current token
+      const data = await callProtectedAPI(keycloak.token);
+
+      setApiResponse(data);
+      console.log('API response:', data);
+    } catch (err) {
+      console.error('API call failed:', err);
+      setError(err.message);
+    }
+  };
+
+  if (!authenticated) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
+      <p>Email: {user?.email}</p>
+
+      {/* Button with onClick handler */}
+      <button onClick={handleCallAPI}>
+        Call Protected API
+      </button>
+
+      {/* Display API response */}
+      {apiResponse && (
+        <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9' }}>
+          <h3>API Response:</h3>
+          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+        </div>
+      )}
+
+      {/* Display errors */}
+      {error && (
+        <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      <button onClick={() => keycloak.logout()}>Logout</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### How onClick Works:
+
+1. **Button Definition**: `<button onClick={handleCallAPI}>`
+   - When clicked, React calls the `handleCallAPI` function
+
+2. **handleCallAPI Function**:
+   ```javascript
+   const handleCallAPI = async () => {
+     await keycloak.updateToken(30);  // Refresh token if needed
+     const data = await callProtectedAPI(keycloak.token);  // Call API
+     setApiResponse(data);  // Update state to display response
+   }
+   ```
+
+3. **Token Flow**:
+   - Get current token: `keycloak.token`
+   - Add to Authorization header: `'Authorization': Bearer ${token}'`
+   - Flask backend receives and verifies the token
+   - Returns protected data or 401 error
+
+4. **State Updates**:
+   - `setApiResponse(data)` triggers re-render
+   - Response appears in the UI automatically
+
 **What's happening?**
-1. React app sends the JWT token in the `Authorization` header
-2. Flask verifies the token using Keycloak's public keys
-3. If valid, Flask returns the protected data
-4. If invalid/expired, Flask returns 401 Unauthorized
+1. User clicks "Call Protected API" button
+2. React calls `handleCallAPI()` function
+3. Token is refreshed if expiring soon
+4. API call is made with token in Authorization header
+5. Flask verifies token using Keycloak's public keys
+6. If valid, Flask returns protected data
+7. React displays the response in the UI
+8. If invalid/expired, error is shown
 
 ---
 
