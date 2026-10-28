@@ -6,7 +6,7 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 # Script to start the React frontend
 
 echo "================================"
-echo "Starting React Frontend"
+echo "Starting Part 1 React Frontend"
 echo "================================"
 echo ""
 

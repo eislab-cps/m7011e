@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""
-Secure Todo API with Keycloak JWT authentication
-This backend validates JWT tokens from Keycloak and implements role-based access control
+"""Part 2: Todo API with verified JWTs and owner-only authorization.
+Todos are stored in memory; run one backend process until you add shared storage.
 """
 
 from flask import Flask, request, jsonify
@@ -41,13 +40,13 @@ if INSECURE:
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "https://keycloak.ltu-m7011e-johan.se").rstrip("/")  # Change to your Keycloak URL
 REALM = os.getenv("KEYCLOAK_REALM", "myapp")  # Change this to match your realm
 CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "my-frontend-app")
-API_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "todo-api")  # Change this to match your client
+API_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "todo-api")  # Audience mapper on the frontend client
 
 # Keycloak endpoints
 KEYCLOAK_ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
 KEYCLOAK_CERTS_URL = f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs"
 
-# Cache for public keys (in production, implement proper caching with expiration)
+# Cache public keys for five minutes; refresh once on an unknown signing key.
 public_keys_cache = None
 public_keys_fetched_at = 0.0
 
@@ -131,6 +130,9 @@ def verify_token(token):
             }
         )
 
+        if not isinstance(decoded_token.get("sub"), str) or not decoded_token["sub"]:
+            raise jwt.InvalidTokenError("Token requires a non-empty subject")
+
         return decoded_token
 
     except jwt.ExpiredSignatureError:
@@ -188,10 +190,6 @@ def get_username():
     return request.user.get('preferred_username', 'unknown')
 
 
-def is_admin():
-    """Check if the authenticated user has admin role"""
-    realm_roles = request.user.get('realm_access', {}).get('roles', [])
-    return 'admin' in realm_roles
 
 
 # =============================================================================
@@ -200,20 +198,15 @@ def is_admin():
 
 @app.route('/')
 def index():
-    """Health check endpoint"""
     return jsonify({
-        'message': 'Secure Todo API with Keycloak',
-        'version': '1.0',
-        'keycloak': {
-            'url': KEYCLOAK_URL,
-            'realm': REALM,
-            'issuer': KEYCLOAK_ISSUER
-        },
+        'message': 'Part 2: Todo API WITH signature verification (No RBAC)',
+        'security': '✅ JWT signatures are verified',
+        'note': 'No role-based access control - all users see their own todos',
         'endpoints': {
-            'GET /api/todos': 'Get todos (requires auth)',
-            'POST /api/todos': 'Create todo (requires auth)',
-            'PUT /api/todos/<id>/toggle': 'Toggle todo completion (requires auth)',
-            'DELETE /api/todos/<id>': 'Delete todo (requires auth)'
+            'GET /api/todos': 'Get your todos',
+            'POST /api/todos': 'Create todo',
+            'PUT /api/todos/<id>/toggle': 'Toggle todo',
+            'DELETE /api/todos/<id>': 'Delete todo'
         }
     })
 
@@ -221,55 +214,38 @@ def index():
 @app.route('/api/todos', methods=['GET'])
 @require_auth
 def get_todos():
-    """
-    Get todos for the authenticated user
-    - Regular users see only their own todos
-    - Admin users see all todos
-    """
+    """Get todos for current user only (no admin privileges)"""
     user_id = get_user_id()
-
-    if is_admin():
-        # Admin sees all todos
-        return jsonify(todos)
-    else:
-        # Regular user sees only their todos
-        user_todos = [t for t in todos if t['user_id'] == user_id]
-        return jsonify(user_todos)
+    # Everyone sees only their own todos
+    user_todos = [t for t in todos if t['user_id'] == user_id]
+    return jsonify(user_todos)
 
 
 @app.route('/api/todos', methods=['POST'])
 @require_auth
 def create_todo():
-    """Create a new todo for the authenticated user"""
+    """Create a new todo"""
     global todo_id_counter
 
     data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not isinstance(data.get('text'), str):
+        return jsonify({'error': 'Missing or invalid required field: text'}), 400
 
-    if not isinstance(data, dict) or 'text' not in data:
-        return jsonify({'error': 'Missing required field: text'}), 400
-
-    if not isinstance(data['text'], str):
-        return jsonify({'error': 'Todo text must be a string'}), 400
     text = data['text'].strip()
     if not text:
         return jsonify({'error': 'Todo text cannot be empty'}), 400
-
-    user_id = get_user_id()
-    username = get_username()
 
     new_todo = {
         'id': todo_id_counter,
         'text': text,
         'completed': False,
-        'user_id': user_id,
-        'username': username,
+        'user_id': get_user_id(),
+        'username': get_username(),
         'created_at': datetime.now().isoformat()
     }
 
     todos.append(new_todo)
     todo_id_counter += 1
-
-    print(f"✓ Todo created by {username}: {text}")
 
     return jsonify(new_todo), 201
 
@@ -277,100 +253,61 @@ def create_todo():
 @app.route('/api/todos/<int:todo_id>/toggle', methods=['PUT'])
 @require_auth
 def toggle_todo(todo_id):
-    """Toggle todo completion status"""
+    """Toggle todo completion - own todos only"""
     user_id = get_user_id()
 
-    # Find the todo
     todo = next((t for t in todos if t['id'] == todo_id), None)
-
     if not todo:
         return jsonify({'error': 'Todo not found'}), 404
 
-    # Check permissions: owner or admin
-    if todo['user_id'] != user_id and not is_admin():
+    # Can only toggle own todos (no admin override)
+    if todo['user_id'] != user_id:
         return jsonify({'error': 'Forbidden: You can only toggle your own todos'}), 403
 
-    # Toggle completion status
     todo['completed'] = not todo['completed']
-
-    print(f"✓ Todo {todo_id} toggled by {get_username()}")
-
     return jsonify(todo)
 
 
 @app.route('/api/todos/<int:todo_id>', methods=['DELETE'])
 @require_auth
 def delete_todo(todo_id):
-    """Delete a todo"""
+    """Delete todo - own todos only"""
     global todos
-
     user_id = get_user_id()
 
-    # Find the todo
     todo = next((t for t in todos if t['id'] == todo_id), None)
-
     if not todo:
         return jsonify({'error': 'Todo not found'}), 404
 
-    # Check permissions: owner or admin
-    if todo['user_id'] != user_id and not is_admin():
+    # Can only delete own todos (no admin override)
+    if todo['user_id'] != user_id:
         return jsonify({'error': 'Forbidden: You can only delete your own todos'}), 403
 
-    # Delete the todo
     todos = [t for t in todos if t['id'] != todo_id]
-
-    print(f"✓ Todo {todo_id} deleted by {get_username()}")
-
     return '', 204
 
 
-# =============================================================================
-# ERROR HANDLERS
-# =============================================================================
-
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({'error': 'Not found'}), 404
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({'error': 'Internal server error'}), 500
-
-
-# =============================================================================
-# MAIN
-# =============================================================================
-
 if __name__ == '__main__':
-    print("=" * 60)
-    print("Starting Secure Todo API with Keycloak Authentication")
-    print("=" * 60)
-    print(f"Keycloak URL: {KEYCLOAK_URL}")
-    print(f"Realm: {REALM}")
-    print(f"Client ID: {CLIENT_ID}")
-    print(f"Issuer: {KEYCLOAK_ISSUER}")
+    print("=" * 70)
+    print("Part 2 Example: Todo API WITH Signature Verification")
+    print("=" * 70)
     print("")
-    print("API Endpoints:")
-    print("  GET    /api/todos           - Get todos (auth required)")
-    print("  POST   /api/todos           - Create todo (auth required)")
-    print("  PUT    /api/todos/<id>/toggle - Toggle todo (auth required)")
-    print("  DELETE /api/todos/<id>      - Delete todo (auth required)")
+    print("✅ JWT signatures are properly verified")
+    print("✅ Uses Keycloak public keys for verification")
+    print("✅ Validates expiration, issuer, audience")
+    print("❌ No role-based access control (RBAC)")
+    print("   All users can only see/edit their own todos")
     print("")
-    print("CORS enabled for:")
-    print("  - http://localhost:3000")
-    print("  - http://127.0.0.1:3000")
+    print("For RBAC (admin can see all todos), see example-part-3-todo-rbac")
     print("")
-    print("Server starting on http://localhost:5001")
-    print("=" * 60)
+    print("=" * 70)
     print("")
 
-    # Fetch public keys on startup to verify Keycloak connectivity
     try:
         get_public_keys()
+        print("✓ Successfully fetched Keycloak public keys")
     except Exception as e:
-        print(f"WARNING: Could not fetch Keycloak public keys: {e}")
-        print("Make sure Keycloak is running and the URL is correct!")
-        print("")
+        print(f"WARNING: Could not fetch public keys: {e}")
+    print("")
 
     app.run(debug=True, port=5001, host='0.0.0.0')

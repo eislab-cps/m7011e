@@ -30,7 +30,7 @@ Work through tutorials 1-13 in order. Tutorials 3-5 explain concepts and include
 | [09 - React with Claude Code](./09-claude-code-frontend/README.md) | Rebuild the todo frontend with React through an iterative AI-assisted workflow. |
 | [10 - Testing and CI](./10-testing-ci/README.md) | Write backend and frontend tests, collect coverage, and create GitHub Actions workflows. Includes a [quick start](./10-testing-ci/QUICKSTART.md). |
 | [11 - Argo CD and GitOps](./11-argocd-gitops/README.md) | Install Argo CD and use Git and Helm to manage application deployments across environments. |
-| [12 - Keycloak](./12-keycloak/README.md) | Deploy Keycloak with PostgreSQL, configure realms and clients, and protect a React/Flask todo app with OpenID Connect and roles. |
+| [12 - Keycloak](./12-keycloak/README.md) | Deploy Keycloak with PostgreSQL, configure realms and clients, and work through three React/Flask examples covering login, JWT verification, and roles. |
 | [13 - MongoDB](./13-mongodb/README.md) | Deploy MongoDB with Helm and persistent storage, connect with mongosh or Python, and practice document operations. |
 
 ## Optional Advanced Tutorials
@@ -57,7 +57,7 @@ Continue with tutorials 14-16 in `advanced/` after the main sequence. Messaging 
 09-claude-code-frontend/       React and Claude Code walkthrough
 10-testing-ci/                Testing guide, quick start, and test dependencies
 11-argocd-gitops/              Argo CD installation and GitOps demo charts
-12-keycloak/                  Keycloak chart, setup scripts, and example app
+12-keycloak/                  Keycloak chart, setup scripts, and three example apps
 13-mongodb/                   MongoDB Helm chart and helper scripts
 advanced/
   14-service-communication/   RabbitMQ chart and Python messaging examples

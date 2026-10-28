@@ -6,7 +6,7 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 # Script to start the Flask backend
 
 echo "================================"
-echo "Starting Flask Backend"
+echo "Starting Part 1 Flask Backend"
 echo "================================"
 echo ""
 
@@ -27,6 +27,8 @@ source venv/bin/activate
 echo "Installing dependencies..."
 pip install -r requirements.txt
 echo ""
+
+echo "Learning example: JWT signatures are NOT verified. Use part 2 or 3 for verification."
 
 # Start the server
 echo "Starting Flask server..."

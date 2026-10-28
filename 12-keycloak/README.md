@@ -83,13 +83,15 @@ Press `Ctrl+C` when both pods show `Running` and `1/1` ready.
 
 Open your browser to: `https://keycloak.ltu-m7011e-YOUR-NAME.se`
 
+![Keycloak](./keycloak.png)
+
 **Login credentials:**
 - Username: `admin`
 - Password: (the adminPassword you set in values.yaml)
 
 **Note**: You'll see a certificate warning because we're using Let's Encrypt staging certificates. Click "Advanced" → "Proceed" to continue.
 
-**🎉 Congratulations!** You now have Keycloak running.
+You now have Keycloak running.
 
 ---
 
@@ -105,6 +107,8 @@ A **realm** is like a tenant - it manages a set of users, applications, roles, a
    - Realm name: `myapp`
    - Enabled: ON
 4. Click **"Create"**
+
+![Realm](./realm.png)
 
 ### Option B: Create Realm Automatically (via API)
 
@@ -149,6 +153,8 @@ The scripts will:
    - Email verified: ON
    - Enabled: ON
 4. Click **"Create"**
+
+![User](./user.png)
 
 ### Step 3: Set User Password
 
@@ -369,6 +375,8 @@ python3 create-user.py
 
 A **client** is an application that uses Keycloak for authentication (like your React app or Flask API).
 
+![Client](./client.png)
+
 ### Option A: Create Client via UI
 
 #### Step 1: Create a Public Client (for Frontend Apps)
@@ -458,7 +466,39 @@ The script will:
 
 Now let's connect a React app to use Keycloak for login.
 
-This section illustrates the adapter in a React app. For the Vite project from Tutorial 9 use `src/App.jsx`, `npm run dev`, and its actual port (usually 5173) in Keycloak redirect URIs and Web Origins. The included complete example uses Create React App on port 3000.
+This section illustrates the adapter in a React app. For the Vite project from Tutorial 9 use `src/App.jsx`, `npm run dev`, and its actual port (usually 5173) in Keycloak redirect URIs and Web Origins. The three included examples use Create React App on port 3000. Run one example at a time because they share ports 3000 and 5001.
+
+> 💡 **Quick Start:** Want to see a working example first? Check out `example-part-1-todo-basic/` - run `./start-frontend.sh` to see it in action, then come back here to understand how it works.
+
+| Example | Purpose |
+| --- | --- |
+| [1: Basic](./example-part-1-todo-basic/) | Login and todo UI; deliberately decodes tokens without checking signatures. Learning only: forged tokens are accepted. |
+| [2: Secure](./example-part-2-todo-secure/) | Verifies signatures, issuer, audience, and expiry. Every user manages only their own todos, regardless of roles. |
+| [3: RBAC](./example-part-3-todo-rbac/) | Adds an `admin` realm role that can view and manage everyone's todos. |
+
+### ⚙️ Configuration Required
+
+Before running the examples, you **MUST** update the Keycloak URL to match your deployment:
+
+**Frontend** - Edit `frontend/src/keycloak-config.js` in each example:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-YOUR-NAME.se',  // ← Change YOUR-NAME
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+**Backend** (examples 2 and 3) - Set `KEYCLOAK_URL` in the terminal that starts the backend, or edit its default in `backend/app.py`:
+```bash
+export KEYCLOAK_URL="https://keycloak.ltu-m7011e-YOUR-NAME.se"
+```
+
+The backend defaults to realm `myapp` and API audience `todo-api`; set `KEYCLOAK_REALM` and `KEYCLOAK_AUDIENCE` to override them. Its `INSECURE=true` default accommodates the staging certificate; use `INSECURE=false` with trusted TLS.
+
+**⚠️ Common Error**: If you see `Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`, you forgot to update the URL!
+
+---
 
 ### Install Keycloak JavaScript Library
 
@@ -547,172 +587,522 @@ export default App;
 
 ### Run Your App
 
+**Using the example (recommended):**
 ```bash
+# See the working example first!
+cd example-part-1-todo-basic
+
+# Terminal 1: Start backend
+./start-backend.sh
+
+# Terminal 2: Start frontend
+./start-frontend.sh
+```
+
+**Or manually if building from scratch:**
+```bash
+# Terminal 1: Start backend
+cd backend
+pip install -r requirements.txt
+python3 app.py
+
+# Terminal 2: Start frontend
+cd frontend
+npm install
 npm start
 ```
 
-Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Login with `testuser` / `testpass123` and you'll be redirected back to your app!
+Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Login with your Keycloak user and you'll be redirected back to your app!
 
+![Login](./login.png)
+
+![App](./todoapp.png)
 ---
 
 ## Part 5: Protect a Flask Backend API
 
 Now let's protect your backend API by validating JWT tokens from Keycloak.
 
+> 💡 **Quick Start:** Want to see a working example first? Check out `example-part-2-todo-secure/` - run `./start-backend.sh` and `./start-frontend.sh` to see API protection in action, then come back here to understand how it works.
+
 ### Install Dependencies
 
+**IMPORTANT**: Only install `PyJWT` (not the old `jwt` package, as they conflict!)
+
 ```bash
-pip install flask flask-cors pyjwt cryptography requests
+pip install flask flask-cors pyjwt cryptography requests urllib3
+```
+
+Or use requirements.txt:
+```txt
+Flask==3.0.0
+flask-cors==4.0.0
+PyJWT==2.8.0
+cryptography==41.0.7
+requests==2.31.0
+urllib3==2.0.7
+```
+
+Then install:
+```bash
+pip install -r requirements.txt
 ```
 
 ### Create Flask App with JWT Validation
 
+The snippets in this section build a minimal API at `/api/public` and `/api/protected`. The included todo examples provide CRUD endpoints at `/api/todos` and can be run directly with their start scripts.
+
 Create `app.py`:
 
 ```python
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import jwt
+import os
+import time
 import requests
+import urllib3
 from functools import wraps
+from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:5173"]}})
 
-# Keycloak configuration
-KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
-REALM = "myapp"
-ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
-API_AUDIENCE = "todo-api"
-INSECURE = True  # Staging certificates only; use False with trusted TLS
-CERTS_URL = f"{ISSUER}/protocol/openid-connect/certs"
+# Configure CORS to allow requests from React frontend
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:5173"
+        ] if not os.getenv("FRONTEND_URL") else [os.environ["FRONTEND_URL"]],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
-# Cache for public keys
-public_keys = None
+# SSL/TLS Configuration
+# Use INSECURE=True for staging/self-signed certificates
+# Use INSECURE=False for production Let's Encrypt certificates
+INSECURE = os.getenv("INSECURE", "true").lower() == "true"
 
-def get_public_keys():
-    """Fetch public keys from Keycloak for token verification"""
-    global public_keys
-    if not public_keys:
-        response = requests.get(CERTS_URL, timeout=10, verify=not INSECURE)
-        response.raise_for_status()
-        public_keys = response.json()
-    return public_keys
+if INSECURE:
+    # Disable SSL warnings when using self-signed certificates
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Keycloak configuration - UPDATE THESE VALUES
+KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "https://keycloak.ltu-m7011e-YOUR-NAME.se").rstrip("/")  # Change to your Keycloak URL
+REALM = os.getenv("KEYCLOAK_REALM", "myapp")  # Change this to match your realm
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "my-frontend-app")
+API_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "todo-api")  # Audience mapper on the frontend client
+
+# Keycloak endpoints
+KEYCLOAK_ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
+KEYCLOAK_CERTS_URL = f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs"
+
+# Cache public keys for five minutes; refresh once on an unknown signing key.
+public_keys_cache = None
+public_keys_fetched_at = 0.0
+
+# In-memory storage for todos
+# In production, use a proper database (PostgreSQL, etc.)
+todos = []
+todo_id_counter = 1
+
+
+def get_public_keys(force_refresh=False):
+    """
+    Fetch public keys from Keycloak for JWT verification
+    Keycloak uses these keys to sign JWTs - we use them to verify signatures
+    """
+    global public_keys_cache, public_keys_fetched_at
+
+    if force_refresh or public_keys_cache is None or time.monotonic() - public_keys_fetched_at > 300:
+        try:
+            response = requests.get(KEYCLOAK_CERTS_URL, timeout=10, verify=not INSECURE)
+            response.raise_for_status()
+            public_keys_cache = response.json()
+            public_keys_fetched_at = time.monotonic()
+            print(f"✓ Fetched public keys from Keycloak")
+        except Exception as e:
+            print(f"✗ Error fetching public keys: {e}")
+            raise Exception("Failed to fetch Keycloak public keys")
+
+    return public_keys_cache
+
+
+def verify_token(token):
+    """
+    Verify JWT token from Keycloak
+    Steps:
+    1. Decode token header to get key ID (kid)
+    2. Find matching public key from Keycloak
+    3. Verify signature using public key
+    4. Validate claims (expiration, issuer, audience)
+    5. Return decoded token with user information
+    """
+    try:
+        # Get public keys from Keycloak
+        keys = get_public_keys()
+
+        # Decode token header (without verification) to get key ID
+        unverified_header = jwt.get_unverified_header(token)
+        key_id = unverified_header.get('kid')
+
+        if not key_id:
+            raise Exception("Token missing key ID (kid)")
+
+        # Refresh JWKS once for an unknown kid so key rotation is supported.
+        key = next((key for key in keys['keys'] if key['kid'] == key_id), None)
+        if key is None:
+            keys = get_public_keys(force_refresh=True)
+            key = next((key for key in keys['keys'] if key['kid'] == key_id), None)
+        if key is None:
+            raise jwt.InvalidTokenError("Unknown signing key")
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+
+        # Verify and decode the token
+        # This validates:
+        # - Signature (ensures token was signed by Keycloak)
+        # - Expiration (exp claim)
+        # - Not before (nbf claim)
+        # - Issuer (iss claim)
+        # - Audience (aud claim)
+        decoded_token = jwt.decode(
+            token,
+            public_key,
+            algorithms=['RS256'],
+            audience=API_AUDIENCE,  # Audience mapper configured on the frontend client
+            issuer=KEYCLOAK_ISSUER,
+            options={
+                'require': ['exp', 'iss', 'sub', 'aud'],
+                'verify_signature': True,
+                'verify_exp': True,
+                'verify_nbf': True,
+                'verify_iss': True,
+                'verify_aud': True
+            }
+        )
+
+        if not isinstance(decoded_token.get("sub"), str) or not decoded_token["sub"]:
+            raise jwt.InvalidTokenError("Token requires a non-empty subject")
+
+        return decoded_token
+
+    except jwt.ExpiredSignatureError:
+        raise Exception("Token has expired")
+    except jwt.InvalidTokenError as e:
+        raise Exception(f"Invalid token: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Token verification failed: {str(e)}")
+
 
 def require_auth(f):
-    """Decorator to require valid JWT token"""
+    """
+    Decorator to require authentication for endpoints
+    Validates JWT token from Authorization header
+    Adds decoded token to request.user for use in endpoint
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Get token from Authorization header
+        # Get Authorization header
         auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return jsonify({'error': 'No authorization header'}), 401
 
-        # Extract token (format: "Bearer <token>")
+        if not auth_header:
+            return jsonify({'error': 'No authorization header provided'}), 401
+
+        # Extract token from "Bearer <token>" format
         parts = auth_header.split()
         if len(parts) != 2 or parts[0].lower() != 'bearer':
-            return jsonify({'error': 'Invalid authorization header'}), 401
+            return jsonify({'error': 'Invalid authorization header format. Use: Bearer <token>'}), 401
 
         token = parts[1]
 
         try:
-            # Decode and verify token
-            keys = get_public_keys()
-            unverified_header = jwt.get_unverified_header(token)
+            # Verify token and extract user information
+            decoded_token = verify_token(token)
 
-            # Find matching public key
-            rsa_key = None
-            for key in keys['keys']:
-                if key['kid'] == unverified_header['kid']:
-                    rsa_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+            # Add user information to request context
+            request.user = decoded_token
 
-            if not rsa_key:
-                return jsonify({'error': 'Public key not found'}), 401
+        except Exception as e:
+            print(f"Authentication failed: {e}")
+            return jsonify({'error': str(e)}), 401
 
-            # Verify token signature and claims
-            payload = jwt.decode(
-                token,
-                rsa_key,
-                algorithms=['RS256'],
-                audience=API_AUDIENCE,
-                issuer=ISSUER,
-                options={'verify_exp': True, 'require': ['exp', 'iss', 'sub', 'aud']}
-            )
-
-            # Add user info to request context
-            request.user = payload
-            return f(*args, **kwargs)
-
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError as e:
-            return jsonify({'error': f'Invalid token: {str(e)}'}), 401
+        return f(*args, **kwargs)
 
     return decorated_function
 
+
 @app.route('/api/public')
 def public():
-    """Public endpoint - no authentication required"""
     return jsonify({'message': 'This is public data'})
+
 
 @app.route('/api/protected')
 @require_auth
 def protected():
-    """Protected endpoint - requires valid token"""
     return jsonify({
         'message': 'This is protected data',
-        'user': request.user['preferred_username'],
+        'user': request.user.get('preferred_username', request.user['sub']),
         'email': request.user.get('email', 'N/A')
     })
 
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001, host='0.0.0.0')
+
 ```
 
 ### Test Your Protected API
 
+**Using the example (recommended):**
 ```bash
-# Run Flask app
-python app.py
+# See the working example with full todo app!
+cd example-part-2-todo-secure
+
+# Terminal 1: Start backend (with signature verification)
+./start-backend.sh
+
+# Terminal 2: Start frontend
+./start-frontend.sh
 ```
 
-In your React app, make an API call with the token:
+**Or manually if building from scratch:**
+```bash
+# Start Flask backend
+cd backend
+pip install -r requirements.txt
+python3 app.py
+```
+
+Now let's call the protected API from React. We'll organize the code properly:
+
+#### Step 1: Create or Update API Helper File
+
+**Building the minimal app from the snippets?** Create `src/api.js` alongside the `keycloak.js` and `App.js` from Part 4:
+
+**Already using the complete todo examples?** You already have `src/api.js` with `getTodos`, `createTodo`, etc. Just add the `callProtectedAPI` function to it.
+
+**Complete `src/api.js` code:**
 
 ```javascript
-// Add this function to your React App.js
-const callProtectedAPI = async () => {
+// src/api.js
+const API_BASE_URL = 'http://localhost:5001/api';
+
+// Helper function to make authenticated requests
+const authFetch = async (url, token, options = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+};
+
+// ← ADD THIS if you already have api.js, OR include it in your new file
+// Call the protected endpoint to test JWT authentication
+export const callProtectedAPI = async (token) => {
+  return authFetch(`${API_BASE_URL}/protected`, token);
+};
+
+// Your existing functions (getTodos, createTodo, etc.) stay here if you have them
+```
+
+#### Step 2: Update App.js to Use the API
+
+Your existing `src/App.js` should already have the basic Keycloak setup. **Add these specific changes**:
+
+**Changes to make:**
+
+1. **Add the new import** (at the top):
+```javascript
+import { callProtectedAPI } from './api';  // ← ADD THIS LINE
+```
+
+2. **Add new state variables** (inside the `App` function, after existing state):
+```javascript
+const [apiResponse, setApiResponse] = useState(null);  // ← ADD THIS
+const [error, setError] = useState(null);               // ← ADD THIS
+```
+
+3. **Add the API call handler function** (after the `useEffect`, before the `return`):
+```javascript
+// ← ADD THIS ENTIRE FUNCTION
+const handleCallAPI = async () => {
   try {
+    setError(null);
+
     // Refresh token if needed (within 30 seconds of expiry)
     await keycloak.updateToken(30);
 
-    const response = await fetch('http://localhost:5000/api/protected', {
-      headers: {
-        'Authorization': `Bearer ${keycloak.token}`
-      }
-    });
+    // Call the protected API with the current token
+    const data = await callProtectedAPI(keycloak.token);
 
-    const data = await response.json();
-    console.log('Protected API response:', data);
-  } catch (error) {
-    console.error('API call failed:', error);
+    setApiResponse(data);
+    console.log('API response:', data);
+  } catch (err) {
+    console.error('API call failed:', err);
+    setError(err.message);
   }
 };
-
-// Add button to trigger it
-<button onClick={callProtectedAPI}>Call Protected API</button>
 ```
 
+4. **Add the button and response display** (inside the `return` statement, after the user info):
+```javascript
+{/* ← ADD THIS BUTTON */}
+<button onClick={handleCallAPI}>
+  Call Protected API
+</button>
+
+{/* ← ADD THIS: Display API response */}
+{apiResponse && (
+  <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9' }}>
+    <h3>API Response:</h3>
+    <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+  </div>
+)}
+
+{/* ← ADD THIS: Display errors */}
+{error && (
+  <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
+    <strong>Error:</strong> {error}
+  </div>
+)}
+```
+
+**Complete example of the updated App.js:**
+
+<details>
+<summary>Click to see full App.js code</summary>
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import keycloak, { initializeKeycloak } from './keycloak';
+import { callProtectedAPI } from './api';  // ← NEW IMPORT
+
+function App() {
+  // Existing state
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // NEW: State for API testing
+  const [apiResponse, setApiResponse] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Reuse the shared initialization promise from Part 4.
+  useEffect(() => {
+    initializeKeycloak().then(authenticated => {
+      setAuthenticated(authenticated);
+
+      if (authenticated) {
+        keycloak.loadUserProfile().then(profile => {
+          setUser(profile);
+        });
+      }
+    });
+  }, []);
+
+  // NEW: Function to call the protected API
+  const handleCallAPI = async () => {
+    try {
+      setError(null);
+      await keycloak.updateToken(30);
+      const data = await callProtectedAPI(keycloak.token);
+      setApiResponse(data);
+      console.log('API response:', data);
+    } catch (err) {
+      console.error('API call failed:', err);
+      setError(err.message);
+    }
+  };
+
+  if (!authenticated) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
+      <p>Email: {user?.email}</p>
+
+      {/* NEW: Button to test API */}
+      <button onClick={handleCallAPI}>
+        Call Protected API
+      </button>
+
+      {/* NEW: Display API response */}
+      {apiResponse && (
+        <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9' }}>
+          <h3>API Response:</h3>
+          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+        </div>
+      )}
+
+      {/* NEW: Display errors */}
+      {error && (
+        <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {/* Existing logout button */}
+      <button onClick={() => keycloak.logout()}>Logout</button>
+    </div>
+  );
+}
+
+export default App;
+```
+</details>
+
+#### How onClick Works:
+
+1. **Button Definition**: `<button onClick={handleCallAPI}>`
+   - When clicked, React calls the `handleCallAPI` function
+
+2. **handleCallAPI Function**:
+   ```javascript
+   const handleCallAPI = async () => {
+     await keycloak.updateToken(30);  // Refresh token if needed
+     const data = await callProtectedAPI(keycloak.token);  // Call API
+     setApiResponse(data);  // Update state to display response
+   }
+   ```
+
+3. **Token Flow**:
+   - Get current token: `keycloak.token`
+   - Add to Authorization header: `'Authorization': Bearer ${token}'`
+   - Flask backend receives and verifies the token
+   - Returns protected data or 401 error
+
+4. **State Updates**:
+   - `setApiResponse(data)` triggers re-render
+   - Response appears in the UI automatically
+
 **What's happening?**
-1. React app sends the JWT token in the `Authorization` header
-2. Flask verifies the token using Keycloak's public keys
-3. If valid, Flask returns the protected data
-4. If invalid/expired, Flask returns 401 Unauthorized
+1. User clicks "Call Protected API" button
+2. React calls `handleCallAPI()` function
+3. Token is refreshed if expiring soon
+4. API call is made with token in Authorization header
+5. Flask verifies token using Keycloak's public keys
+6. If valid, Flask returns protected data
+7. React displays the response in the UI
+8. If invalid/expired, error is shown
 
 ---
 
 ## Part 6: Add Roles and Authorization
 
-Let's add role-based access control to limit what users can do.
+Let's add role-based access control to limit what users can do. Run `example-part-3-todo-rbac/` for the complete implementation: users manage their own todos, and the `admin` realm role can view, toggle, and delete everyone's todos. The `editor` and `viewer` roles below illustrate additional checks you can add; the included app treats both as ordinary users.
 
 ### Step 1: Create Roles
 
@@ -733,7 +1123,7 @@ Let's add role-based access control to limit what users can do.
 
 ### Step 3: Check Roles in Your Application
 
-The JWT token now contains the user's roles. In React:
+After changing roles, log out and log back in to obtain a new access token. In React:
 
 ```javascript
 // Check if user has a specific role
@@ -825,7 +1215,7 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 
 ## Part 9: Complete Example Application
 
-Want to see everything working together? Check out the `todo-app-example/` directory!
+Want to see everything working together? Use `example-part-3-todo-rbac/` after trying examples 1 and 2 above.
 
 ### What's Included
 
@@ -838,7 +1228,7 @@ Want to see everything working together? Check out the `todo-app-example/` direc
 ### Quick Start
 
 ```bash
-cd todo-app-example
+cd example-part-3-todo-rbac
 
 # Start backend (Terminal 1)
 ./start-backend.sh
@@ -851,7 +1241,7 @@ Before starting, update `backend/app.py` (or set `KEYCLOAK_URL`, `KEYCLOAK_REALM
 
 ---
 
-To run the backend authentication regression tests without Keycloak, install `pytest` in the backend virtual environment and run `python -m pytest test_app.py` from `todo-app-example/backend/`.
+To run the backend regression tests without a live Keycloak server, install `pytest` alongside the example 3 backend dependencies and run `python -m pytest tests/` from `12-keycloak/`. The tests cover all three examples, including the intentional signature bypass in example 1 and the admin-role difference between examples 2 and 3.
 
 ## Part 10: Troubleshooting
 
@@ -905,6 +1295,102 @@ Always access your frontend at `http://localhost:3000`.
 ```javascript
 // Refresh if expires in < 30 seconds
 await keycloak.updateToken(30);
+```
+
+### Backend Error: "Failed to resolve 'keycloak.ltu-m7011e-your-name.se'" or "Could not fetch public keys"
+
+**Problem**: The backend cannot connect to Keycloak because you're using the placeholder URL instead of your actual Keycloak domain.
+
+**Symptoms**:
+- `WARNING: Could not fetch public keys: HTTPSConnectionPool(host='keycloak.ltu-m7011e-your-name.se', port=443): Max retries exceeded`
+- `NameResolutionError: Failed to resolve 'keycloak.ltu-m7011e-your-name.se'`
+- Frontend loads but API calls fail with 401 or 500 errors
+- Backend shows connection errors on startup
+
+**Solution**:
+
+1. **Update Backend Configuration** (example-part-2 and example-part-3):
+
+```bash
+# Edit backend/app.py
+nano example-part-2-todo-secure/backend/app.py
+nano example-part-3-todo-rbac/backend/app.py
+```
+
+Change the KEYCLOAK_URL line:
+```python
+# Change this:
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
+
+# To your actual domain:
+KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"  # ← Use YOUR name
+```
+
+2. **Update Frontend Configuration** (all examples):
+
+```bash
+# Edit frontend/src/keycloak-config.js in each example
+nano example-part-1-todo-basic/frontend/src/keycloak-config.js
+nano example-part-2-todo-secure/frontend/src/keycloak-config.js
+nano example-part-3-todo-rbac/frontend/src/keycloak-config.js
+```
+
+Change the url field:
+```javascript
+export const keycloakConfig = {
+  url: 'https://keycloak.ltu-m7011e-johan.se',  // ← Use YOUR name
+  realm: 'myapp',
+  clientId: 'my-frontend-app'
+};
+```
+
+3. **Restart Both Backend and Frontend**:
+
+```bash
+# Stop the backend (Ctrl+C) and restart
+cd example-part-2-todo-secure
+./start-backend.sh
+
+# In another terminal, restart frontend
+cd example-part-2-todo-secure
+./start-frontend.sh
+```
+
+4. **Verify**: You should see "✓ Successfully fetched Keycloak public keys" when the backend starts.
+
+**See also**: Configuration Required section in Part 4 above for complete setup instructions.
+
+### Flask Backend Error: "module 'jwt' has no attribute 'ExpiredSignatureError'"
+
+**Problem**: Both `PyJWT` and `jwt` provide a Python module named `jwt`, so installing both can break the imports used by this example.
+
+**Symptoms**:
+- `AttributeError: module 'jwt' has no attribute 'ExpiredSignatureError'`
+- `AttributeError: module 'jwt' has no attribute 'get_unverified_header'`
+- JWT token verification fails
+
+**Solution**:
+
+```bash
+# 1. Uninstall the conflicting jwt package
+python -m pip uninstall -y jwt
+
+# 2. Ensure only PyJWT is installed
+python -m pip install --force-reinstall PyJWT==2.8.0
+
+# 3. Verify the correct package is installed
+python3 -c "import jwt; print(jwt.__version__)"
+# Should output: 2.8.0
+
+# 4. Test that all required attributes exist
+python3 -c "import jwt; print(hasattr(jwt, 'ExpiredSignatureError'))"
+# Should output: True
+```
+
+**Prevention**: Always use `PyJWT` (not `jwt`) in your requirements.txt:
+```txt
+PyJWT==2.8.0  # ✓ Correct
+jwt           # ✗ Wrong - causes conflicts!
 ```
 
 ### Certificate Warnings
@@ -1847,7 +2333,7 @@ Deploy a full-stack authenticated application:
 
 **1.1 Create Dockerfile for Flask API**
 
-Create `todo-app-example/backend/Dockerfile`:
+Create `example-part-3-todo-rbac/backend/Dockerfile`:
 ```dockerfile
 FROM python:3.11-slim
 
@@ -1871,7 +2357,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--workers", "1", "app:app"]
 
 **1.2 Create requirements.txt**
 
-Create `todo-app-example/backend/requirements.txt`:
+Create `example-part-3-todo-rbac/backend/requirements.txt`:
 ```
 Flask==3.0.0
 flask-cors==4.0.0
@@ -1883,7 +2369,7 @@ gunicorn==23.0.0
 
 **1.3 Update Configuration for Production**
 
-Edit `app.py` to use environment variables:
+The included backend already reads the environment variables below. With trusted TLS, set `INSECURE=false` and your public frontend origin in the Deployment (shown in Step 2). If adapting another backend, use:
 ```python
 import os
 
@@ -1909,7 +2395,7 @@ CORS(app, resources={
 
 ```bash
 # From 12-keycloak/
-cd todo-app-example/backend
+cd example-part-3-todo-rbac/backend
 
 # Build image
 docker build -t todo-backend:latest .
@@ -1925,7 +2411,7 @@ docker push registry.example.com/todo-backend:latest
 
 **2.1 Create Backend Deployment**
 
-Create `todo-app-example/k8s/backend-deployment.yaml`:
+Create `example-part-3-todo-rbac/k8s/backend-deployment.yaml`:
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -2020,10 +2506,10 @@ spec:
 
 **2.2 Deploy Backend**
 
-Run the following commands from `12-keycloak/`. Create `todo-app-example/k8s/` and your chosen namespace first. Replace `yournamespace` consistently in both manifests.
+Run the following commands from `12-keycloak/`. Create `example-part-3-todo-rbac/k8s/` and your chosen namespace first. Replace `yournamespace` consistently in both manifests.
 
 ```bash
-kubectl apply -f todo-app-example/k8s/backend-deployment.yaml
+kubectl apply -f example-part-3-todo-rbac/k8s/backend-deployment.yaml
 
 # Verify deployment
 kubectl get pods -n yournamespace -l app=todo-backend
@@ -2037,7 +2523,7 @@ curl https://todo-api.ltu-m7011e-yourname.se/
 
 **3.1 Create Dockerfile for React App**
 
-Create `todo-app-example/frontend/Dockerfile`:
+Create `example-part-3-todo-rbac/frontend/Dockerfile`:
 ```dockerfile
 # Build stage
 FROM node:22-alpine AS build
@@ -2070,7 +2556,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 **3.2 Create nginx Configuration**
 
-Create `todo-app-example/frontend/nginx.conf`:
+Create `example-part-3-todo-rbac/frontend/nginx.conf`:
 ```nginx
 server {
     listen 80;
@@ -2121,7 +2607,7 @@ const API_BASE_URL = 'https://todo-api.ltu-m7011e-yourname.se/api';
 
 ```bash
 # From 12-keycloak/ in a new terminal
-cd todo-app-example/frontend
+cd example-part-3-todo-rbac/frontend
 
 # Build image
 docker build -t todo-frontend:latest .
@@ -2135,7 +2621,7 @@ docker push registry.example.com/todo-frontend:latest
 
 **4.1 Create Frontend Deployment**
 
-Create `todo-app-example/k8s/frontend-deployment.yaml`:
+Create `example-part-3-todo-rbac/k8s/frontend-deployment.yaml`:
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -2220,7 +2706,7 @@ spec:
 **4.2 Deploy Frontend**
 
 ```bash
-kubectl apply -f todo-app-example/k8s/frontend-deployment.yaml
+kubectl apply -f example-part-3-todo-rbac/k8s/frontend-deployment.yaml
 
 # Verify deployment
 kubectl get pods -n yournamespace -l app=todo-frontend
@@ -2371,26 +2857,4 @@ Now it's your turn! Add Keycloak authentication to one of your previous tutorial
 
 ---
 
-## Summary
-
-You've learned how to:
-
-✅ Deploy Keycloak on Kubernetes with PostgreSQL
-✅ Create realms, users, and roles
-✅ Configure client applications for web and mobile
-✅ Integrate Keycloak with React (frontend) and Flask (backend)
-✅ Implement role-based access control
-✅ Add social login (GitHub, Google, etc.)
-✅ Enable multi-factor authentication
-✅ Validate JWT tokens in your API
-✅ Handle token refresh and expiration
-
 **Key Takeaway**: Keycloak provides enterprise-grade authentication with minimal code. Instead of building your own auth system (and making security mistakes), you get industry-standard protocols, best practices, and features out of the box.
-
-## What's Next?
-
-- Explore fine-grained authorization with policies and permissions
-- Create custom authentication flows
-- Set up user federation with LDAP/Active Directory
-- Build a microservices architecture with centralized auth
-- Learn about Keycloak clustering for high availability

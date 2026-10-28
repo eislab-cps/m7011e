@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Keycloak from 'keycloak-js';
 import { keycloakConfig } from './keycloak-config';
 import { getTodos, createTodo, deleteTodo, toggleTodo } from './api';
@@ -28,12 +28,23 @@ function App() {
   const [newTodoText, setNewTodoText] = useState('');
   const [error, setError] = useState(null);
 
+  const loadTodos = useCallback(async () => {
+    try {
+      const data = await getTodos(await getAccessToken());
+      setTodos(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error loading todos:', err);
+      setError(err.message);
+    }
+  }, []);
+
   // Initialize Keycloak
   useEffect(() => {
     const keycloak = getKeycloak();
 
     let active = true;
-    // StrictMode may run the effect twice; initialize the adapter only once.
+    // StrictMode may rerun the effect while initialization is still pending.
     if (!keycloakInitPromise) {
       keycloakInitPromise = keycloak.init({
         onLoad: 'login-required',
@@ -49,18 +60,22 @@ function App() {
       if (authenticated) {
         // Load user profile
         keycloak.loadUserProfile().then(profile => {
+          if (!active) return;
           // Check if user has admin role
           const isAdmin = keycloak.hasRealmRole('admin');
           setUser({
             ...profile,
             isAdmin
           });
+        }).catch(err => {
+          if (active) setError(`Failed to load user profile: ${err.message}`);
         });
 
         // Load todos
         loadTodos();
       }
     }).catch(err => {
+      if (!active) return;
       console.error('Keycloak initialization error:', err);
       setError('Failed to initialize authentication');
       setLoading(false);
@@ -81,18 +96,7 @@ function App() {
       active = false;
       clearInterval(refreshInterval);
     };
-  }, []);
-
-  const loadTodos = async () => {
-    try {
-      const data = await getTodos(await getAccessToken());
-      setTodos(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading todos:', err);
-      setError(err.message);
-    }
-  };
+  }, [loadTodos]);
 
   const handleAddTodo = async (e) => {
     e.preventDefault();
@@ -109,17 +113,6 @@ function App() {
     }
   };
 
-  const handleDeleteTodo = async (todoId) => {
-    try {
-      await deleteTodo(await getAccessToken(), todoId);
-      await loadTodos();
-      setError(null);
-    } catch (err) {
-      console.error('Error deleting todo:', err);
-      setError(err.message);
-    }
-  };
-
   const handleToggleTodo = async (todoId) => {
     try {
       await toggleTodo(await getAccessToken(), todoId);
@@ -131,51 +124,58 @@ function App() {
     }
   };
 
+  const handleDeleteTodo = async (todoId) => {
+    try {
+      await deleteTodo(await getAccessToken(), todoId);
+      await loadTodos();
+      setError(null);
+    } catch (err) {
+      console.error('Error deleting todo:', err);
+      setError(err.message);
+    }
+  };
+
   const handleLogout = () => {
-    getKeycloak().logout({
-      redirectUri: window.location.origin
-    });
+    getKeycloak().logout({ redirectUri: window.location.origin });
   };
 
   if (loading) {
     return (
-      <div className="app">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading...</p>
-        </div>
+      <div className="loading">
+        <div className="spinner"></div>
+        <p>Initializing authentication...</p>
       </div>
     );
   }
 
   if (!authenticated) {
     return (
-      <div className="app">
+      <div className="loading">
         <div className="error-container">
-          <h2>Authentication Required</h2>
+          <h2>Not Authenticated</h2>
           <p>Please log in to access the todo app.</p>
-          <button
-            onClick={() => getKeycloak().login()}
-            className="login-button"
-          >
-            Log In
+          <button className="login-button" onClick={() => getKeycloak().login()}>
+            Login with Keycloak
           </button>
         </div>
       </div>
     );
   }
 
+  const completedCount = todos.filter(t => t.completed).length;
+  const activeCount = todos.length - completedCount;
+
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>🔐 Secure Todo App</h1>
+          <h1>My Todo App</h1>
           <div className="user-info">
             <span className="welcome">
-              Welcome, <strong>{user?.firstName || user?.username}</strong>!
+              Welcome, {user?.firstName || user?.username}!
               {user?.isAdmin && <span className="admin-badge">Admin</span>}
             </span>
-            <button onClick={handleLogout} className="btn btn-secondary">
+            <button className="btn btn-secondary btn-sm" onClick={handleLogout}>
               Logout
             </button>
           </div>
@@ -186,108 +186,109 @@ function App() {
         <div className="container">
           {error && (
             <div className="error-message">
-              <span>⚠️ {error}</span>
-              <button onClick={() => setError(null)} className="close-btn">×</button>
+              <span>{error}</span>
+              <button className="close-btn" onClick={() => setError(null)}>×</button>
             </div>
           )}
 
           <div className="card">
-            <h2>My Todos {user?.isAdmin && '(Admin View - All Users)'}</h2>
-
-            <form onSubmit={handleAddTodo} className="todo-form">
+            <h2>Add New Todo</h2>
+            <form className="todo-form" onSubmit={handleAddTodo}>
               <input
                 type="text"
+                className="todo-input"
+                placeholder="What needs to be done?"
                 value={newTodoText}
                 onChange={(e) => setNewTodoText(e.target.value)}
-                placeholder="What needs to be done?"
-                className="todo-input"
-                autoFocus
               />
               <button type="submit" className="btn btn-primary">
                 Add Todo
               </button>
             </form>
+          </div>
 
-            <div className="todos-list">
-              {todos.length === 0 ? (
-                <p className="empty-state">No todos yet. Add one above!</p>
-              ) : (
-                todos.map(todo => (
-                  <div key={todo.id} className="todo-item">
-                    <div className="todo-content">
-                      <input
-                        type="checkbox"
-                        checked={todo.completed || false}
-                        onChange={() => handleToggleTodo(todo.id)}
-                        className="todo-checkbox"
-                      />
-                      <span className={todo.completed ? 'todo-text completed' : 'todo-text'}>
-                        {todo.text}
-                      </span>
-                      {user?.isAdmin && todo.username && (
-                        <span className="todo-owner">by {todo.username}</span>
-                      )}
+          <div className="card">
+            <h2>My Todos</h2>
+            {todos.length === 0 ? (
+              <div className="empty-state">
+                No todos yet. Add one above to get started!
+              </div>
+            ) : (
+              <>
+                <div className="todos-list">
+                  {todos.map(todo => (
+                    <div key={todo.id} className="todo-item">
+                      <div className="todo-content">
+                        <input
+                          type="checkbox"
+                          className="todo-checkbox"
+                          checked={todo.completed}
+                          onChange={() => handleToggleTodo(todo.id)}
+                        />
+                        <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>
+                          {todo.text}
+                        </span>
+                        {todo.username && todo.username !== user?.username && (
+                          <span className="todo-owner">by {todo.username}</span>
+                        )}
+                      </div>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDeleteTodo(todo.id)}
+                      >
+                        Delete
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleDeleteTodo(todo.id)}
-                      className="btn btn-danger btn-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="todo-stats">
-              <span>{todos.filter(t => !t.completed).length} active</span>
-              <span>{todos.filter(t => t.completed).length} completed</span>
-              <span>{todos.length} total</span>
-            </div>
+                  ))}
+                </div>
+                <div className="todo-stats">
+                  <span>Total: {todos.length}</span>
+                  <span>Active: {activeCount}</span>
+                  <span>Completed: {completedCount}</span>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="card info-card">
             <h3>User Information</h3>
             <dl className="user-details">
-              <dt>Username:</dt>
-              <dd>{user?.username}</dd>
-
-              <dt>Email:</dt>
-              <dd>{user?.email}</dd>
-
               <dt>Name:</dt>
               <dd>{user?.firstName} {user?.lastName}</dd>
-
-              <dt>Roles:</dt>
+              <dt>Username:</dt>
+              <dd>{user?.username}</dd>
+              <dt>Email:</dt>
+              <dd>{user?.email || 'N/A'}</dd>
+              <dt>Role:</dt>
               <dd>
-                {user?.isAdmin ? (
-                  <span className="role-badge admin">Admin</span>
-                ) : (
-                  <span className="role-badge user">User</span>
-                )}
+                <span className={`role-badge ${user?.isAdmin ? 'admin' : 'user'}`}>
+                  {user?.isAdmin ? 'Administrator' : 'User'}
+                </span>
               </dd>
             </dl>
 
             <details className="token-details">
-              <summary>View Access Token (for debugging)</summary>
-              <pre className="token-display">{getKeycloak().token}</pre>
-              <a
-                href={`https://jwt.io/#debugger-io?token=${getKeycloak().token}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="jwt-link"
-              >
-                Decode at jwt.io →
-              </a>
+              <summary>View Access Token</summary>
+              <div className="token-display">
+                {getKeycloak().token}
+              </div>
+              <p>
+                <a
+                  href="https://jwt.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="jwt-link"
+                >
+                  Decode on jwt.io →
+                </a>
+              </p>
             </details>
           </div>
         </div>
       </main>
 
       <footer className="app-footer">
-        <p>
-          Secured with Keycloak | Tutorial 12 - M7011E
-        </p>
+        <p>Keycloak Todo App - Part 1: WITHOUT signature verification</p>
       </footer>
     </div>
   );
