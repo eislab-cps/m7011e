@@ -1,0 +1,11 @@
+StorageClassName: local-path
+Timezone: "Europe/Stockholm"
+
+DBUser: "admin"
+DBPassword: "TODO"
+DBName: "appdb"
+DBImage: mongo:7
+DBResourceLimit: false
+DBCPU: "500m"
+DBMemory: "512Mi"
+DBStorage: 10Gi
