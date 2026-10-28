@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="451" viewBox="0.00 0.00 1190.67 447.83" role="img" aria-labelledby="title description">
+<title id="title">Graph edges represent relationships in the data</title><desc id="description">Here an arrow such as FOLLOWS is a stored relationship, not a network message between two services. Traversing Alice → Bob → a post answers a different question from looking up Alice's row by ID. Graph databases make such connected-data operations central to the model. Relational joins can also represent relationships, so the choice depends on the traversal workload and operational constraints.</desc><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(28.8 419.03)">
+<title>Relationships</title>
+<polygon fill="white" stroke="transparent" points="-28.8,28.8 -28.8,-419.03 1161.87,-419.03 1161.87,28.8 -28.8,28.8" />
+<text text-anchor="middle" x="566.54" y="-364.63" font-family="DejaVu Sans" font-size="27.00" id="text-0">Graph edges represent relationships in the data</text>
+<text text-anchor="middle" x="566.54" y="-334.63" font-family="DejaVu Sans" font-size="27.00" id="text-1">FOLLOWS, POSTED, LIKED, and WORKS_AT are stored facts</text>
+
+<g id="node1" class="node">
+<title>Alice</title>
+<ellipse fill="#eff5fc" stroke="#adc5df" stroke-width="2" cx="60.1" cy="-186.23" rx="60.21" ry="33.47" />
+<text text-anchor="middle" x="60.1" y="-180.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-2">Alice</text>
+</g>
+
+<g id="node2" class="node">
+<title>Bob</title>
+<ellipse fill="#eff5fc" stroke="#adc5df" stroke-width="2" cx="353.21" cy="-233.23" rx="53.07" ry="33.47" />
+<text text-anchor="middle" x="353.21" y="-227.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-3">Bob</text>
+</g>
+
+<g id="edge1" class="edge">
+<title>Alice-&gt;Bob</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M117.92,-195.41C167.87,-203.47 240.37,-215.18 291.45,-223.43" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="290.94,-226.89 301.37,-225.03 292.06,-219.98 290.94,-226.89" />
+<text text-anchor="middle" x="200.21" y="-221.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-4">FOLLOWS</text>
+</g>
+
+<g id="node3" class="node">
+<title>Carol</title>
+<ellipse fill="#eff5fc" stroke="#adc5df" stroke-width="2" cx="649.14" cy="-139.23" rx="62.87" ry="33.47" />
+<text text-anchor="middle" x="649.14" y="-133.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-5">Carol</text>
+</g>
+
+<g id="edge2" class="edge">
+<title>Alice-&gt;Carol</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M118.67,-178.43C162.8,-172.68 225.26,-165.06 280.21,-160.23 382.78,-151.23 501.79,-145.25 576.04,-142.05" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="576.37,-145.54 586.21,-141.61 576.07,-138.54 576.37,-145.54" />
+<text text-anchor="middle" x="353.21" y="-165.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-6">FOLLOWS</text>
+</g>
+
+<g id="node5" class="node">
+<title>Post1</title>
+<path fill="#edf8f2" stroke="#adc5df" stroke-width="2" d="M414.21,-59.73C414.21,-59.73 292.21,-59.73 292.21,-59.73 286.21,-59.73 280.21,-53.73 280.21,-47.73 280.21,-47.73 280.21,-24.73 280.21,-24.73 280.21,-18.73 286.21,-12.73 292.21,-12.73 292.21,-12.73 414.21,-12.73 414.21,-12.73 420.21,-12.73 426.21,-18.73 426.21,-24.73 426.21,-24.73 426.21,-47.73 426.21,-47.73 426.21,-53.73 420.21,-59.73 414.21,-59.73" />
+<text text-anchor="middle" x="353.21" y="-30.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-7">Post: Hello</text>
+</g>
+
+<g id="edge6" class="edge">
+<title>Alice-&gt;Post1</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M84.06,-155.27C101.58,-133.76 127.51,-106.04 156.21,-89.23 190.83,-68.97 233.4,-56.24 270.01,-48.36" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="271.08,-51.72 280.17,-46.27 269.67,-44.86 271.08,-51.72" />
+<text text-anchor="middle" x="200.21" y="-94.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-8">POSTED</text>
+</g>
+
+<g id="node6" class="node">
+<title>Post2</title>
+<path fill="#edf8f2" stroke="#adc5df" stroke-width="2" d="M1121.07,-275.73C1121.07,-275.73 896.07,-275.73 896.07,-275.73 890.07,-275.73 884.07,-269.73 884.07,-263.73 884.07,-263.73 884.07,-240.73 884.07,-240.73 884.07,-234.73 890.07,-228.73 896.07,-228.73 896.07,-228.73 1121.07,-228.73 1121.07,-228.73 1127.07,-228.73 1133.07,-234.73 1133.07,-240.73 1133.07,-240.73 1133.07,-263.73 1133.07,-263.73 1133.07,-269.73 1127.07,-275.73 1121.07,-275.73" />
+<text text-anchor="middle" x="1008.57" y="-246.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-9">Post: Docker tutorial</text>
+</g>
+
+<g id="edge8" class="edge">
+<title>Alice-&gt;Post2</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M97.82,-212.43C114.98,-223.88 136.05,-236.81 156.21,-246.23 208.66,-270.76 223,-277.24 280.21,-286.23 485.6,-318.54 727.31,-295.3 873.89,-274.55" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="874.44,-278.01 883.84,-273.13 873.44,-271.08 874.44,-278.01" />
+<text text-anchor="middle" x="506.21" y="-307.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-10">LIKED</text>
+</g>
+
+<g id="edge3" class="edge">
+<title>Bob-&gt;Carol</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M400.78,-218.34C450.57,-202.42 529.79,-177.08 585.12,-159.39" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="586.36,-162.67 594.82,-156.29 584.23,-156 586.36,-162.67" />
+<text text-anchor="middle" x="506.21" y="-203.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-11">FOLLOWS</text>
+</g>
+
+<g id="edge7" class="edge">
+<title>Bob-&gt;Post2</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M406.3,-234.75C506.53,-237.66 729.08,-244.14 873.5,-248.34" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="873.66,-251.84 883.76,-248.63 873.87,-244.84 873.66,-251.84" />
+<text text-anchor="middle" x="649.14" y="-248.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-12">POSTED</text>
+</g>
+
+<g id="edge9" class="edge">
+<title>Carol-&gt;Post2</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M703.93,-155.99C743.76,-168.42 799.32,-185.8 848.07,-201.23 872.91,-209.09 899.9,-217.7 924.49,-225.57" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="923.56,-228.94 934.15,-228.66 925.69,-222.28 923.56,-228.94" />
+<text text-anchor="middle" x="798.07" y="-206.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-13">LIKED</text>
+</g>
+
+<g id="node7" class="node">
+<title>Company</title>
+<path fill="#f3f0fc" stroke="#adc5df" stroke-width="2" d="M1118.57,-99.73C1118.57,-99.73 898.57,-99.73 898.57,-99.73 892.57,-99.73 886.57,-93.73 886.57,-87.73 886.57,-87.73 886.57,-64.73 886.57,-64.73 886.57,-58.73 892.57,-52.73 898.57,-52.73 898.57,-52.73 1118.57,-52.73 1118.57,-52.73 1124.57,-52.73 1130.57,-58.73 1130.57,-64.73 1130.57,-64.73 1130.57,-87.73 1130.57,-87.73 1130.57,-93.73 1124.57,-99.73 1118.57,-99.73" />
+<text text-anchor="middle" x="1008.57" y="-70.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-14">Company: TechCorp</text>
+</g>
+
+<g id="edge4" class="edge">
+<title>Carol-&gt;Company</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M709.16,-128.83C754.62,-120.82 819.19,-109.44 876.65,-99.31" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="877.3,-102.75 886.54,-97.57 876.09,-95.86 877.3,-102.75" />
+<text text-anchor="middle" x="798.07" y="-126.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-15">WORKS_AT</text>
+</g>
+
+<g id="node4" class="node">
+<title>Dave</title>
+<ellipse fill="#eff5fc" stroke="#adc5df" stroke-width="2" cx="649.14" cy="-33.23" rx="62.87" ry="33.47" />
+<text text-anchor="middle" x="649.14" y="-27.93" font-family="DejaVu Sans" font-size="21.00" fill="#152b43" id="text-16">Dave</text>
+</g>
+
+<g id="edge5" class="edge">
+<title>Dave-&gt;Company</title>
+<path fill="none" stroke="#1559a6" stroke-width="2" d="M711.8,-36.83C750.93,-39.46 802.57,-43.55 848.07,-49.23 857.28,-50.38 866.76,-51.68 876.3,-53.08" />
+<polygon fill="#1559a6" stroke="#1559a6" stroke-width="2" points="875.84,-56.55 886.25,-54.57 876.88,-49.63 875.84,-56.55" />
+<text text-anchor="middle" x="798.07" y="-54.83" font-family="DejaVu Sans" font-size="18.00" fill="#152b43" id="text-17">WORKS_AT</text>
+</g>
+</g>
+</svg>

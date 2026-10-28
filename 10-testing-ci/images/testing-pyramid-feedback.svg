@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="695" viewBox="0 0 1200 695" role="img" aria-labelledby="title description">
+<title id="title">Test scope trades feedback speed against integrated confidence</title>
+<desc id="description">A single browser journey can establish that several pieces work together, but a failure may have many possible causes. Focused tests isolate business rules and provide quicker, more precise feedback. Integration tests cover assumptions that mocks cannot establish, such as real query behavior. The pyramid encourages a useful feedback structure, not a fixed percentage quota or a promise about every test&#x27;s runtime.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="695" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Test scope trades feedback speed against integrated confidence</text>
+<text id="text-2" x="40" y="83" class="muted">The widening base suggests more focused checks; it does not prescribe numerical quotas.</text>
+<path d="M400.0 150 H800.0 L850.0 278 H350.0 Z" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-4" x="600" y="193" class="heading" text-anchor="middle">End-to-end</text>
+<text id="text-5" x="600" y="229" class="body" text-anchor="middle">Selected user journeys through a</text>
+<text id="text-6" x="600" y="254" class="body" text-anchor="middle">realistic system.</text>
+<path d="M245.0 290 H955.0 L1005.0 418 H195.0 Z" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-8" x="600" y="333" class="heading" text-anchor="middle">Integration</text>
+<text id="text-9" x="600" y="369" class="body" text-anchor="middle">Real interactions such as a service and its database.</text>
+<path d="M90.0 430 H1110.0 L1160.0 558 H40.0 Z" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="600" y="473" class="heading" text-anchor="middle">Unit</text>
+<text id="text-12" x="600" y="509" class="body" text-anchor="middle">Focused behavior with narrow dependencies and fast feedback.</text>
+<rect x="40" y="605" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="60" y="635" class="body">A passing narrow test and a passing integrated journey provide different evidence.</text>
+</svg>

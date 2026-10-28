@@ -4,6 +4,12 @@ This tutorial will guide you through deploying a simple application using Helm t
 
 Run the following commands from `07-k8s-helloworld/`. The cluster needs the `traefik` ingress class, cert-manager, a `letsencrypt-staging` ClusterIssuer, and DNS for your chosen hostname pointing to the ingress controller. Check these with course staff if you use another cluster.
 
+## Why This Exercise Uses Helm, Ingress, and TLS Together
+
+These tools solve separate problems. Helm lets repeated resource definitions share configuration such as a release's hostname and replica count. An ingress controller routes external HTTP requests to the right internal application. TLS protects a connection and establishes a certificate-based server identity; cert-manager automates obtaining and renewing the certificates used for that identity.
+
+You could serve HTTPS from a single web server without Kubernetes, or apply a small manifest without Helm. Here the tools are combined because you are operating a configurable application on a shared cluster. Trace which problem each one solves rather than treating the installation as one unexplained way to make a URL work.
+
 ## Before Deploying: How HTTPS Reaches Your Application
 
 You already used HTTP locally in [Tutorial 1](../01-basic-webapp/README.md#2-follow-one-http-request). Now a browser will contact a public hostname through a shared ingress controller. Follow the request before installing the chart:

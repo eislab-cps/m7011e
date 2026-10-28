@@ -37,6 +37,12 @@ By the end of this tutorial, you will:
 
 The example service and tests shown below are included in `examples/`, `backend-tests/`, and `frontend-tests/`. This is a separate database-backed example using `title`, `todo_id`, and `user_id`; its API differs from the `text` and `id` API in Tutorials 1 and 9. The frontend tests mock fetch, so they do not require a running backend.
 
+## Why Automated Tests and CI Both Exist
+
+Opening the app and trying one successful operation gives useful but narrow evidence. It is easy to miss invalid input, permissions, retries, and combinations of changes, and repeating all those checks manually after each commit is expensive. A test records an expected behavior so a program can check it repeatedly and report a failure precisely.
+
+CI supplies a repeatable place to run selected checks when a change is published. It helps detect environment assumptions and makes the result visible to the team. A test runner, coverage tool, CI workflow, and deployment mechanism have different roles: none turns an untested behavior into a guarantee simply because a pipeline is green. The test scopes below explain which assumptions each check can establish.
+
 ## Understand What Each Test Command Proves
 
 Tests execute code and compare observations with assertions. Identify which dependencies are real, replaced with a mock, or not involved before interpreting a green result.
@@ -56,37 +62,28 @@ Tests execute code and compare observations with assertions. Identify which depe
 
 ## Part 1: Understanding the Testing Pyramid
 
-```mermaid
-graph TB
-    subgraph "Testing Pyramid"
-        E2E[End-to-End Tests<br/>10%<br/>Slow, Expensive]
-        INT[Integration Tests<br/>20%<br/>Medium Speed]
-        UNIT[Unit Tests<br/>70%<br/>Fast, Cheap]
-    end
+![Test scope trades feedback speed against integrated confidence. The widening base suggests more focused checks; it does not prescribe numerical quotas.](./images/testing-pyramid-feedback.svg)
 
-    E2E --> INT
-    INT --> UNIT
+A single browser journey can establish that several pieces work together, but a failure may have many possible causes. Focused tests isolate business rules and provide quicker, more precise feedback. Integration tests cover assumptions that mocks cannot establish, such as real query behavior. The pyramid encourages a useful feedback structure, not a fixed percentage quota or a promise about every test's runtime.
 
-    style UNIT fill:#90EE90
-    style INT fill:#FFD700
-    style E2E fill:#FF6B6B
-```
+**Check your reasoning:** Which test would you use to locate an incorrect price calculation, and which would establish that the database stores its result correctly?
 
-The percentages are an illustrative balance, not prescribed quotas. Choose the mix based on application risks.
 
-**Unit Tests (70%)**:
+The widths illustrate a feedback strategy, not prescribed quotas. Choose the mix based on application risks and the evidence each test provides.
+
+**Unit Tests**:
 - Test individual functions in isolation
 - Fast execution (milliseconds)
 - Mock external dependencies
 - Example: Testing a password hashing function
 
-**Integration Tests (20%)**:
+**Integration Tests**:
 - Test multiple components together
 - Medium speed (seconds)
 - Use real databases (test containers)
 - Example: Testing API endpoint with real database
 
-**End-to-End Tests (10%)**:
+**End-to-End Tests**:
 - Test complete user workflows
 - Slow execution (minutes)
 - Test in production-like environment
@@ -1678,24 +1675,12 @@ updates:
 
 ## Part 8: Testing Pyramid in Microservices
 
-```mermaid
-graph TB
-    subgraph "Microservices Testing Strategy"
-        E2E[End-to-End Tests<br/>Full user journeys<br/>Across all services]
-        CONTRACT[Contract Tests<br/>API compatibility<br/>Between services]
-        INT[Integration Tests<br/>Service + Database<br/>Service + Cache]
-        UNIT[Unit Tests<br/>Individual functions<br/>Business logic]
-    end
+![Distributed systems add compatibility checks between test scopes. The levels describe scope and purpose, not a mandatory order in one CI pipeline.](./images/microservice-test-scopes.svg)
 
-    E2E --> CONTRACT
-    CONTRACT --> INT
-    INT --> UNIT
+Independent releases make compatibility a distinct testing problem. A service can pass its unit tests while returning a field or status its consumer no longer understands. Contract checks make selected interface assumptions explicit; they do not replace testing against real dependencies or a few end-to-end journeys. Choose each scope based on the failure it can detect and the evidence it cannot supply.
 
-    style UNIT fill:#90EE90
-    style INT fill:#FFD700
-    style CONTRACT fill:#FFA500
-    style E2E fill:#FF6B6B
-```
+**Check your reasoning:** If a consumer expects a string but the provider changes it to an object, why can both services' isolated unit tests still pass?
+
 
 ### Contract Testing (for microservices)
 

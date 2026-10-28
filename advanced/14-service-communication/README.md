@@ -2,6 +2,12 @@
 
 Learn how to use RabbitMQ message queues for reliable asynchronous communication between microservices, with automatic retry on failure.
 
+## Why Put a Broker Between Two Services?
+
+A direct HTTP call ties one conversation to the availability and response time of both participants. If sending an order confirmation can happen later, a queue can retain accepted work until a consumer is ready. That changes temporal coupling: placing an order does not have to wait for the email operation to finish.
+
+The queue adds a component and new failure boundaries. The producer needs to know whether the broker accepted work, the consumer needs to acknowledge processing, and the application needs to handle duplicate effects. Synchronous HTTP remains useful when the caller needs an immediate result. Choose between an immediate reply and deferred work based on the operation's meaning, not because messaging automatically makes all failures disappear.
+
 ## Why This Tutorial Matters
 
 In Tutorial 5, you learned about microservices communicating via synchronous HTTP/REST calls. This works for simple request-response patterns, but has critical limitations:
@@ -39,11 +45,10 @@ channel.basic_publish(
 ```
 
 **If Notification Service crashes:**
-- ✅ Message stays in queue **safely stored**
-- ✅ When Notification Service restarts, it processes the message automatically
-- ✅ **Automatic retry** via message acknowledgments (acks)
-- ✅ No message loss, even if service is down for hours
-- ✅ Order Service doesn't care - it published the message and moved on
+- Unacknowledged work can be redelivered after the consumer connection closes.
+- Accepted work can wait for a consumer instead of requiring the email service to be available immediately.
+- Surviving broker restarts also requires the durability and storage settings described below.
+- The producer must handle uncertain acceptance, and consumers must handle duplicate processing. A queue changes the failure boundaries; it does not remove them.
 
 Reliability requires durable queues, persistent messages, publisher confirms, and persistent broker storage. Consumer acknowledgments provide at-least-once delivery, so processing must be idempotent. A consumer that succeeds and crashes before acknowledging can perform the same side effect again. See the [RabbitMQ reliability guide](https://www.rabbitmq.com/docs/reliability).
 
@@ -96,27 +101,12 @@ The broker is a running server. A producer and consumer are separate client proc
 
 ### The Producer-Queue-Consumer Model
 
-```mermaid
-graph LR
-    P1[Order Service<br/>Producer]
-    P2[Payment Service<br/>Producer]
+![A broker separates accepting work from processing it. The arrows follow work delivery; confirmations and acknowledgments travel back separately.](./images/producer-broker-consumer.svg)
 
-    subgraph RabbitMQ
-        Q1[email_notifications<br/>Queue]
-        Q2[order_processing<br/>Queue]
-    end
+A direct request usually requires both services to be available for that conversation. A queue can let a producer hand off work for later processing, which decouples their timing. It adds a broker and distinct acceptance, delivery, and processing outcomes. Durable settings, publisher confirms, and consumer acknowledgments address different failures; none makes an arbitrary external side effect exactly-once automatically.
 
-    C1[Notification Service<br/>Consumer]
-    C2[Shipping Service<br/>Consumer]
+**Check your reasoning:** If a consumer sends an email and crashes before acknowledging, why can receiving the message again send a second email?
 
-    P1 -->|Publish message| Q1
-    P2 -->|Publish message| Q2
-    Q1 -->|Deliver message| C1
-    Q2 -->|Deliver message| C2
-
-    style Q1 fill:#FFE0B2,stroke:#E65100,stroke-width:2px
-    style Q2 fill:#FFE0B2,stroke:#E65100,stroke-width:2px
-```
 
 **How it works:**
 
@@ -186,25 +176,12 @@ Black Friday sale: 10,000 orders per minute!
 
 **4. Multiple Consumers - Parallel Processing**
 
-```mermaid
-graph LR
-    P[Order Service]
+![A work queue distributes deliveries among eligible consumers. Branches are competing consumers of one queue, not subscribers each receiving a full copy.](./images/competing-consumers.svg)
 
-    subgraph RabbitMQ
-        Q[email_notifications<br/>Queue<br/>1000 messages]
-    end
+Adding consumers can increase processing capacity when the work can run concurrently. The branches are not a broadcast: one delivery goes to one eligible consumer, and unacknowledged work can later be redelivered. Prefetch, processing time, acknowledgments, and failures affect distribution. Do not assume a permanent message-number assignment or an exact equal split across workers.
 
-    C1[Notification Service<br/>Instance 1]
-    C2[Notification Service<br/>Instance 2]
-    C3[Notification Service<br/>Instance 3]
+**Check your reasoning:** What happens to throughput and unacknowledged counts if one consumer is much slower? Why is each consumer not guaranteed every message?
 
-    P -->|Publish| Q
-    Q -->|Message 1, 4, 7...| C1
-    Q -->|Message 2, 5, 8...| C2
-    Q -->|Message 3, 6, 9...| C3
-
-    style Q fill:#FFE0B2,stroke:#E65100,stroke-width:2px
-```
 
 RabbitMQ automatically distributes messages across all connected consumers (round-robin). Scale horizontally by adding more consumer instances.
 

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="833" viewBox="0 0 1200 833" role="img" aria-labelledby="title description">
+<title id="title">A Deployment manages versions through ReplicaSets</title>
+<desc id="description">The hierarchy separates rollout policy from maintaining an instance count. A Deployment coordinates versions; each ReplicaSet maintains Pods for its template. During a rolling update, old and new versions can coexist. The arrow to the Pod summary describes the current ReplicaSet&#x27;s responsibility; the Deployment does not need to manage each instance as a hand-written start command.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="833" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A Deployment manages versions through ReplicaSets</text>
+<text id="text-2" x="40" y="83" class="muted">Read the current ReplicaSet as the owner of the current Pods; history is a separate version.</text>
+<rect x="330" y="150" width="540" height="124" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="352" y="184" class="heading" font-size="22px" style="font-size:22px">Deployment: user-service</text>
+<text id="text-5" x="352" y="218" class="body">A Pod-template change creates or selects a</text>
+<text id="text-6" x="352" y="243" class="body">ReplicaSet for that version.</text>
+<path d="M600 274 V317 H310 V359" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="359" width="540" height="149" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="62" y="393" class="heading" font-size="22px" style="font-size:22px">Previous ReplicaSet</text>
+<text id="text-10" x="62" y="427" class="body">Example: v1, desired replicas now zero.</text>
+<text id="text-11" x="62" y="452" class="body">May be retained as revision history.</text>
+<path d="M600 274 V317 H890 V359" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620" y="359" width="540" height="149" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="642" y="393" class="heading" font-size="22px" style="font-size:22px">Current ReplicaSet</text>
+<text id="text-15" x="642" y="427" class="body">Example: v2, desired replicas three.</text>
+<text id="text-16" x="642" y="452" class="body">Keeps its matching Pod count at the requested</text>
+<text id="text-17" x="642" y="477" class="body">level.</text>
+<path d="M890 508 L890 573" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620" y="573" width="540" height="124" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-20" x="642" y="607" class="heading" font-size="22px" style="font-size:22px">Current Pods</text>
+<text id="text-21" x="642" y="641" class="body">Three replaceable instances of v2.</text>
+<text id="text-22" x="642" y="666" class="body">Each must start and satisfy readiness conditions.</text>
+<rect x="40" y="743" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="773" class="body">Rollout completion still depends on startup, resource availability, and readiness.</text>
+</svg>

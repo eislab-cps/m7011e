@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="766" viewBox="0 0 1200 766" role="img" aria-labelledby="title description">
+<title id="title">Backend choices start with constraints, not a leaderboard</title>
+<desc id="description">A framework can remove repetitive routing, serialization, and integration work, but its abstractions also have a learning and maintenance cost. A database-bound endpoint can remain slow after changing languages because its dominant cost is elsewhere. Start with the team&#x27;s constraints and a representative operation, then measure the complete request path before assigning a performance problem to the framework.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="766" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Backend choices start with constraints, not a leaderboard</text>
+<text id="text-2" x="40" y="83" class="muted">The examples describe ecosystems and evaluation questions, not guaranteed throughput.</text>
+<rect x="40.0" y="150" width="352.0" height="224" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Python libraries</text>
+<text id="text-5" x="62.0" y="218" class="body">Need existing data-processing</text>
+<text id="text-6" x="62.0" y="243" class="body">or Python code?</text>
+<text id="text-7" x="62.0" y="268" class="body">Compare Flask and FastAPI</text>
+<text id="text-8" x="62.0" y="293" class="body">facilities against that need.</text>
+<rect x="424.0" y="150" width="352.0" height="224" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="446.0" y="184" class="heading" font-size="22px" style="font-size:22px">JavaScript / TypeScript</text>
+<text id="text-11" x="446.0" y="218" class="body">Need shared language knowledge</text>
+<text id="text-12" x="446.0" y="243" class="body">or Node integrations?</text>
+<text id="text-13" x="446.0" y="268" class="body">Compare minimal middleware</text>
+<text id="text-14" x="446.0" y="293" class="body">with stronger conventions.</text>
+<rect x="808.0" y="150" width="352.0" height="224" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="830.0" y="184" class="heading" font-size="22px" style="font-size:22px">Go</text>
+<text id="text-17" x="830.0" y="218" class="body">Need Go libraries and</text>
+<text id="text-18" x="830.0" y="243" class="body">operational simplicity?</text>
+<text id="text-19" x="830.0" y="268" class="body">Measure resource use and</text>
+<text id="text-20" x="830.0" y="293" class="body">concurrency in the real</text>
+<text id="text-21" x="830.0" y="318" class="body">service.</text>
+<rect x="40.0" y="406" width="352.0" height="224" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-23" x="62.0" y="440" class="heading" font-size="22px" style="font-size:22px">Rust</text>
+<text id="text-24" x="62.0" y="474" class="body">Need Rust&#x27;s memory-safety</text>
+<text id="text-25" x="62.0" y="499" class="body">model or native integrations?</text>
+<text id="text-26" x="62.0" y="524" class="body">Include development cost and</text>
+<text id="text-27" x="62.0" y="549" class="body">measured hot paths.</text>
+<rect x="424.0" y="406" width="352.0" height="224" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-29" x="446.0" y="440" class="heading" font-size="22px" style="font-size:22px">Java</text>
+<text id="text-30" x="446.0" y="474" class="body">Need Java libraries and</text>
+<text id="text-31" x="446.0" y="499" class="body">established application</text>
+<text id="text-32" x="446.0" y="524" class="body">patterns?</text>
+<text id="text-33" x="446.0" y="549" class="body">Compare integration, startup,</text>
+<text id="text-34" x="446.0" y="574" class="body">and operations requirements.</text>
+<rect x="808.0" y="406" width="352.0" height="224" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-36" x="830.0" y="440" class="heading" font-size="22px" style="font-size:22px">Common responsibilities</text>
+<text id="text-37" x="830.0" y="474" class="body">Every choice still needs</text>
+<text id="text-38" x="830.0" y="499" class="body">validation, authorization, and</text>
+<text id="text-39" x="830.0" y="524" class="body">tests.</text>
+<text id="text-40" x="830.0" y="549" class="body">API compatibility and data</text>
+<text id="text-41" x="830.0" y="574" class="body">correctness remain application</text>
+<text id="text-42" x="830.0" y="599" class="body">work.</text>
+<rect x="40" y="676" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-44" x="60" y="706" class="body">A fast hello-world handler is not a benchmark of your authenticated, database-backed API.</text>
+</svg>

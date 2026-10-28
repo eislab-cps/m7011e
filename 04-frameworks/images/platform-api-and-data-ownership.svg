@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">A platform uses contracts to connect independently changing parts</title>
+<desc id="description">Using different Go HTTP libraries is possible, but that diversity is not what makes the system a microservice architecture. Independent deployment depends on compatible interfaces, explicit ownership, and operational support. Each extra framework adds maintenance work, so a shared choice can be preferable unless a service has a concrete reason to differ.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A platform uses contracts to connect independently changing parts</text>
+<text id="text-2" x="40" y="83" class="muted">The branches represent independently managed contracts and their privately owned data.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Client → platform gateway</text>
+<text id="text-5" x="62" y="218" class="body">A stable public contract hides selected internal routing details.</text>
+<path d="M600 260 V310 H213.33333333333334 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="346.6666666666667" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">User API</text>
+<text id="text-9" x="62.0" y="428" class="body">Owns profile data and</text>
+<text id="text-10" x="62.0" y="453" class="body">operations.</text>
+<text id="text-11" x="62.0" y="478" class="body">Changes behind its supported</text>
+<text id="text-12" x="62.0" y="503" class="body">API.</text>
+<path d="M600 260 V310 H600.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="426.6666666666667" y="360" width="346.6666666666667" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="448.6666666666667" y="394" class="heading" font-size="22px" style="font-size:22px">Product API</text>
+<text id="text-16" x="448.6666666666667" y="428" class="body">Owns product representation.</text>
+<text id="text-17" x="448.6666666666667" y="453" class="body">Chooses storage for its access</text>
+<text id="text-18" x="448.6666666666667" y="478" class="body">patterns.</text>
+<path d="M600 260 V310 H986.6666666666667 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="813.3333333333334" y="360" width="346.6666666666667" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="835.3333333333334" y="394" class="heading" font-size="22px" style="font-size:22px">Order API</text>
+<text id="text-22" x="835.3333333333334" y="428" class="body">Owns order transitions.</text>
+<text id="text-23" x="835.3333333333334" y="453" class="body">Defines event and retry</text>
+<text id="text-24" x="835.3333333333334" y="478" class="body">behavior.</text>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="616" class="body">A language choice does not supply API compatibility, retries, or data consistency.</text>
+</svg>

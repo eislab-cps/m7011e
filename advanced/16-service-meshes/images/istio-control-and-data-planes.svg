@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">The control plane distributes policy; proxies carry traffic</title>
+<desc id="description">A control plane exists so many proxies can receive a consistent operating policy rather than being configured individually. In this sidecar deployment, istiod combines control-plane functions; names such as Pilot and Citadel describe responsibilities and history, not a requirement to install separate Pods for each label. Application requests flow through the data-plane proxies, while configuration and certificate operations involve the control plane.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The control plane distributes policy; proxies carry traffic</text>
+<text id="text-2" x="40" y="83" class="muted">Dashed arrows distribute configuration and credentials; solid arrows depict eligible proxy traffic.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">istiod control plane</text>
+<text id="text-5" x="62" y="218" class="body">Discovers services, distributes configuration, and provides workload certificate functions.</text>
+<path d="M600 260 V310 H213.33333333333334 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="40.0" y="360" width="346.6666666666667" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">Pod A: app + proxy</text>
+<text id="text-9" x="62.0" y="428" class="body">Receives configuration and</text>
+<text id="text-10" x="62.0" y="453" class="body">credentials.</text>
+<text id="text-11" x="62.0" y="478" class="body">Proxy handles eligible</text>
+<text id="text-12" x="62.0" y="503" class="body">traffic.</text>
+<path d="M600 260 V310 H600.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="426.6666666666667" y="360" width="346.6666666666667" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="448.6666666666667" y="394" class="heading" font-size="22px" style="font-size:22px">Pod B: app + proxy</text>
+<text id="text-16" x="448.6666666666667" y="428" class="body">Receives configuration and</text>
+<text id="text-17" x="448.6666666666667" y="453" class="body">credentials.</text>
+<text id="text-18" x="448.6666666666667" y="478" class="body">Proxy applies local policies.</text>
+<path d="M386.6666666666667 447.0 L426.6666666666667 447.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M600 260 V310 H986.6666666666667 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="813.3333333333334" y="360" width="346.6666666666667" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="835.3333333333334" y="394" class="heading" font-size="22px" style="font-size:22px">Pod C: app + proxy</text>
+<text id="text-23" x="835.3333333333334" y="428" class="body">Receives configuration and</text>
+<text id="text-24" x="835.3333333333334" y="453" class="body">credentials.</text>
+<text id="text-25" x="835.3333333333334" y="478" class="body">Application still owns</text>
+<text id="text-26" x="835.3333333333334" y="503" class="body">business logic.</text>
+<path d="M773.3333333333334 447.0 L813.3333333333334 447.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-29" x="60" y="616" class="body">The control plane is not an extra network hop for every application request.</text>
+</svg>

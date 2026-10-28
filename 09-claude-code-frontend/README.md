@@ -14,6 +14,12 @@ Example of a generated React Todo List app below:
 
 ---
 
+## Why Rebuild a Working Page with React?
+
+The original todo frontend demonstrates that a framework is not required to make HTTP requests. Its JavaScript explicitly updates the DOM after events. As more components depend on the same changing state, keeping every displayed value synchronized can become repetitive. React provides a component and state model so the UI can be described from current state instead of manually coordinating every DOM edit.
+
+That abstraction adds a toolchain and concepts to learn; it does not replace the API or guarantee that generated code is correct. Vite handles development and build tooling, styling tools handle presentation, and the coding assistant helps produce source changes. They are separate technologies because they address separate tasks. Inspect a generated feature until you can trace its event, state update, HTTP request, and response without relying on the assistant's explanation alone.
+
 ## Know Which Instructions Run Where
 
 This tutorial alternates between shell commands and natural-language requests to a coding assistant. Type fenced `bash` commands into your terminal. Type the quoted development requests into the assistant conversation. A generated change still needs inspection and verification.

@@ -14,6 +14,14 @@ By completing this tutorial, you will understand:
 
 ---
 
+## Why Use a Database Instead of a Python List or JSON File?
+
+An in-memory list is easy to understand but disappears with its process. Writing a JSON file can preserve data across restarts, but a shared application also has to coordinate updates, recover from partial writes, find records efficiently, and enforce rules. For example, two requests can read the same old file, make different edits, and overwrite one another's changes.
+
+A database packages mechanisms for such storage and coordination problems. You still have to choose transactions, constraints, indexes, and access rules appropriate to the application. A file can remain sufficient for small, controlled uses; an embedded SQL engine can add transaction and query facilities without a separate server. A client-server database addresses shared access and administration from multiple programs.
+
+Different database technologies emphasize different data shapes, operations, and deployment needs. A document model, relational tables, and a graph are ways to represent and access data, not a ladder from obsolete to modern. Ask what must be read, changed, and kept correct before choosing one.
+
 ## What is a Database?
 
 A **database** is an organized collection of structured data stored electronically. Databases provide:
@@ -84,14 +92,12 @@ The **CAP theorem** describes a trade-off during a network partition: a distribu
 - **Availability:** Every request to a non-failing node eventually receives a successful response.
 - **Partition tolerance:** Nodes may be unable to communicate, so the system must decide whether to reject some operations or accept potentially inconsistent results.
 
-```mermaid
-flowchart TD
-    Partition["Network partition"]
-    CP["Preserve consistency<br/>Some requests must wait or fail"]
-    AP["Preserve availability<br/>Some responses may be stale"]
-    Partition --> CP
-    Partition --> AP
-```
+![A network partition forces a consistency decision. The branches show which guarantee is relaxed during the same communication failure.](./images/cap-during-a-partition.svg)
+
+CAP concerns the guarantees a distributed system can maintain while nodes cannot communicate. Here consistency means linearizable behavior, not a table constraint, and availability has a specific all-requests guarantee. The branches describe different responses to that failure, not permanent labels for every operation of a product. A database can make different tradeoffs for different operations and settings.
+
+**Check your reasoning:** During a partition, can two isolated nodes both accept conflicting writes and each promise that every read sees one latest value?
+
 
 Behavior depends on the database topology, operation, and consistency settings; a product name alone does not establish its guarantees. SQL does not imply a single node, and NoSQL does not imply eventual consistency. MongoDB, for example, supports [multi-document transactions on replica sets and sharded clusters](https://www.mongodb.com/docs/manual/data-modeling/enforce-consistency/transactions/).
 
@@ -134,47 +140,12 @@ Behavior depends on the database topology, operation, and consistency settings; 
 
 ## Database Types Overview
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-flowchart TB
-    DB["Databases"]
+![Database models and deployment choices are separate dimensions. Each card describes an access model, not a claim about an entire product's guarantees.](./images/database-models-and-deployment.svg)
 
-    SQL["SQL Databases<br/>(Relational)"]
-    NoSQL["NoSQL Databases"]
+These categories arose because applications ask different questions of stored data. A join, a time-window aggregation, and a nearest-neighbor search benefit from different representations and indexes. The categories overlap: embedded versus server is a deployment choice, and relational databases can also support documents or vector search. Start from operations and correctness requirements rather than treating this as a list of mutually exclusive products.
 
-    Relational["Relational<br/>PostgreSQL, MySQL"]
-    Embedded["Embedded<br/>SQLite"]
+**Check your reasoning:** Why can SQLite be both relational and embedded, while PostgreSQL is relational and usually accessed through a server?
 
-    Document["Document<br/>MongoDB, CouchDB"]
-    KeyValue["Key-Value<br/>Redis, DynamoDB"]
-    ColumnFamily["Wide-Column<br/>Cassandra, HBase"]
-    Graph["Graph<br/>Neo4j, ArangoDB"]
-
-    Specialized["Specialized"]
-    TimeSeries["Time-Series<br/>InfluxDB, TimescaleDB"]
-    Search["Search<br/>Elasticsearch, Solr"]
-    Vector["Vector<br/>Pinecone, Weaviate"]
-
-    DB --> SQL
-    DB --> NoSQL
-    DB --> Specialized
-
-    SQL --> Relational
-    SQL --> Embedded
-
-    NoSQL --> Document
-    NoSQL --> KeyValue
-    NoSQL --> ColumnFamily
-    NoSQL --> Graph
-
-    Specialized --> TimeSeries
-    Specialized --> Search
-    Specialized --> Vector
-
-    style SQL fill:#e3f2fd,stroke:#1976d2
-    style NoSQL fill:#fff3e0,stroke:#f57c00
-    style Specialized fill:#f3e5f5,stroke:#7b1fa2
-```
 
 ---
 
@@ -184,19 +155,12 @@ flowchart TB
 
 **PostgreSQL** is an advanced open-source relational database known for reliability, robustness, and performance.
 
-```mermaid
-flowchart LR
-    App["Application"]
-    PG["PostgreSQL Server"]
-    Tables["Tables<br/>(Structured Data)"]
-    Indexes["Indexes<br/>(Fast Lookup)"]
+![A PostgreSQL query goes through a database engine. Arrows trace query handling; tables and indexes remain inside the database system.](./images/postgresql-query-and-storage.svg)
 
-    App -->|"SQL Queries"| PG
-    PG -->|"CRUD Operations"| Tables
-    PG -->|"Optimized Access"| Indexes
+The server exists to coordinate shared data access, transactions, and durable storage for several clients. An index is not a second server the application calls: it is a structure the database may use to avoid reading every row. Maintaining indexes consumes space and adds work to writes, so an index should correspond to a useful query pattern.
 
-    style PG fill:#336791,stroke:#fff,color:#fff
-```
+**Check your reasoning:** If you index an owner ID used by every todo-list query, which reads may improve and which writes acquire extra work?
+
 
 ### Key Features
 
@@ -263,19 +227,12 @@ WHERE posts.published_at > '2024-01-01';
 
 **MongoDB** is a popular NoSQL document database that stores data in flexible JSON-like documents (BSON).
 
-```mermaid
-flowchart LR
-    App["Application"]
-    Mongo["MongoDB Server"]
-    Collections["Collections<br/>(Groups of Documents)"]
-    Docs["Documents<br/>(JSON-like)"]
+![A document database stores related fields together. Arrows represent a database operation, not an HTTP request to a public website.](./images/mongodb-document-operations.svg)
 
-    App -->|"Query Language"| Mongo
-    Mongo -->|"Store/Retrieve"| Collections
-    Collections -->|"Contains"| Docs
+Documents make a nested record a natural unit to retrieve or change, which can reduce the need to assemble it from several tables. Flexible shape does not remove schema decisions: the application and any database validation must agree on types and required fields. Embedding related data can make one read convenient but can duplicate values that later need coordinated updates.
 
-    style Mongo fill:#47A248,stroke:#fff,color:#fff
-```
+**Check your reasoning:** Would you embed an address snapshot in an order, or read the customer's current address later? How does the required meaning change the model?
+
 
 ### Key Features
 
@@ -353,19 +310,12 @@ db.users.aggregate([
 
 **Redis** is an in-memory data structure store used as a database, cache, message broker, and streaming engine.
 
-```mermaid
-flowchart LR
-    App["Application"]
-    Redis["Redis<br/>(In-Memory)"]
-    Memory["RAM<br/>(Fast Access)"]
-    Disk["Disk<br/>(Persistence)"]
+![Redis serves memory-resident data with configurable persistence. The branches distinguish the live serving state from optional persistence mechanisms.](./images/redis-memory-and-persistence.svg)
 
-    App -->|"Commands"| Redis
-    Redis <-->|"Read/Write"| Memory
-    Memory -.->|"Periodic Snapshot"| Disk
+A cache exists to avoid repeatedly doing more expensive work, such as a remote lookup or calculation. Redis can also be used for other data roles, but persistence and recovery must be deliberately configured; keeping a value in RAM is not the same as making it durable. A cache introduces another correctness problem: knowing when a stored result has become stale.
 
-    style Redis fill:#DC382D,stroke:#fff,color:#fff
-```
+**Check your reasoning:** If the source record changes but its cache entry does not, what will the next reader see? Which TTL or invalidation rule would you use?
+
 
 ### Key Features
 
@@ -439,19 +389,12 @@ TTL session:abc123
 
 **SQLite** is a self-contained, serverless, zero-configuration SQL database engine. It's the most deployed database in the world.
 
-```mermaid
-flowchart LR
-    App["Application"]
-    SQLite["SQLite Library<br/>(Embedded)"]
-    File["Database File<br/>(Single .db file)"]
+![SQLite embeds SQL storage in the application process. These stages can be library calls and file operations inside one process environment.](./images/sqlite-in-process-storage.svg)
 
-    App -->|"SQL Queries"| SQLite
-    SQLite <-->|"Read/Write"| File
+A separate database server is useful for remote, shared administration, but it is extra machinery for a local application or embedded device. SQLite supplies a relational engine as a library, avoiding a database network connection. That changes deployment and concurrency considerations; copying its file into many independent replicas does not create one shared, coordinated database.
 
-    Note["No separate server process"]
+**Check your reasoning:** If three API replicas each write their own local SQLite file, why will a user's next request not necessarily see the same todos?
 
-    style SQLite fill:#003B57,stroke:#fff,color:#fff
-```
 
 ### Key Features
 
@@ -502,19 +445,12 @@ flowchart LR
 - **InfluxDB**: Purpose-built time-series database
 - **TimescaleDB**: PostgreSQL extension for time-series data
 
-```mermaid
-flowchart LR
-    Sensors["IoT Sensors<br/>Metrics<br/>Logs"]
-    TSDB["Time-Series DB"]
-    Storage["Time-Optimized<br/>Storage"]
-    Analytics["Analytics<br/>Dashboards"]
+![Time-series workloads connect measurements to time windows. Arrows show the measurement pipeline from collection to analysis.](./images/time-series-ingest-and-query.svg)
 
-    Sensors -->|"Continuous Data"| TSDB
-    TSDB -->|"Efficient Storage"| Storage
-    TSDB -->|"Fast Queries"| Analytics
+A measurement is more useful when related to when it happened and which component produced it. Time-series systems specialize in repeated samples and time-range access, which motivates retention and aggregation features. A normal SQL table with suitable indexes can also serve some of these workloads. The added system becomes justified when its ingestion, retention, or query behavior meets a concrete need.
 
-    style TSDB fill:#22ADF6,stroke:#fff,color:#fff
-```
+**Check your reasoning:** Why does one current temperature value fail to answer whether a device has been overheating for the last hour?
+
 
 ### Key Features
 
@@ -576,34 +512,12 @@ GROUP BY location, time(5m)
 
 **Popular Option: Neo4j**
 
-```mermaid
-%%{init: {'sequence': {'mirrorActors': false}}}%%
-graph LR
-    Alice((Alice))
-    Bob((Bob))
-    Carol((Carol))
-    Dave((Dave))
+![Graph edges represent relationships in the data. Read the edge names as facts: FOLLOWS, POSTED, LIKED, and WORKS_AT.](./images/graph-relationships.svg)
 
-    Post1[Post: 'Hello']
-    Post2[Post: 'Docker Tutorial']
-    Company[Company: 'TechCorp']
+Here an arrow such as FOLLOWS is a stored relationship, not a network message between two services. Traversing Alice → Bob → a post answers a different question from looking up Alice's row by ID. Graph databases make such connected-data operations central to the model. Relational joins can also represent relationships, so the choice depends on the traversal workload and operational constraints.
 
-    Alice -->|FOLLOWS| Bob
-    Alice -->|FOLLOWS| Carol
-    Bob -->|FOLLOWS| Carol
-    Carol -->|WORKS_AT| Company
-    Dave -->|WORKS_AT| Company
+**Check your reasoning:** Follow the edges to find a post that Alice liked and Bob created. Which edges answer the query, and which are irrelevant?
 
-    Alice -->|POSTED| Post1
-    Bob -->|POSTED| Post2
-    Alice -->|LIKED| Post2
-    Carol -->|LIKED| Post2
-
-    style Alice fill:#42a5f5,color:#fff
-    style Bob fill:#66bb6a,color:#fff
-    style Carol fill:#ffa726,color:#fff
-    style Dave fill:#ab47bc,color:#fff
-```
 
 ### Key Features
 
@@ -686,21 +600,12 @@ LIMIT 10;
 - **Chroma**: Embedding database for LLM applications
 - **Pinecone**: Managed vector database service
 
-```mermaid
-flowchart LR
-    Text["Text/Images<br/>Audio/Video"]
-    Embedding["Embedding Model<br/>(OpenAI, etc.)"]
-    Vectors["Vector Database"]
-    Search["Similarity Search"]
-    Results["Most Similar<br/>Results"]
+![Similarity search depends on an embedding model. Arrows trace a search pipeline; similarity is a model-dependent score.](./images/embedding-and-vector-search.svg)
 
-    Text -->|"Convert"| Embedding
-    Embedding -->|"Store Vectors"| Vectors
-    Vectors -->|"Query"| Search
-    Search -->|"Return"| Results
+Keyword equality cannot directly express that two different sentences have similar meaning. An embedding model makes a numerical representation that a vector index can search by distance. The index does not establish truth or usefulness: results depend on the model, the metric, filtering, and the dataset. Approximate search can trade recall for speed, which must be measured against the application's needs.
 
-    style Vectors fill:#9C27B0,stroke:#fff,color:#fff
-```
+**Check your reasoning:** If you change the embedding model but keep old stored vectors, why might distances stop producing meaningful matches?
+
 
 ### Key Features
 
@@ -893,49 +798,12 @@ Latency and throughput depend on queries, indexes, dataset size, hardware, concu
 
 ### Decision Tree
 
-```mermaid
-%%{init: {'theme':'base'}}%%
-flowchart TD
-    Start["What type of data?"]
+![Choose the operation before choosing a database. These are selection questions; several systems can satisfy more than one card.](./images/database-selection-questions.svg)
 
-    Relational["Structured with<br/>relationships?"]
-    Documents["Flexible documents?"]
-    Cache["Need caching/<br/>fast access?"]
-    TimeSeries["Time-stamped<br/>metrics?"]
-    Relationships["Complex relationship<br/>traversal?"]
-    Vectors["AI/ML embeddings<br/>similarity search?"]
+The earlier examples are tools for reasoning about requirements, not a rule that each application needs a different database. List important reads, writes, consistency needs, growth, and recovery requirements. Then compare a simple design with alternatives using that workload. Introducing another database also introduces deployment, backup, monitoring, and expertise costs.
 
-    PostgreSQL["PostgreSQL"]
-    MongoDB["MongoDB"]
-    Redis["Redis"]
-    InfluxDB["InfluxDB/<br/>TimescaleDB"]
-    Neo4j["Neo4j"]
-    SQLite["SQLite"]
-    VectorDB["Pinecone/<br/>Weaviate"]
+**Check your reasoning:** For the course todo app, which requirement would actually justify adding a cache or a vector index instead of keeping one database?
 
-    Start --> Relational
-    Start --> Documents
-    Start --> Cache
-    Start --> TimeSeries
-    Start --> Relationships
-    Start --> Vectors
-
-    Relational -->|"Multi-user"| PostgreSQL
-    Relational -->|"Embedded"| SQLite
-    Documents --> MongoDB
-    Cache --> Redis
-    TimeSeries --> InfluxDB
-    Relationships --> Neo4j
-    Vectors --> VectorDB
-
-    style PostgreSQL fill:#336791,color:#fff
-    style MongoDB fill:#47A248,color:#fff
-    style Redis fill:#DC382D,color:#fff
-    style Neo4j fill:#008CC1,color:#fff
-    style SQLite fill:#003B57,color:#fff
-    style InfluxDB fill:#22ADF6,color:#fff
-    style VectorDB fill:#9C27B0,color:#fff
-```
 
 ### Use Case Matrix
 

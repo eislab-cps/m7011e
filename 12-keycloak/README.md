@@ -34,6 +34,12 @@ The chart pins Keycloak 23 and uses `start-dev` for the course exercise. Its pro
 
 ---
 
+## Why Use a Shared Identity Provider?
+
+If each service implements its own accounts and login policy, the same person can acquire several passwords, inconsistent session behavior, and repeated authentication code to maintain. An identity provider centralizes those identity responsibilities and exposes standard login protocols that applications can integrate. Keycloak is one implementation, not a requirement for every application.
+
+The cost is operating another service, configuring clients and trust correctly, and handling its availability. A small isolated application may reasonably use a framework's local authentication facilities instead. In this course, Keycloak demonstrates shared identity across applications while each API retains its own data permissions. A login provider, TLS certificate, and service-mesh workload identity solve different trust questions; none substitutes for the other two.
+
 ## Before Deploying: Follow One Sign-In
 
 Suppose Alice opens the todo app. **Authentication** establishes that she is Alice. **Authorization** decides whether Alice may perform a particular action, such as deleting Bob's todo. A successful login settles the first question; the Flask API must still answer the second for every protected operation.

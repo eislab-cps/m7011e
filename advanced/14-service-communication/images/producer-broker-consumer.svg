@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="499" viewBox="0 0 1200 499" role="img" aria-labelledby="title description">
+<title id="title">A broker separates accepting work from processing it</title>
+<desc id="description">A direct request usually requires both services to be available for that conversation. A queue can let a producer hand off work for later processing, which decouples their timing. It adds a broker and distinct acceptance, delivery, and processing outcomes. Durable settings, publisher confirms, and consumer acknowledgments address different failures; none makes an arbitrary external side effect exactly-once automatically.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="499" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A broker separates accepting work from processing it</text>
+<text id="text-2" x="40" y="83" class="muted">The arrows follow work delivery; confirmations and acknowledgments travel back separately.</text>
+<rect x="40.0" y="150" width="320.0" height="199" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Producer</text>
+<text id="text-5" x="62.0" y="218" class="body">Publishes a message to the</text>
+<text id="text-6" x="62.0" y="243" class="body">broker.</text>
+<text id="text-7" x="62.0" y="268" class="body">Needs confirmation and</text>
+<text id="text-8" x="62.0" y="293" class="body">failure handling for</text>
+<text id="text-9" x="62.0" y="318" class="body">acceptance.</text>
+<rect x="440.0" y="150" width="320.0" height="199" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Broker and queue</text>
+<text id="text-12" x="462.0" y="218" class="body">Routes and retains work</text>
+<text id="text-13" x="462.0" y="243" class="body">according to configuration.</text>
+<text id="text-14" x="462.0" y="268" class="body">Tracks deliveries and</text>
+<text id="text-15" x="462.0" y="293" class="body">acknowledgments.</text>
+<path d="M360.0 249.5 L440.0 249.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="199" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Consumer</text>
+<text id="text-19" x="862.0" y="218" class="body">Performs the work.</text>
+<text id="text-20" x="862.0" y="243" class="body">Acknowledges according to</text>
+<text id="text-21" x="862.0" y="268" class="body">the processing design.</text>
+<path d="M760.0 249.5 L840.0 249.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="409" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="439" class="body">At-least-once delivery requires the processing design to handle duplicates.</text>
+</svg>

@@ -2,6 +2,12 @@
 
 This guide provides step-by-step instructions to help you begin working with Kubernetes on the LTU-Rancher cluster.
 
+## Why Use an API Client Instead of Logging into Every Server?
+
+With manual server administration, a deployment can depend on a particular host, shell session, and sequence of commands. Kubernetes instead exposes an API for declaring and observing resources. Controllers and node agents carry out the work. `kubectl` is a client of that API; it is not the cluster itself and does not normally deploy by opening SSH sessions to every node.
+
+This explains why client installation, cluster selection, authentication, and namespace permissions are different steps. Helm is another client-side tool: it packages and renders related resource definitions. Having kubectl or Helm installed does not grant permission to change a cluster, and changing your local directory does not select a new cluster.
+
 ## What the Setup Commands Actually Configure
 
 `kubectl` and Helm are clients on your computer. Kubernetes runs elsewhere. A **kubeconfig** tells the clients which API server to contact and which credentials and context to use. Installing the clients and configuring access are separate steps.

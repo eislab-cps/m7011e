@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="548" viewBox="0 0 1200 548" role="img" aria-labelledby="title description">
+<title id="title">GitOps compares published intent with the running system</title>
+<desc id="description">A deployment command can become stale as people or controllers change the running system. GitOps adds an ongoing comparison with published configuration. Argo CD needs both repository access and cluster permissions; it is not a way to operate without credentials. Detection, synchronization, pruning, and self-healing are policy choices, and the controller does not automatically wait for an unrelated CI run.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="548" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">GitOps compares published intent with the running system</text>
+<text id="text-2" x="40" y="83" class="muted">The loop represents repeated observation and policy-controlled synchronization.</text>
+<rect x="40.0" y="150" width="320.0" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Read desired state</text>
+<text id="text-5" x="62.0" y="218" class="body">Argo CD reads a configured</text>
+<text id="text-6" x="62.0" y="243" class="body">repository revision.</text>
+<text id="text-7" x="62.0" y="268" class="body">Rendered manifests describe</text>
+<text id="text-8" x="62.0" y="293" class="body">the intended resources.</text>
+<rect x="440.0" y="150" width="320.0" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Observe actual state</text>
+<text id="text-11" x="462.0" y="218" class="body">The controller reads</text>
+<text id="text-12" x="462.0" y="243" class="body">cluster resource state.</text>
+<text id="text-13" x="462.0" y="268" class="body">It compares managed fields</text>
+<text id="text-14" x="462.0" y="293" class="body">with the desired manifests.</text>
+<path d="M360.0 250.0 L440.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Request</text>
+<text id="text-18" x="862.0" y="210" class="heading" font-size="22px" style="font-size:22px">synchronization</text>
+<text id="text-19" x="862.0" y="244" class="body">Manual sync or configured</text>
+<text id="text-20" x="862.0" y="269" class="body">automation applies changes.</text>
+<text id="text-21" x="862.0" y="294" class="body">Health and errors remain</text>
+<text id="text-22" x="862.0" y="319" class="body">separate observations.</text>
+<path d="M760.0 250.0 L840.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1000.0 350 V398 H200.0 V350" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="297.0" y="410" width="606.0" height="30" fill="#fff"/>
+<text id="text-26" x="600" y="431" class="body" text-anchor="middle">The controller repeats its reads; this is not a write to Git</text>
+<rect x="40" y="458" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="488" class="body">Reconciliation timing and automatic behavior are configuration, not a universal three-minute promise.</text>
+</svg>

@@ -1,6 +1,6 @@
 # Tutorial 2: Docker and Docker Compose
 
-This tutorial introduces Docker, a platform for developing, shipping, and running applications in containers. You'll learn how to containerize the todo application from Tutorial 1, create Docker images, and use Docker Compose to orchestrate multiple containers.
+Your todo API can work on your laptop and fail on a classmate's machine even when both have the same Python source. This tutorial explains that problem, how Docker packages a runnable environment, and which problems still need other tools. You will build images for Tutorial 1's application and run them together using Compose.
 
 ## Learning Objectives
 
@@ -16,84 +16,65 @@ By completing this tutorial, you will understand:
 
 ---
 
-## Read the Build and Run Commands
-
-The commands in this tutorial run through your Docker daemon. An **image** is a build artifact; a **container** is an instance created from one. Building, running, inspecting, and publishing are different operations:
-
-| Command you will use | What it does and how to read it |
-| --- | --- |
-| `docker build -t todo-backend .` | Reads the Dockerfile and build context from `.` and tags the resulting image `todo-backend`. It does not start the API. Files outside the context cannot be copied by this build. |
-| `docker run -p 8000:8000 todo-backend` | Creates and starts a container, publishing **host port 8000 → container port 8000**. The API must still listen on the container's network interface. |
-| `docker run -d ...` | Starts the container detached, returning control to the terminal. Detaching does not mean the application is ready. |
-| `docker ps` / `docker ps -a` | Lists running containers / all containers, including those that exited. Inspect exit state when a container disappears from `docker ps`. |
-| `docker logs CONTAINER` | Reads the application's standard output and error. It is evidence about why the process started or exited. |
-| `docker exec -it CONTAINER bash` | Starts a shell inside an existing running container. `-i` keeps input open; `-t` allocates a terminal. The image must contain the requested shell. |
-| `docker compose up --build` | Builds where needed and starts the services described by the Compose file. Compose service names identify destinations between containers on their network. |
-| `docker compose stop` / `docker compose down` | Stops containers / removes the project's containers and networks. Removing containers is different from deleting named volumes; adding `-v` requests volume removal. |
-| `docker tag` / `docker push` | Gives an image another name / uploads it to a registry. Neither operation replaces an already-running container. |
-
-The browser uses published **host** ports. A backend container uses a database's Compose hostname and **container** port. In each case, `localhost` means the caller's own network environment; see [the command guide](../COMMANDS.md#understand-ports-and-foreground-processes).
-
-**Predict and check:** Build an image and inspect `docker ps`: should a new container exist yet? Run it, then inspect the published port. Edit a source file that was copied into the image: why is a rebuild and container replacement necessary unless you explicitly configured a bind mount? Use the logs and an HTTP request to distinguish "container exists" from "API works".
-
 ## What is Docker?
 
-**Docker** is a platform for developing, shipping, and running applications inside containers.
+Docker provides tools to **build an image of an application's user-space environment, distribute that image, and start isolated processes from it**. The image contains application files and dependencies. A running container also needs a compatible kernel, resources, network configuration, and any external services the application uses.
+
+### Why Docker Was Developed
+
+Before packaging the environment, deploying a Python API might mean copying its source to a server and manually installing Python, system libraries, and packages. The developer, CI server, and production server can gradually acquire different versions. Installing a library for one application can break another. "Use the same code" does not solve a mismatch in the environment running that code.
+
+Virtual machines addressed part of this problem by giving an application its own guest operating system. They remain useful, but carrying and maintaining a guest OS for every small service can be unnecessary work. Linux already had mechanisms for isolating processes and limiting resources. Docker made a developer workflow around container images, build instructions, registries, and lifecycle commands. Docker was publicly demonstrated in 2013 with software delivery as a central motivation; see [Docker's account of the original demonstration](https://www.docker.com/blog/docker-nine-years-young/).
+
+For this todo app, the change is concrete: build the API and its dependencies into an image, test that image, and deploy that same image artifact. Another machine does not need a manually prepared Flask installation. This reduces one source of variation; it does not automatically supply the right secrets, database, CPU architecture, storage, or network access. Rebuilding later can also produce a different result if base images and dependencies have changed.
+
+### Why There Are Several Container Technologies
+
+Different tools address different layers, and alternatives make different operational choices:
+
+| Approach or tool | Problem it addresses | Why another approach may still be useful |
+| --- | --- | --- |
+| Direct installation or a Python virtual environment | Isolate Python packages with little setup. | Useful for local work; it does not package the host's kernel or all system dependencies. |
+| Virtual machine | Provide a separate guest OS and kernel through virtualized hardware. | Useful when a different kernel or a stronger hardware virtualization boundary is required. Containers commonly run inside VMs too. |
+| Docker Engine and its CLI | Build, distribute, and manage container workloads through a common workflow and API. | Other engines offer different management and integration choices; an engine is not itself an application architecture. |
+| OCI specifications | Standardize image, distribution, and runtime interfaces. | Shared formats allow multiple tools to interoperate; standardization does not make every tool's role identical. |
+| Kubernetes-compatible runtimes, such as containerd or CRI-O | Run containers as part of a Kubernetes node's runtime integration. | Kubernetes does not require developers to manage each node through the Docker CLI. |
+| Docker Compose | Describe related containers, networks, and volumes as one application configuration. | Convenient for this multi-container development exercise; it does not provide Kubernetes' multi-node control system. |
+| Kubernetes | Continuously manage desired workloads across a cluster: scheduling, replacement, discovery, and rollout. | Addresses operation at a different scale, with extra setup and concepts that a single local app may not need. |
+
+The [Open Container Initiative](https://opencontainers.org/) explains its standards, and Kubernetes documents [its runtime integration](https://kubernetes.io/docs/setup/production-environment/container-runtimes/). Treat these as layers and design choices rather than a ranking of newer tools replacing every older one.
+
+**Reason about an alternative:** If your only problem is conflicting Python packages, what does a virtual environment solve? If two applications need different kernels, why is a shared-kernel container insufficient by itself? If you have one laptop and two containers, what extra problem would justify operating a Kubernetes cluster?
 
 ### Containers vs Virtual Machines
 
-```mermaid
-flowchart TB
-    subgraph VM["Virtual Machines Architecture"]
-        Host1["Host Operating System"]
-        Hypervisor["Hypervisor"]
-        VM1["VM 1<br/>Guest OS + App"]
-        VM2["VM 2<br/>Guest OS + App"]
-        VM3["VM 3<br/>Guest OS + App"]
+![Containers and VMs isolate at different boundaries. Read each column from application files down to the infrastructure beneath them.](./images/containers-and-virtual-machines.svg)
 
-        Host1 --> Hypervisor
-        Hypervisor --> VM1
-        Hypervisor --> VM2
-        Hypervisor --> VM3
-    end
+A VM can supply its own kernel; a Linux container uses the kernel of its Linux host. That difference explains why a container image can be lighter than a whole guest system, and why it cannot supply an arbitrary different kernel on its own. On macOS and in common Windows Linux-container setups, a Linux VM provides the kernel: containers and VMs are often used together.
 
-    subgraph Container["Containers Architecture"]
-        Host2["Host Operating System"]
-        Docker["Docker Engine"]
-        C1["Container 1<br/>App + Libs"]
-        C2["Container 2<br/>App + Libs"]
-        C3["Container 3<br/>App + Libs"]
+**Check your reasoning:** Would packaging Linux user-space files alone make them run directly on a Windows kernel? Where would a Linux VM fit?
 
-        Host2 --> Docker
-        Docker --> C1
-        Docker --> C2
-        Docker --> C3
-    end
-
-    style VM fill:#ffe6e6,stroke:#cc0000
-    style Container fill:#e6ffe6,stroke:#00cc00
-```
 
 **Key Differences:**
 
-| Aspect | Virtual Machines | Containers |
+| Aspect | Virtual Machines | Linux Containers in This Exercise |
 |--------|-----------------|------------|
-| **Isolation** | Hardware-level | Process-level |
-| **Startup Time** | Minutes | Seconds |
-| **Size** | GBs | MBs |
-| **Resource Usage** | Heavy | Lightweight |
-| **OS** | Each VM has full OS | Share host OS kernel |
-| **Portability** | Less portable | Highly portable |
+| **Boundary** | Virtualized hardware and a guest kernel | Process isolation using a shared Linux kernel |
+| **Startup work** | Start or restore a guest system and its processes | Start the configured process environment |
+| **Packaged contents** | A guest system image and application files | User-space image layers; no independent guest kernel |
+| **Resource use** | Includes the guest system's overhead | Shares kernel resources; application demands still matter |
+| **OS requirements** | Guest and hypervisor must be compatible | Image, runtime, architecture, and host kernel must be compatible |
+| **Can they coexist?** | A VM can host a container runtime | Containers commonly run inside a VM |
 
 ### Why Use Docker?
 
-1. **Consistency**: "Works on my machine" → Works everywhere
-2. **Isolation**: Applications run in isolated environments
-3. **Portability**: Run anywhere Docker is installed
-4. **Efficiency**: Lightweight compared to VMs
-5. **Scalability**: Easy to scale up/down
-6. **Version Control**: Images are versioned and reproducible
-7. **Microservices**: Perfect for microservice architectures
+1. **Consistent artifacts**: Test and deploy the same built image instead of manually reinstalling its dependencies in each environment.
+2. **Configured isolation**: Separate process environments and constrain resources; the boundary depends on runtime and host configuration.
+3. **Distribution**: A registry lets another compatible host retrieve the artifact rather than repeat an undocumented setup.
+4. **Shared infrastructure**: Linux containers can share one kernel while carrying different user-space dependencies.
+5. **Repeatable lifecycle**: Starting and replacing instances becomes a common operation; scaling safely still depends on application state and orchestration.
+6. **Artifact identity**: A tag is a convenient name and can change; a digest identifies particular content. Rebuilding from changing inputs can create a different image.
+7. **Architecture flexibility**: Both modular monoliths and independently deployed services can be packaged as containers.
 
 ### Docker Concepts
 
@@ -107,7 +88,7 @@ A **Docker image** is a read-only template containing:
 Think of it as a "snapshot" or "class" in programming.
 
 #### 2. Container
-A **container** is a running instance of an image.
+A **container** is an instance created from an image. Starting it runs its configured process; after that process exits, the container can remain in a stopped state until removed. This is why `docker ps` and `docker ps -a` can show different lists.
 
 Think of it as an "object" created from the image "class".
 
@@ -154,27 +135,12 @@ services:
 
 ## Docker Architecture
 
-```mermaid
-flowchart TB
-    Client["Docker Client<br/>(docker CLI)"]
-    Daemon["Docker Daemon<br/>(dockerd)"]
-    Registry["Docker Registry<br/>(Docker Hub)"]
+![The CLI asks; the engine manages; the registry stores. Arrows represent management requests and image transfer, not application HTTP traffic.](./images/docker-client-engine-registry.svg)
 
-    subgraph "Docker Host"
-        Daemon
-        Images["Images"]
-        Containers["Containers"]
-    end
+A terminal command is a request to the configured Docker environment, not proof that work happens inside the terminal process. A registry makes a built artifact available elsewhere; it does not run that artifact for you. A run can use a locally available image, so contacting a registry is not mandatory for every container start.
 
-    Client -->|"docker commands"| Daemon
-    Daemon -->|"pull/push"| Registry
-    Daemon -->|"creates"| Containers
-    Images -->|"run"| Containers
+**Check your reasoning:** After pushing an image, why does an existing running container still use its previous filesystem and process?
 
-    style Client fill:#e1f5ff,stroke:#01579b
-    style Daemon fill:#fff9c4,stroke:#f57f17
-    style Registry fill:#f3e5f5,stroke:#4a148c
-```
 
 **Components:**
 
@@ -195,6 +161,26 @@ flowchart TB
 ```
 
 ---
+
+## Read the Build and Run Commands
+
+The commands in this tutorial run through your Docker daemon. An **image** is a build artifact; a **container** is an instance created from one. Building, running, inspecting, and publishing are different operations:
+
+| Command you will use | What it does and how to read it |
+| --- | --- |
+| `docker build -t todo-backend .` | Reads the Dockerfile and build context from `.` and tags the resulting image `todo-backend`. It does not start the API. Files outside the context cannot be copied by this build. |
+| `docker run -p 8000:8000 todo-backend` | Creates and starts a container, publishing **host port 8000 → container port 8000**. The API must still listen on the container's network interface. |
+| `docker run -d ...` | Starts the container detached, returning control to the terminal. Detaching does not mean the application is ready. |
+| `docker ps` / `docker ps -a` | Lists running containers / all containers, including those that exited. Inspect exit state when a container disappears from `docker ps`. |
+| `docker logs CONTAINER` | Reads the application's standard output and error. It is evidence about why the process started or exited. |
+| `docker exec -it CONTAINER bash` | Starts a shell inside an existing running container. `-i` keeps input open; `-t` allocates a terminal. The image must contain the requested shell. |
+| `docker compose up --build` | Builds where needed and starts the services described by the Compose file. Compose service names identify destinations between containers on their network. |
+| `docker compose stop` / `docker compose down` | Stops containers / removes the project's containers and networks. Removing containers is different from deleting named volumes; adding `-v` requests volume removal. |
+| `docker tag` / `docker push` | Gives an image another name / uploads it to a registry. Neither operation replaces an already-running container. |
+
+The browser uses published **host** ports. A backend container uses a database's Compose hostname and **container** port. In each case, `localhost` means the caller's own network environment; see [the command guide](../COMMANDS.md#understand-ports-and-foreground-processes).
+
+**Predict and check:** Build an image and inspect `docker ps`: should a new container exist yet? Run it, then inspect the published port. Edit a source file that was copied into the image: why is a rebuild and container replacement necessary unless you explicitly configured a bind mount? Use the logs and an HTTP request to distinguish "container exists" from "API works".
 
 ## Prerequisites
 
@@ -671,19 +657,12 @@ In our todo app:
 
 Docker **volumes** are the solution for persisting data across container restarts.
 
-```mermaid
-flowchart LR
-    Container["Container<br/>(can be deleted)"]
-    Volume["Docker Volume<br/>(persistent storage)"]
-    HostFS["Host Filesystem<br/>/var/lib/docker/volumes/"]
+![Container files and persistent volumes have different lifetimes. Arrows show the storage path used for an application write.](./images/container-volume-lifetime.svg)
 
-    Container <-->|"reads/writes"| Volume
-    Volume <-->|"stored on"| HostFS
+A container has a writable layer that belongs to that container instance. A volume gives selected paths a separate storage lifetime, which is useful when a database process must be replaced without discarding its files. The application must actually write into the mounted path. A surviving volume is not a backup, and deleting the volume can still remove its data.
 
-    style Container fill:#ffe6e6,stroke:#cc0000
-    style Volume fill:#e6f3ff,stroke:#0066cc
-    style HostFS fill:#fff3e6,stroke:#cc8800
-```
+**Check your reasoning:** If the database writes outside its mounted directory, will deleting and recreating the container preserve those files?
+
 
 ### Types of Data Storage
 

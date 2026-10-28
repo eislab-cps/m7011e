@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">Ingress routing connects a public request to an internal Service</title>
+<desc id="description">A shared ingress controller lets applications use HTTP hosts and paths instead of exposing a new public port for every service. An Ingress object is configuration; an installed controller implements it. DNS, rule matching, TLS, Service endpoints, and the backend route are separate dependencies. In particular, matching `/products` does not automatically strip that prefix before forwarding to the API.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Ingress routing connects a public request to an internal Service</text>
+<text id="text-2" x="40" y="83" class="muted">Branches show host/path selection, not an automatic path-rewrite policy.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Browser → ingress controller</text>
+<text id="text-5" x="62" y="218" class="body">The controller uses configured host and path rules to choose a backend Service.</text>
+<path d="M600 260 V310 H213.33333333333334 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="346.6666666666667" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">/users</text>
+<text id="text-9" x="62.0" y="428" class="body">Matches the User Service</text>
+<text id="text-10" x="62.0" y="453" class="body">route.</text>
+<text id="text-11" x="62.0" y="478" class="body">Service endpoints lead to</text>
+<text id="text-12" x="62.0" y="503" class="body">ready application Pods.</text>
+<path d="M600 260 V310 H600.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="426.6666666666667" y="360" width="346.6666666666667" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="448.6666666666667" y="394" class="heading" font-size="22px" style="font-size:22px">/products</text>
+<text id="text-16" x="448.6666666666667" y="428" class="body">Matches the Product Service</text>
+<text id="text-17" x="448.6666666666667" y="453" class="body">route.</text>
+<text id="text-18" x="448.6666666666667" y="478" class="body">A path match does not itself</text>
+<text id="text-19" x="448.6666666666667" y="503" class="body">rewrite the request path.</text>
+<path d="M600 260 V310 H986.6666666666667 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="813.3333333333334" y="360" width="346.6666666666667" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="835.3333333333334" y="394" class="heading" font-size="22px" style="font-size:22px">/orders</text>
+<text id="text-23" x="835.3333333333334" y="428" class="body">Matches the Order Service</text>
+<text id="text-24" x="835.3333333333334" y="453" class="body">route.</text>
+<text id="text-25" x="835.3333333333334" y="478" class="body">The application must</text>
+<text id="text-26" x="835.3333333333334" y="503" class="body">understand the forwarded path.</text>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="616" class="body">A route definition needs a compatible controller, working endpoints, and a matching backend path.</text>
+</svg>

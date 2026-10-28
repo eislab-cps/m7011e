@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">A Pod groups containers that share a local environment</title>
+<desc id="description">The Pod exists because some processes need a shared lifecycle and local networking rather than independent placement. An application and its sidecar proxy are one example. Containers in different Pods do not share localhost, and being in one Pod does not automatically share all files. Put unrelated services in separate Pods so their scaling and replacement are not unnecessarily coupled.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A Pod groups containers that share a local environment</text>
+<text id="text-2" x="40" y="83" class="muted">Branches show resources and relationships within one Pod, not load-balanced replicas.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">One Pod identity and network namespace</text>
+<text id="text-5" x="62" y="218" class="body">The application can have a closely related helper or proxy in the same Pod.</text>
+<path d="M600 260 V310 H213.33333333333334 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="346.6666666666667" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">Containers</text>
+<text id="text-9" x="62.0" y="428" class="body">Have their own process and</text>
+<text id="text-10" x="62.0" y="453" class="body">filesystem configuration.</text>
+<text id="text-11" x="62.0" y="478" class="body">Must not compete for the same</text>
+<text id="text-12" x="62.0" y="503" class="body">listening port.</text>
+<path d="M600 260 V310 H600.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="426.6666666666667" y="360" width="346.6666666666667" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="448.6666666666667" y="394" class="heading" font-size="22px" style="font-size:22px">Shared network</text>
+<text id="text-16" x="448.6666666666667" y="428" class="body">Use the Pod IP and port space.</text>
+<text id="text-17" x="448.6666666666667" y="453" class="body">Can communicate through</text>
+<text id="text-18" x="448.6666666666667" y="478" class="body">localhost.</text>
+<path d="M600 260 V310 H986.6666666666667 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="813.3333333333334" y="360" width="346.6666666666667" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="835.3333333333334" y="394" class="heading" font-size="22px" style="font-size:22px">Declared volumes</text>
+<text id="text-22" x="835.3333333333334" y="428" class="body">Can be mounted into selected</text>
+<text id="text-23" x="835.3333333333334" y="453" class="body">containers.</text>
+<text id="text-24" x="835.3333333333334" y="478" class="body">Sharing a Pod does not share</text>
+<text id="text-25" x="835.3333333333334" y="503" class="body">every filesystem path.</text>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="616" class="body">A Pod is a scheduling and lifecycle unit; a container remains a process environment.</text>
+</svg>

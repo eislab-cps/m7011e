@@ -1,5 +1,11 @@
 # Tutorial 13 - Deploying MongoDB on Kubernetes
 
+## Why a Document Database When We Already Have PostgreSQL?
+
+An application's natural read unit may be a nested record: for example, a profile containing contact details and a list of preferences. A document database makes that representation a central unit for storing, filtering, and changing data. This can simplify some access patterns, while references, duplicated fields, validation, and concurrent updates still require a deliberate model.
+
+This is a different design emphasis, not a rule that documents are always faster or that relational databases cannot store JSON. PostgreSQL remains useful for the relationships and transaction rules from Tutorial 8. Compare the operations you need, how data changes, and the guarantees required. Deploying MongoDB here lets you observe the document model, authentication, and persistence rather than memorizing a product category.
+
 ## What is MongoDB?
 
 MongoDB is a NoSQL document database. Unlike traditional relational databases (like PostgreSQL or MySQL) that store data in tables with rows and columns, MongoDB stores data as flexible JSON-like documents called BSON (Binary JSON).

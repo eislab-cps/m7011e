@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="499" viewBox="0 0 1200 499" role="img" aria-labelledby="title description">
+<title id="title">Time-series workloads connect measurements to time windows</title>
+<desc id="description">A measurement is more useful when related to when it happened and which component produced it. Time-series systems specialize in repeated samples and time-range access, which motivates retention and aggregation features. A normal SQL table with suitable indexes can also serve some of these workloads. The added system becomes justified when its ingestion, retention, or query behavior meets a concrete need.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="499" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Time-series workloads connect measurements to time windows</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show the measurement pipeline from collection to analysis.</text>
+<rect x="40.0" y="150" width="320.0" height="199" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Measurements</text>
+<text id="text-5" x="62.0" y="218" class="body">Samples have timestamps,</text>
+<text id="text-6" x="62.0" y="243" class="body">values, and labels.</text>
+<text id="text-7" x="62.0" y="268" class="body">Examples: latency,</text>
+<text id="text-8" x="62.0" y="293" class="body">temperature, and queue</text>
+<text id="text-9" x="62.0" y="318" class="body">depth.</text>
+<rect x="440.0" y="150" width="320.0" height="199" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Time-series storage</text>
+<text id="text-12" x="462.0" y="218" class="body">Organizes ingestion,</text>
+<text id="text-13" x="462.0" y="243" class="body">retention, and time ranges.</text>
+<text id="text-14" x="462.0" y="268" class="body">May summarize or compress</text>
+<text id="text-15" x="462.0" y="293" class="body">older samples.</text>
+<path d="M360.0 249.5 L440.0 249.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="199" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Window queries</text>
+<text id="text-19" x="862.0" y="218" class="body">Ask for changes, rates, or</text>
+<text id="text-20" x="862.0" y="243" class="body">aggregates over time.</text>
+<text id="text-21" x="862.0" y="268" class="body">Feed dashboards and alerts.</text>
+<path d="M760.0 249.5 L840.0 249.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="409" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="439" class="body">A timestamped record and a retention policy solve different parts of the problem.</text>
+</svg>

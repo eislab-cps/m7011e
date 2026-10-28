@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="666" viewBox="0 0 1200 666" role="img" aria-labelledby="title description">
+<title id="title">Database models and deployment choices are separate dimensions</title>
+<desc id="description">These categories arose because applications ask different questions of stored data. A join, a time-window aggregation, and a nearest-neighbor search benefit from different representations and indexes. The categories overlap: embedded versus server is a deployment choice, and relational databases can also support documents or vector search. Start from operations and correctness requirements rather than treating this as a list of mutually exclusive products.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="666" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Database models and deployment choices are separate dimensions</text>
+<text id="text-2" x="40" y="83" class="muted">Each card describes an access model, not a claim about an entire product&#x27;s guarantees.</text>
+<rect x="40.0" y="150" width="352.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Relational</text>
+<text id="text-5" x="62.0" y="218" class="body">Tables, constraints, joins,</text>
+<text id="text-6" x="62.0" y="243" class="body">transactions.</text>
+<text id="text-7" x="62.0" y="268" class="body">Examples: PostgreSQL and</text>
+<text id="text-8" x="62.0" y="293" class="body">SQLite.</text>
+<rect x="424.0" y="150" width="352.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="446.0" y="184" class="heading" font-size="22px" style="font-size:22px">Document</text>
+<text id="text-11" x="446.0" y="218" class="body">Records with nested fields and</text>
+<text id="text-12" x="446.0" y="243" class="body">arrays.</text>
+<text id="text-13" x="446.0" y="268" class="body">Example: MongoDB.</text>
+<rect x="808.0" y="150" width="352.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="830.0" y="184" class="heading" font-size="22px" style="font-size:22px">Key-value / wide-column</text>
+<text id="text-16" x="830.0" y="218" class="body">Access organized around keys</text>
+<text id="text-17" x="830.0" y="243" class="body">and partitions.</text>
+<text id="text-18" x="830.0" y="268" class="body">Examples: Redis and Cassandra.</text>
+<rect x="40.0" y="356" width="352.0" height="174" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-20" x="62.0" y="390" class="heading" font-size="22px" style="font-size:22px">Graph</text>
+<text id="text-21" x="62.0" y="424" class="body">Nodes and relationships</text>
+<text id="text-22" x="62.0" y="449" class="body">queried by traversal.</text>
+<text id="text-23" x="62.0" y="474" class="body">Example: Neo4j.</text>
+<rect x="424.0" y="356" width="352.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-25" x="446.0" y="390" class="heading" font-size="22px" style="font-size:22px">Time-series / search</text>
+<text id="text-26" x="446.0" y="424" class="body">Time-window or text-search</text>
+<text id="text-27" x="446.0" y="449" class="body">access patterns.</text>
+<text id="text-28" x="446.0" y="474" class="body">Examples: TimescaleDB and</text>
+<text id="text-29" x="446.0" y="499" class="body">Elasticsearch.</text>
+<rect x="808.0" y="356" width="352.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-31" x="830.0" y="390" class="heading" font-size="22px" style="font-size:22px">Vector search</text>
+<text id="text-32" x="830.0" y="424" class="body">Search by distance between</text>
+<text id="text-33" x="830.0" y="449" class="body">embeddings.</text>
+<text id="text-34" x="830.0" y="474" class="body">Can be a feature of several</text>
+<text id="text-35" x="830.0" y="499" class="body">database types.</text>
+<rect x="40" y="576" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-37" x="60" y="606" class="body">One system can implement several models; operational cost and required guarantees still matter.</text>
+</svg>

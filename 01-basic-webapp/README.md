@@ -18,6 +18,14 @@ By completing this tutorial, you will understand:
 
 ---
 
+## Why HTTP, JSON, and an API Are Different Things
+
+Two programs need an agreed way to ask for information and interpret the reply. HTTP supplies common message semantics: a target, a method, headers, and a response status. That lets a browser, curl, and a Python client talk to a Flask server without each pair inventing a new communication protocol.
+
+JSON addresses another question: how to represent the data inside some of those messages. An API then defines the application's meaning, such as which path creates a todo and which fields are required. Using HTTP and valid JSON does not automatically define that contract. TLS addresses yet another problem, protecting a connection; changing HTTP to HTTPS does not change the todo's data model.
+
+**Why alternatives remain:** A static HTML page may need no data API. An interactive page needs a way to request and change application state. REST, RPC, and event-based interfaces organize that interaction differently. Learn one concrete exchange first, then compare the problem an alternative interface would solve.
+
 ## Fundamental Concepts
 
 ### 1. Client-Server Architecture
@@ -261,22 +269,12 @@ parameters:
 
 Our simple todo list application:
 
-```mermaid
-flowchart TB
-    subgraph Frontend["Frontend (Browser)"]
-        HTML["index.html<br/>- HTML structure<br/>- CSS styling<br/>- JavaScript logic"]
-        Features["Features:<br/>* Fetch todos<br/>* Add new todo<br/>* Delete todo"]
-        HTML --> Features
-    end
+![A page and an API do different work. Read left to right: a user action becomes an HTTP request, then a data operation.](./images/todo-application-architecture.svg)
 
-    subgraph Backend["Backend (Flask Server)"]
-        API["app.py<br/>REST API Endpoints:<br/>- GET /api/todos<br/>- POST /api/todos<br/>- DELETE /api/todos/id"]
-        Storage["Data Storage:<br/>- In-memory list<br/>(resets on restart)"]
-        API --> Storage
-    end
+The browser controls what is displayed, while Flask owns the list the API returns. The arrows trace a data operation, not three separate machines: both servers can run on your laptop. This separation lets a different client use the same API. Persistence is still absent because the last stage is only a Python list.
 
-    Frontend -->|"HTTP Requests (Fetch API)"| Backend
-```
+**Check your reasoning:** After creating a todo, reload the page and then restart Flask. Which action loses the stored item, and why?
+
 
 **Data Flow Example - Adding a Todo:**
 

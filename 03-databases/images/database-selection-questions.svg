@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="718" viewBox="0 0 1200 718" role="img" aria-labelledby="title description">
+<title id="title">Choose the operation before choosing a database</title>
+<desc id="description">The earlier examples are tools for reasoning about requirements, not a rule that each application needs a different database. List important reads, writes, consistency needs, growth, and recovery requirements. Then compare a simple design with alternatives using that workload. Introducing another database also introduces deployment, backup, monitoring, and expertise costs.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="718" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Choose the operation before choosing a database</text>
+<text id="text-2" x="40" y="83" class="muted">These are selection questions; several systems can satisfy more than one card.</text>
+<rect x="40.0" y="150" width="352.0" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Local relational</text>
+<text id="text-5" x="62.0" y="210" class="heading" font-size="22px" style="font-size:22px">storage</text>
+<text id="text-6" x="62.0" y="244" class="body">Need SQL inside one</text>
+<text id="text-7" x="62.0" y="269" class="body">application?</text>
+<text id="text-8" x="62.0" y="294" class="body">Consider an embedded engine</text>
+<text id="text-9" x="62.0" y="319" class="body">and its concurrency limits.</text>
+<rect x="424.0" y="150" width="352.0" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="446.0" y="184" class="heading" font-size="22px" style="font-size:22px">Shared transactions</text>
+<text id="text-12" x="446.0" y="218" class="body">Need constraints and</text>
+<text id="text-13" x="446.0" y="243" class="body">coordinated concurrent writes?</text>
+<text id="text-14" x="446.0" y="268" class="body">Evaluate a transactional</text>
+<text id="text-15" x="446.0" y="293" class="body">server and its data model.</text>
+<rect x="808.0" y="150" width="352.0" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="830.0" y="184" class="heading" font-size="22px" style="font-size:22px">Nested records</text>
+<text id="text-18" x="830.0" y="218" class="body">Often fetch or update a whole</text>
+<text id="text-19" x="830.0" y="243" class="body">document?</text>
+<text id="text-20" x="830.0" y="268" class="body">Compare embedding, references,</text>
+<text id="text-21" x="830.0" y="293" class="body">and validation.</text>
+<rect x="40.0" y="382" width="352.0" height="200" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-23" x="62.0" y="416" class="heading" font-size="22px" style="font-size:22px">Repeated expensive</text>
+<text id="text-24" x="62.0" y="442" class="heading" font-size="22px" style="font-size:22px">reads</text>
+<text id="text-25" x="62.0" y="476" class="body">Can a stale or missing cached</text>
+<text id="text-26" x="62.0" y="501" class="body">result be tolerated?</text>
+<text id="text-27" x="62.0" y="526" class="body">Define invalidation and TTL</text>
+<text id="text-28" x="62.0" y="551" class="body">behavior.</text>
+<rect x="424.0" y="382" width="352.0" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-30" x="446.0" y="416" class="heading" font-size="22px" style="font-size:22px">Time-window analysis</text>
+<text id="text-31" x="446.0" y="450" class="body">Need high-rate samples and</text>
+<text id="text-32" x="446.0" y="475" class="body">retention rules?</text>
+<text id="text-33" x="446.0" y="500" class="body">Compare indexed SQL with</text>
+<text id="text-34" x="446.0" y="525" class="body">time-series facilities.</text>
+<rect x="808.0" y="382" width="352.0" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-36" x="830.0" y="416" class="heading" font-size="22px" style="font-size:22px">Traversal or similarity</text>
+<text id="text-37" x="830.0" y="450" class="body">Are relationships or vector</text>
+<text id="text-38" x="830.0" y="475" class="body">distances the main query?</text>
+<text id="text-39" x="830.0" y="500" class="body">Evaluate specialized indexes</text>
+<text id="text-40" x="830.0" y="525" class="body">and correctness requirements.</text>
+<rect x="40" y="628" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-42" x="60" y="658" class="body">Start with the simplest model that preserves the required behavior, then measure its limits.</text>
+</svg>

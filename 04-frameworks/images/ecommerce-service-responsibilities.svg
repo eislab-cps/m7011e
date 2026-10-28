@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">An e-commerce design separates business responsibilities</title>
+<desc id="description">This is one possible division of an application, not a requirement to use four languages or databases. Each boundary should justify independent change, ownership, or scale. An order can cross several boundaries, so the design must say what happens when payment or notification processing fails. A gateway reduces the number of public entry points without making those distributed operations atomic.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">An e-commerce design separates business responsibilities</text>
+<text id="text-2" x="40" y="83" class="muted">Branches show request routing to responsibilities, not a prescribed framework for each one.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Browser → API gateway</text>
+<text id="text-5" x="62" y="218" class="body">The gateway routes a public request to the responsible service.</text>
+<path d="M600 260 V310 H165.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="250.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">Catalog</text>
+<text id="text-9" x="62.0" y="428" class="body">Owns product</text>
+<text id="text-10" x="62.0" y="453" class="body">information.</text>
+<text id="text-11" x="62.0" y="478" class="body">Chooses storage for</text>
+<text id="text-12" x="62.0" y="503" class="body">catalog queries.</text>
+<path d="M600 260 V310 H455.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="330.0" y="360" width="250.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="352.0" y="394" class="heading" font-size="22px" style="font-size:22px">Accounts</text>
+<text id="text-16" x="352.0" y="428" class="body">Owns user-profile</text>
+<text id="text-17" x="352.0" y="453" class="body">operations.</text>
+<text id="text-18" x="352.0" y="478" class="body">Integrates the</text>
+<text id="text-19" x="352.0" y="503" class="body">identity provider.</text>
+<path d="M600 260 V310 H745.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620.0" y="360" width="250.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="642.0" y="394" class="heading" font-size="22px" style="font-size:22px">Orders</text>
+<text id="text-23" x="642.0" y="428" class="body">Owns order state.</text>
+<text id="text-24" x="642.0" y="453" class="body">Publishes events</text>
+<text id="text-25" x="642.0" y="478" class="body">when its design</text>
+<text id="text-26" x="642.0" y="503" class="body">requires them.</text>
+<path d="M600 260 V310 H1035.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="910.0" y="360" width="250.0" height="174" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-29" x="932.0" y="394" class="heading" font-size="22px" style="font-size:22px">Payments</text>
+<text id="text-30" x="932.0" y="428" class="body">Owns payment</text>
+<text id="text-31" x="932.0" y="453" class="body">processing.</text>
+<text id="text-32" x="932.0" y="478" class="body">Defines its failure</text>
+<text id="text-33" x="932.0" y="503" class="body">and retry rules.</text>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-35" x="60" y="616" class="body">Add a service boundary for an independent responsibility, not just to use another technology.</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="474" viewBox="0 0 1200 474" role="img" aria-labelledby="title description">
+<title id="title">Container files and persistent volumes have different lifetimes</title>
+<desc id="description">A container has a writable layer that belongs to that container instance. A volume gives selected paths a separate storage lifetime, which is useful when a database process must be replaced without discarding its files. The application must actually write into the mounted path. A surviving volume is not a backup, and deleting the volume can still remove its data.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="474" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Container files and persistent volumes have different lifetimes</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show the storage path used for an application write.</text>
+<rect x="40.0" y="150" width="320.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Application process</text>
+<text id="text-5" x="62.0" y="218" class="body">Reads and writes paths</text>
+<text id="text-6" x="62.0" y="243" class="body">inside the container.</text>
+<text id="text-7" x="62.0" y="268" class="body">Uses a mounted directory</text>
+<text id="text-8" x="62.0" y="293" class="body">for durable data.</text>
+<rect x="440.0" y="150" width="320.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Volume mount</text>
+<text id="text-11" x="462.0" y="218" class="body">Maps a container path to</text>
+<text id="text-12" x="462.0" y="243" class="body">separate storage.</text>
+<text id="text-13" x="462.0" y="268" class="body">Is configured when the</text>
+<text id="text-14" x="462.0" y="293" class="body">container is created.</text>
+<path d="M360.0 237.0 L440.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Volume storage</text>
+<text id="text-18" x="862.0" y="218" class="body">Managed separately from the</text>
+<text id="text-19" x="862.0" y="243" class="body">container.</text>
+<text id="text-20" x="862.0" y="268" class="body">Can be reused after a</text>
+<text id="text-21" x="862.0" y="293" class="body">container is replaced.</text>
+<path d="M760.0 237.0 L840.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="384" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="414" class="body">Volumes address lifetime; backup, recovery, and replication remain separate decisions.</text>
+</svg>

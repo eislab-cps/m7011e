@@ -2,6 +2,12 @@
 
 Learn how to monitor microservices and message queues with Prometheus metrics and Grafana dashboards for real-time observability.
 
+## Why Metrics, Logs, and Traces Are Different Tools
+
+A log records details about an event. To answer whether error frequency is increasing across replicas, you also need comparable measurements over time. Metrics provide numeric time series; traces help follow selected requests across component boundaries. These forms of evidence support different questions and can be used together.
+
+Prometheus collects samples from configured HTTP targets and lets you query them over time. Grafana visualizes queried data; opening its UI does not itself collect application measurements. Other collection designs can push measurements instead of scraping them. The [Prometheus overview](https://prometheus.io/docs/introduction/overview/) explains its pull model. This course uses it to connect application events, exported counters, collected samples, and displayed rates in one observable experiment.
+
 ## Why This Tutorial Matters
 
 In Tutorial 14, you built microservices with RabbitMQ for reliable communication. But now you need to answer critical questions:
@@ -138,32 +144,12 @@ sum(rate(http_requests_total{status=~"5.."}[5m]))
 
 ### Architecture Overview
 
-```mermaid
-graph TB
-    subgraph monitoring["Monitoring Namespace"]
-        OS["Order Service<br/>(Port 8001)<br/>/metrics"]
-        RMQ["RabbitMQ<br/>Queue"]
-        Consumer["RabbitMQ Consumer<br/>(Port 8000)<br/>/metrics"]
-        Prom["Prometheus<br/>(Port 9090)<br/>Stores time-series metrics"]
-        Grafana["Grafana<br/>(Port 3000)<br/>Visualizes dashboards"]
-    end
+![Prometheus scrapes targets; Grafana queries Prometheus. Solid arrows show initiated requests or published work, not the reverse direction of returned data.](./images/metrics-collection-and-workload.svg)
 
-    Load["Load generator"] -->|publishes messages| RMQ
-    Load -->|HTTP requests| OS
-    RMQ -->|consumes messages| Consumer
+The top arrows show who initiates monitoring requests: Grafana queries Prometheus, and Prometheus fetches metric samples from exporters. Measurements return in the responses. The bottom arrows are application workload, generated separately through HTTP and AMQP. Keeping these conversations distinct explains why a visible Grafana page does not establish that a target was scraped or that any application request succeeded.
 
-    OS -.->|scrape metrics| Prom
-    Consumer -.->|scrape metrics| Prom
-    RMQ -.->|scrape metrics| Prom
+**Check your reasoning:** If the API works but its scrape target is down, which observation is missing? If no workload runs, what should a request-rate graph show?
 
-    Prom -->|queries| Grafana
-
-    style OS fill:#e1f5ff
-    style Consumer fill:#e1f5ff
-    style RMQ fill:#fff4e1
-    style Prom fill:#ffe1f5
-    style Grafana fill:#e1ffe1
-```
 
 ### Step 1: Deploy Monitoring Stack
 

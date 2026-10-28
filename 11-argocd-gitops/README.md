@@ -2,6 +2,12 @@
 
 This tutorial introduces GitOps principles and automated continuous deployment using Argo CD. You'll learn how to manage application deployments declaratively through Git, enabling automated synchronization, rollbacks, and multi-environment management.
 
+## Why Record Desired Deployments in Git?
+
+A successful deployment script records that one attempt ran. It does not necessarily explain the current intended configuration after later edits, nor restore drift after someone changes a live resource. Git gives the team a reviewable history of intended manifests; a reconciler such as Argo CD compares that intent with actual resources and acts according to the selected policy.
+
+CI still builds and tests artifacts, and promotion rules still determine which revision becomes desired. Argo CD does not infer those rules from the existence of a repository. Manual synchronization, automatic synchronization, pruning, and self-healing are distinct choices; consult the [automatic sync policy documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/) when interpreting their effects.
+
 ## Understanding GitOps
 
 **GitOps** is a modern approach to continuous deployment where Git serves as the single source of truth for declarative infrastructure and applications.
@@ -16,35 +22,29 @@ This tutorial introduces GitOps principles and automated continuous deployment u
 ### Traditional CI/CD vs GitOps
 
 **Traditional CI/CD (Push-based):**
-```mermaid
-flowchart LR
-    Dev[Developer] -->|1. Push code| Git[Git Repository]
-    Git -->|2. Trigger| Build[CI Build]
-    Build -->|3. Build & Test| Deploy[CI Deploy]
-    Deploy ==>|4. PUSH deployment<br/>requires cluster credentials| K8s[Kubernetes Cluster]
+![A push-based pipeline deploys with its own cluster access. Arrows follow a delivery action from CI toward the cluster.](./images/ci-push-deployment.svg)
 
-    style Deploy fill:#f96,stroke:#333,stroke-width:2px
-```
+A push deployment automates commands that someone might otherwise run manually. It is straightforward, but the deployment job needs appropriate cluster access and its one-time success does not necessarily detect later drift. Separating build from deployment also makes it easier to identify which tested artifact and configuration actually reached the environment.
+
+**Check your reasoning:** If someone manually changes a replica count an hour after CI finishes, which mechanism in this design will notice or restore it?
+
 *One-way: CI/CD only pushes, doesn't monitor actual state*
 
 **GitOps (Pull-based with Reconciliation Loop):**
-```mermaid
-flowchart LR
-    Dev[Developer] -->|1. Push code| Git[Git Repository]
-    Git -.->|2. PULL desired state<br/>poll every 3 min| ArgoCD[Argo CD<br/>runs in cluster]
-    K8s[Kubernetes Cluster] -.->|3. PULL actual state<br/>continuous monitoring| ArgoCD
-    ArgoCD ==>|4. PUSH changes<br/>if drift detected| K8s
+![GitOps compares published intent with the running system. The loop represents repeated observation and policy-controlled synchronization.](./images/gitops-observe-and-reconcile.svg)
 
-    style ArgoCD fill:#9f6,stroke:#333,stroke-width:2px
-```
-*Two-way: Argo CD pulls from both Git (desired) and K8s (actual), then pushes corrections*
+A deployment command can become stale as people or controllers change the running system. GitOps adds an ongoing comparison with published configuration. Argo CD needs both repository access and cluster permissions; it is not a way to operate without credentials. Detection, synchronization, pruning, and self-healing are policy choices, and the controller does not automatically wait for an unrelated CI run.
+
+**Check your reasoning:** If an untested commit reaches the tracked branch, what prevents it from becoming desired state? Which branch or promotion rule must your workflow provide?
+
+*The controller reads desired and actual state, then applies changes according to its synchronization policy.*
 
 ### Benefits of GitOps
 
 - **Auditability**: Every change tracked in Git history
 - **Disaster Recovery**: Cluster state can be recreated from Git
 - **Consistency**: Same deployment process across all environments
-- **Security**: No external access needed to cluster (pull-based)
+- **Deployment access**: CI can publish desired-state changes without holding cluster deployment credentials; Argo CD still needs appropriate repository and cluster access
 - **Collaboration**: Use familiar Git workflows (PR reviews, branches)
 - **Rollback**: Easy reversion using Git history
 
@@ -62,15 +62,12 @@ flowchart LR
 
 ### How Argo CD Works
 
-```mermaid
-flowchart TB
-    Git[Git Repository<br/>Source of Truth]
-    ArgoCD[Argo CD Controller<br/>Compares desired vs actual state]
-    K8s[Kubernetes Cluster<br/>Actual running state]
+![Desired state, synchronization, and health are different facts. Follow the loop while keeping manifest alignment separate from workload readiness.](./images/argocd-controller-loop.svg)
 
-    Git -->|Polls every 3 min| ArgoCD
-    ArgoCD -->|Syncs if different| K8s
-```
+Argo CD exists to make the intended deployment inspectable and comparable with live resources. Synchronization says something about configuration alignment; health says something about the resulting resources. They are deliberately different because applying an invalid image name can align the manifest while leaving Pods unable to start. Changing Git again gives the controller a new intended state to reconcile.
+
+**Check your reasoning:** How can an Application be Synced but Degraded after changing its image tag? Which observation points to the actual failure?
+
 
 ### Key Concepts
 

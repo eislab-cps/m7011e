@@ -15,6 +15,12 @@ The provided Helm chart deploys a PostgreSQL database using a StatefulSet with p
 - kubectl configured to communicate with your cluster
 - A StorageClass available in your cluster (default: `local-path`)
 
+## Why PostgreSQL and Persistent Storage Are Separate Components
+
+The todo API needs shared records, query behavior, and rules for concurrent updates. PostgreSQL provides a server for SQL operations and transactions. A persistent volume supplies storage whose lifetime can outlast a Pod. The database engine decides how records and transactions behave; the volume does not understand a todo or execute SQL.
+
+Kubernetes maintains the process and its storage attachment, while a client such as `psql` sends database operations. These layers explain why installing the chart does not create your application's tables and why a ready Pod does not prove a query or password is correct. SQLite is another useful choice when in-process storage is the better requirement; see its [discussion of embedded versus client-server use](https://sqlite.org/whentouse.html).
+
 ## Configuration
 
 The following table lists the configurable parameters in `values.yaml`:

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="666" viewBox="0 0 1200 666" role="img" aria-labelledby="title description">
+<title id="title">Framework choices organize different kinds of work</title>
+<desc id="description">These are roles and ecosystems rather than a speed or popularity ranking. React supplies UI primitives, while a complete application also needs decisions about routing, data loading, and deployment. Server frameworks similarly differ in how much structure they supply. Existing libraries, team knowledge, integration needs, and maintenance cost can outweigh the size of a short example.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="666" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Framework choices organize different kinds of work</text>
+<text id="text-2" x="40" y="83" class="muted">Cards group examples by execution role and language; they do not prescribe one stack.</text>
+<rect x="40.0" y="150" width="352.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Browser UI</text>
+<text id="text-5" x="62.0" y="218" class="body">React, Vue, Angular, Svelte,</text>
+<text id="text-6" x="62.0" y="243" class="body">or WASM-based UI tools.</text>
+<text id="text-7" x="62.0" y="268" class="body">Components, rendering, and</text>
+<text id="text-8" x="62.0" y="293" class="body">interaction state.</text>
+<rect x="424.0" y="150" width="352.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="446.0" y="184" class="heading" font-size="22px" style="font-size:22px">Python backend</text>
+<text id="text-11" x="446.0" y="218" class="body">Flask and FastAPI.</text>
+<text id="text-12" x="446.0" y="243" class="body">Routing, request handling, and</text>
+<text id="text-13" x="446.0" y="268" class="body">Python integrations.</text>
+<rect x="808.0" y="150" width="352.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="830.0" y="184" class="heading" font-size="22px" style="font-size:22px">JavaScript / TypeScript</text>
+<text id="text-16" x="830.0" y="218" class="body">Express and NestJS.</text>
+<text id="text-17" x="830.0" y="243" class="body">Minimal middleware or more</text>
+<text id="text-18" x="830.0" y="268" class="body">application conventions.</text>
+<rect x="40.0" y="356" width="352.0" height="174" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-20" x="62.0" y="390" class="heading" font-size="22px" style="font-size:22px">Go backend</text>
+<text id="text-21" x="62.0" y="424" class="body">Gin, Echo, and Fiber.</text>
+<text id="text-22" x="62.0" y="449" class="body">HTTP handling within the Go</text>
+<text id="text-23" x="62.0" y="474" class="body">ecosystem.</text>
+<rect x="424.0" y="356" width="352.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-25" x="446.0" y="390" class="heading" font-size="22px" style="font-size:22px">Rust backend</text>
+<text id="text-26" x="446.0" y="424" class="body">Actix Web, Rocket, and Axum.</text>
+<text id="text-27" x="446.0" y="449" class="body">HTTP handling within the Rust</text>
+<text id="text-28" x="446.0" y="474" class="body">ecosystem.</text>
+<rect x="808.0" y="356" width="352.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-30" x="830.0" y="390" class="heading" font-size="22px" style="font-size:22px">Java backend</text>
+<text id="text-31" x="830.0" y="424" class="body">Spring Boot, Micronaut, and</text>
+<text id="text-32" x="830.0" y="449" class="body">Quarkus.</text>
+<text id="text-33" x="830.0" y="474" class="body">Application conventions and</text>
+<text id="text-34" x="830.0" y="499" class="body">Java integrations.</text>
+<rect x="40" y="576" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-36" x="60" y="606" class="body">GitHub stars and an unqualified benchmark do not establish fitness for your application.</text>
+</svg>

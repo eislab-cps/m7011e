@@ -2,6 +2,14 @@
 
 An introduction to microservices architecture and Kubernetes concepts for deploying distributed systems.
 
+## Two Problems: Independent Change and Reliable Operation
+
+A modular application can serve many projects well. Separating it into networked services becomes useful when responsibilities genuinely need different release cycles, ownership, or capacity. The price is that an operation can now fail between processes: a timeout no longer tells the caller whether the remote action happened. Microservices address organizational and deployment boundaries; they also create distributed-systems work.
+
+Containers address packaging, while Kubernetes addresses maintaining workloads across machines. After starting several containers manually, an operator still has to choose hosts, replace failed instances, route traffic, and roll out versions. Kubernetes makes these into desired-state objects and reconciliation loops. Its [overview](https://kubernetes.io/docs/concepts/overview/) describes these operational responsibilities; the project was open-sourced by Google in 2014.
+
+These technologies are not inseparable. A monolith can run in a container, microservices can run without Kubernetes, and a small local system may use Compose rather than operate a cluster. The course uses Kubernetes to make scheduling, discovery, rollout, and failure recovery observable, not because every small application inherently needs it.
+
 ## Why This Tutorial Matters
 
 **Course Requirement**: In this course, you will build a microservices-based application deployed on Kubernetes. This tutorial teaches the foundational concepts you need to understand.
@@ -153,23 +161,14 @@ Understanding the differences between these architectures is crucial for making 
 
 ### Monolithic Architecture
 
-A **monolith** is a single, unified application where all functionality exists in one codebase and runs as a single process. This is how most applications start - and for good reason: monoliths are simpler to build initially.
+A **monolith** is an application whose modules are released as one deployment unit. It can be well structured and can run multiple worker processes or replicas. A small modular application can be simpler to build, debug, and operate than a distributed version of the same features.
 
-```mermaid
-graph TB
-    subgraph Monolithic["Monolithic Application"]
-        UI[User Interface]
-        BL[Business Logic]
-        DAL[Data Access Layer]
-        DB[(Single Database)]
+![One deployment can still have clear internal modules. The boxes are code responsibilities, not three independent servers.](./images/monolith-internal-layers.svg)
 
-        UI --> BL
-        BL --> DAL
-        DAL --> DB
-    end
+These arrows are logical calls inside one deployable application; they do not automatically cross a network. A monolith can have well-defined modules rather than one unstructured file. Keeping an operation within one process and database can simplify debugging and transactions. The tradeoff is that release and scaling decisions apply to the deployment as a whole.
 
-    style Monolithic fill:#ffebee,stroke:#c62828,stroke-width:2px
-```
+**Check your reasoning:** Would moving these modules into three Python files create three microservices? What would actually need to change?
+
 
 **Characteristics:**
 
@@ -206,38 +205,18 @@ A process-level crash interrupts all modules in that process
 
 A **microservices architecture** decomposes the application into multiple small services, each running independently. This enables organizational scalability - multiple teams can work on different services simultaneously without stepping on each other's toes.
 
-```mermaid
-graph TB
-    Gateway[API Gateway]
+![Independent services require owned data and compatible APIs. Each branch is a service responsibility together with the data it owns.](./images/microservices-and-owned-data.svg)
 
-    subgraph Services["Independent Services"]
-        US[User Service]
-        PS[Product Service]
-        OS[Order Service]
-    end
+Separate deployment is useful when a responsibility needs to change or scale independently. Data ownership prevents another service from becoming dependent on private table layouts. It does not require a separate physical database machine for each service. Once one operation crosses these boundaries, retries, compatibility, and cross-service consistency become design work rather than local function-call details.
 
-    subgraph Databases["Separate Databases"]
-        USDB[(User DB)]
-        PSDB[(Product DB)]
-        OSDB[(Order DB)]
-    end
+**Check your reasoning:** Can Orders update a Product table directly and still let Products change that table independently? What contract could replace that dependency?
 
-    Gateway --> US
-    Gateway --> PS
-    Gateway --> OS
-
-    US --> USDB
-    PS --> PSDB
-    OS --> OSDB
-
-    style Services fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-```
 
 **Characteristics:**
 
-1. **Multiple Codebases**: Each service has its own repository. The User Service team works in `user-service` repo, Product Service team in `product-service` repo. Code reviews are faster because teams focus on their domain.
+1. **Separate Responsibilities**: Services can live in one repository or several. Independence comes from explicit ownership, compatible contracts, and the ability to release a service separately, not from the number of Git repositories.
 
-2. **Independent Deployments**: Services deploy separately. The Product team can deploy 5 times a day while the Payment team deploys monthly. No coordination needed.
+2. **Independent Deployments**: A compatible internal change can be released without updating every consumer. Breaking API or event changes still need a migration or coordination plan.
 
 3. **Database Per Service**: Each service owns its data. Product Service can use MongoDB for flexible schemas, User Service uses PostgreSQL for relational data. No service directly queries another service's database.
 
@@ -674,43 +653,12 @@ Kubernetes operates on a **declarative model** using the **controller pattern** 
 
 #### Desired State vs Current State
 
-```mermaid
-graph TB
-    User[User declares<br/>Desired State<br/>kubectl apply]
+![Kubernetes turns a specification into observed running work. Read top to bottom as an overview; several controllers continue operating concurrently.](./images/kubernetes-reconciliation-components.svg)
 
-    subgraph ControlPlane["Kubernetes Control Plane"]
-        API[API Server<br/>Only component that<br/>accesses etcd]
-        ETCD[(etcd Database<br/>Stores cluster state)]
-        Controller[Controller<br/>Deployment Controller,<br/>ReplicaSet Controller, etc.]
-    end
+Kubernetes was designed to keep reconciling desired and observed state, avoiding a fragile one-time list of SSH commands. The API server is the coordination interface; the scheduler chooses placement, and the node's kubelet arranges execution through its runtime. These are cooperating watch-and-reconcile loops, not one central script. Acceptance, scheduling, container startup, and readiness can fail at different stages.
 
-    subgraph DataPlane["Worker Nodes"]
-        Kubelet[Kubelet]
-        Pod1((Pod))
-        Pod2((Pod))
-        Pod3((Pod))
-    end
+**Check your reasoning:** If a Pod is Pending because no node has enough resources, which component has not completed its job? Would rerunning the same YAML create more capacity?
 
-    User -->|1. Submit YAML| API
-    API -->|2. Store state| ETCD
-    API <-->|3. Watch for changes| Controller
-    Controller -->|4. Create Pod request| API
-    API -->|5. Schedule Pod| Kubelet
-    Kubelet -->|6. Start containers| Pod1
-    Kubelet -->|6. Start containers| Pod2
-    Kubelet -->|6. Start containers| Pod3
-    Kubelet -->|7. Report status| API
-    API -->|8. Update state| ETCD
-
-    style API fill:#64B5F6,stroke:#1565C0,stroke-width:3px
-    style ETCD fill:#FFB74D,stroke:#E65100,stroke-width:2px
-    style Controller fill:#81C784,stroke:#2E7D32,stroke-width:2px
-    style Pod1 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod2 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod3 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style ControlPlane fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
-    style DataPlane fill:#F1F8E9,stroke:#558B2F,stroke-width:2px
-```
 
 **Key Concepts:**
 
@@ -830,21 +778,12 @@ A **Pod** is the smallest deployable unit in Kubernetes. It's a wrapper around o
 
 **Why not deploy containers directly?** Kubernetes needs a higher-level abstraction to manage networking, storage, and lifecycle. The Pod provides this abstraction.
 
-```mermaid
-graph TB
-    Pod((Pod<br/>user-service-abc<br/>IP: 10.0.0.5))
+![A Pod groups containers that share a local environment. Branches show resources and relationships within one Pod, not load-balanced replicas.](./images/pod-shared-resources.svg)
 
-    Container[Container<br/>user-service:v1]
-    Storage[/Shared Storage/]
-    Network[Shared Network<br/>localhost]
+The Pod exists because some processes need a shared lifecycle and local networking rather than independent placement. An application and its sidecar proxy are one example. Containers in different Pods do not share localhost, and being in one Pod does not automatically share all files. Put unrelated services in separate Pods so their scaling and replacement are not unnecessarily coupled.
 
-    Pod --> Container
-    Container -.-> Storage
-    Container -.-> Network
+**Check your reasoning:** Why would localhost reach a helper in the same Pod but not the database running in another Pod?
 
-    style Pod fill:#E1F5FE,stroke:#01579B,stroke-width:3px
-    style Container fill:#BBDEFB,stroke:#1565C0,stroke-width:2px
-```
 
 **Key Characteristics:**
 
@@ -1037,34 +976,12 @@ spec:
 
 A Deployment doesn't directly manage Pods. Instead, it manages **ReplicaSets**, which in turn manage Pods.
 
-```mermaid
-graph TB
-    Deployment[Deployment<br/>user-service<br/>Strategy: RollingUpdate]
+![A Deployment manages versions through ReplicaSets. Read the current ReplicaSet as the owner of the current Pods; history is a separate version.](./images/deployment-replicaset-pods.svg)
 
-    subgraph ReplicaSets["ReplicaSets"]
-        RS1[ReplicaSet v1<br/>replicas: 0<br/>image: user-service:v1]
-        RS2[ReplicaSet v2<br/>replicas: 3<br/>image: user-service:v2]
-    end
+The hierarchy separates rollout policy from maintaining an instance count. A Deployment coordinates versions; each ReplicaSet maintains Pods for its template. During a rolling update, old and new versions can coexist. The arrow to the Pod summary describes the current ReplicaSet's responsibility; the Deployment does not need to manage each instance as a hand-written start command.
 
-    subgraph Pods["Pods (Current Version)"]
-        Pod1((Pod<br/>v2-abc))
-        Pod2((Pod<br/>v2-def))
-        Pod3((Pod<br/>v2-ghi))
-    end
+**Check your reasoning:** If you delete one current Pod, why does another appear? Which controller restores the count, and why should you not fix it by editing that Pod directly?
 
-    Deployment -->|Creates/Manages| RS1
-    Deployment -->|Creates/Manages| RS2
-    RS2 -->|Creates/Manages| Pod1
-    RS2 -->|Creates/Manages| Pod2
-    RS2 -->|Creates/Manages| Pod3
-
-    style Deployment fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px
-    style RS2 fill:#A5D6A7,stroke:#2E7D32,stroke-width:2px
-    style RS1 fill:#E0E0E0,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5
-    style Pod1 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod2 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod3 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-```
 
 #### What is a ReplicaSet?
 
@@ -1283,45 +1200,20 @@ spec:
   replicas: 3
 ```
 
-**Problems:**
-1. **Random names**: Pods named `postgres-abc123`, `postgres-def456`, `postgres-ghi789`. How do you configure which is the primary?
-2. **Storage coordination**: A Deployment can use persistent volumes, but independent database replicas need distinct storage and replication configuration.
-3. **Parallel creation**: All 3 Pods start simultaneously. Databases need ordered initialization (primary first, then replicas).
-4. **Changing IPs**: Replicas connect to primary via IP. When primary restarts, IP changes, breaking replication.
+This count alone does not configure a primary, replicas, or safe access to database files. Some applications need stable peer identities, an individual storage claim for each instance, or controlled initialization order.
 
-**StatefulSets fix these issues:**
-- Stable, predictable names: `postgres-0`, `postgres-1`, `postgres-2`
-- Persistent storage: Each Pod has its own disk that survives restarts
-- Ordered deployment: `postgres-0` starts first, then `postgres-1`, then `postgres-2`
-- Stable network identities: `postgres-0.postgres` DNS name never changes
+**What a StatefulSet can provide with the appropriate configuration:**
+- Stable ordinal names such as `postgres-0` and `postgres-1`; an ordinal does not elect a database primary.
+- Per-Pod persistent claims through `volumeClaimTemplates`, so a replacement can reuse its corresponding storage.
+- Ordered creation under the default `OrderedReady` policy; readiness and database initialization rules still need configuration.
+- Stable DNS identities through the governing Service and cluster DNS, while individual Pod IPs may change. Clients still need to resolve names and handle reconnects.
 
-```mermaid
-graph TB
-    StatefulSet[StatefulSet<br/>postgres<br/>replicas: 3]
+![Stable Pod identity connects each ordinal to its storage. Each branch is an ordinal identity and its own persistent-volume claim, not a copied database.](./images/statefulset-identity-and-storage.svg)
 
-    subgraph Pods["Ordered Pods with Persistent Storage"]
-        Pod1((postgres-0<br/>Stable ID))
-        Pod2((postgres-1<br/>Stable ID))
-        Pod3((postgres-2<br/>Stable ID))
+A stateful application may need to reconnect a replacement process to the same identity and files. A StatefulSet and volume claim templates provide that mapping. The diagram does not configure database replication, leader election, backups, or high availability. Starting three PostgreSQL processes without a replication design does not turn them into a coordinated primary-replica database.
 
-        PV1[/Persistent Volume 1/]
-        PV2[/Persistent Volume 2/]
-        PV3[/Persistent Volume 3/]
+**Check your reasoning:** If app-1 is replaced, which identity and claim should it receive? What extra configuration would make its database contents agree with app-0?
 
-        Pod1 -.-> PV1
-        Pod2 -.-> PV2
-        Pod3 -.-> PV3
-    end
-
-    StatefulSet -->|1. Creates First| Pod1
-    StatefulSet -->|2. Creates Second| Pod2
-    StatefulSet -->|3. Creates Third| Pod3
-
-    style StatefulSet fill:#FFE0B2,stroke:#E65100,stroke-width:3px
-    style Pod1 fill:#FFF3E0,stroke:#E65100,stroke-width:2px
-    style Pod2 fill:#FFF3E0,stroke:#E65100,stroke-width:2px
-    style Pod3 fill:#FFF3E0,stroke:#E65100,stroke-width:2px
-```
 
 **Key Differences from Deployments:**
 
@@ -1329,7 +1221,7 @@ graph TB
 |---------|-----------|-------------|
 | **Pod Identity** | Random names (user-service-abc123) | Ordered names (postgres-0, postgres-1) |
 | **Storage** | Can mount PVCs; no per-replica claim identity | Per-Pod PVC identity with volumeClaimTemplates |
-| **Creation Order** | Parallel (all at once) | Sequential (0, then 1, then 2) |
+| **Creation Order** | No stable ordinal startup order | OrderedReady by default; a Parallel policy is also available |
 | **Network Identity** | Random IP, changes on restart | Stable hostname (postgres-0.postgres) |
 | **Use Case** | Stateless apps (APIs, web servers) | Stateful apps (databases, queues) |
 
@@ -1430,27 +1322,12 @@ A replacement Pod generally gets a new IP. Restarting a container inside the sam
 3. **Load balancing**: Automatically distributes traffic across healthy Pods
 4. **Health checking**: Only routes to Pods that are ready
 
-```mermaid
-graph LR
-    Client[Client Request]
-    Service[Service<br/>user-service:5000<br/>ClusterIP: 10.0.1.100]
+![A Service provides stable discovery for replaceable Pods. Branches represent eligible endpoints behind one stable Service abstraction.](./images/service-selectors-and-endpoints.svg)
 
-    subgraph Pods["Pod Replicas"]
-        Pod1((Pod 1<br/>10.0.2.10))
-        Pod2((Pod 2<br/>10.0.2.11))
-        Pod3((Pod 3<br/>10.0.2.12))
-    end
+A Service solves discovery when replica names and IP addresses change. It is a Kubernetes API abstraction implemented by the cluster's networking, not a new copy of the application or necessarily a proxy process handling each JSON request. Endpoint selection follows labels and readiness. Load distribution is not a promise that every HTTP request gets a different replica; connection reuse and protocol behavior matter.
 
-    Client --> Service
-    Service -->|Load Balance| Pod1
-    Service -->|Load Balance| Pod2
-    Service -->|Load Balance| Pod3
+**Check your reasoning:** If a Service selector matches no ready Pods, why can DNS resolve correctly while application connections still fail?
 
-    style Service fill:#BBDEFB,stroke:#1976D2,stroke-width:3px
-    style Pod1 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod2 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-    style Pod3 fill:#E1F5FE,stroke:#01579B,stroke-width:2px
-```
 
 **With Service - WORKS:**
 ```python
@@ -1856,19 +1733,12 @@ Each service does **one thing well**.
 
 Each service owns its database. **No shared database access.**
 
-```mermaid
-graph LR
-    US[User Service] --> USDB[(User DB<br/>PostgreSQL)]
-    PS[Product Service] --> PSDB[(Product DB<br/>MongoDB)]
-    OS[Order Service] --> OSDB[(Order DB<br/>PostgreSQL)]
+![Private data changes through its owning service. The arrows inside the cards mean authorized data access by the owning service.](./images/service-data-ownership.svg)
 
-    US -.X.- PSDB
-    US -.X.- OSDB
+Private storage boundaries reduce the chance that one team's schema change silently breaks another service. Sharing a database server can still preserve logical ownership with appropriate databases, schemas, and permissions. Conversely, three separate servers do not create independence if each service directly edits the others' tables. The useful boundary is the supported data-access contract.
 
-    style USDB fill:#4DB6AC,stroke:#00695C,stroke-width:2px
-    style PSDB fill:#81C784,stroke:#2E7D32,stroke-width:2px
-    style OSDB fill:#64B5F6,stroke:#1565C0,stroke-width:2px
-```
+**Check your reasoning:** If Orders needs a historical product price, should it repeatedly read the current Product record or keep an agreed snapshot? Why?
+
 
 **Why:**
 - Services scale independently
@@ -1884,24 +1754,12 @@ graph LR
 
 **Single entry point** for all client requests.
 
-```mermaid
-graph TB
-    Client[Client/Browser]
-    Gateway[API Gateway<br/>Port 8080]
+![An API gateway presents one entry point to several APIs. The branches show path-based routing; a gateway can do more only when configured to do so.](./images/api-gateway-routing.svg)
 
-    subgraph Services["Microservices"]
-        US[User Service<br/>:5001]
-        PS[Product Service<br/>:5002]
-        OS[Order Service<br/>:5003]
-    end
+Without an entry layer, every client may need to know several internal addresses and repeat common connection logic. A gateway can centralize routing and selected policies while services retain their responsibilities. That extra hop is also a component to operate and protect. Routing and authentication do not make a multi-service operation atomic or eliminate authorization inside the target service.
 
-    Client -->|All requests| Gateway
-    Gateway -->|/api/users| US
-    Gateway -->|/api/products| PS
-    Gateway -->|/api/orders| OS
+**Check your reasoning:** Which changes if Orders moves to a new internal address: every browser client, or the gateway's routing configuration?
 
-    style Gateway fill:#64B5F6,stroke:#1565C0,stroke-width:3px
-```
 
 **Gateway Responsibilities:**
 - **Routing**: Direct requests to correct service
@@ -1946,44 +1804,12 @@ response = requests.get(f"{USER_SERVICE_URL}/api/users/123")
 
 ### Example: E-commerce Platform
 
-```mermaid
-graph TB
-    Client[Web Browser]
+![Application design and Kubernetes resources describe different layers. Each branch combines an application responsibility with the resources needed to operate it.](./images/ecommerce-on-kubernetes.svg)
 
-    subgraph Kubernetes["Kubernetes Cluster"]
-        Gateway[API Gateway<br/>LoadBalancer Service]
+A Deployment says how to maintain a workload; a Service says how to reach it; the application API says what an operation means. Keeping these layers separate helps explain why a healthy Pod count does not prove an order was processed correctly. Databases, caches, and notification workers also need their own persistence and failure rules. The picture is an illustrative design, not applications already included in this repository.
 
-        subgraph Deployments["Stateless Services (Deployments)"]
-            US[User Service<br/>3 replicas]
-            PS[Product Service<br/>5 replicas]
-            OS[Order Service<br/>3 replicas]
-            NS[Notification Service<br/>2 replicas]
-        end
+**Check your reasoning:** If the Order Deployment has three ready replicas but its database is unavailable, what can Kubernetes health information tell you and what must the application reveal?
 
-        subgraph StatefulSets["Stateful Services"]
-            USDB[(User DB<br/>PostgreSQL<br/>StatefulSet)]
-            PSDB[(Product DB<br/>MongoDB<br/>StatefulSet)]
-            OSDB[(Order DB<br/>PostgreSQL<br/>StatefulSet)]
-            Redis[(Cache<br/>Redis<br/>StatefulSet)]
-        end
-
-        Client --> Gateway
-        Gateway --> US
-        Gateway --> PS
-        Gateway --> OS
-
-        US --> USDB
-        US --> Redis
-        PS --> PSDB
-        OS --> OSDB
-        OS -.API Call.-> PS
-        OS -.Event.-> NS
-    end
-
-    style Gateway fill:#64B5F6,stroke:#1565C0,stroke-width:2px
-    style Deployments fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
-    style StatefulSets fill:#FFE0B2,stroke:#E65100,stroke-width:2px
-```
 
 **Kubernetes Resources Used:**
 
@@ -2060,30 +1886,12 @@ Problem: 3 services = 3 public IP addresses = 3× cost and complexity!
 
 **Ingress** is a Kubernetes resource that provides HTTP/HTTPS routing from outside the cluster to Services inside the cluster. It acts as an API Gateway and reverse proxy.
 
-```mermaid
-graph LR
-    User[User<br/>Internet]
-    Ingress[Ingress Controller<br/>nginx/traefik]
+![Ingress routing connects a public request to an internal Service. Branches show host/path selection, not an automatic path-rewrite policy.](./images/ingress-host-and-path-routing.svg)
 
-    subgraph "Kubernetes Cluster"
-        US[user-service<br/>ClusterIP]
-        PS[product-service<br/>ClusterIP]
-        OS[order-service<br/>ClusterIP]
-    end
+A shared ingress controller lets applications use HTTP hosts and paths instead of exposing a new public port for every service. An Ingress object is configuration; an installed controller implements it. DNS, rule matching, TLS, Service endpoints, and the backend route are separate dependencies. In particular, matching `/products` does not automatically strip that prefix before forwarding to the API.
 
-    User -->|yourdomain.com/users| Ingress
-    User -->|yourdomain.com/products| Ingress
-    User -->|yourdomain.com/orders| Ingress
+**Check your reasoning:** If a request reaches the API but its handler expects /api/products, why might a successful ingress match still lead to an HTTP 404?
 
-    Ingress -->|/users/*| US
-    Ingress -->|/products/*| PS
-    Ingress -->|/orders/*| OS
-
-    style Ingress fill:#ffe1f5
-    style US fill:#e1f5ff
-    style PS fill:#e1f5ff
-    style OS fill:#e1f5ff
-```
 
 **One public IP address routes to all services!**
 
@@ -2563,27 +2371,12 @@ USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:5000")
 
 ## Summary: Deployment Decision Tree
 
-```mermaid
-graph TD
-    Start{Does service<br/>store data?}
-    Start -->|Yes| Stateful{Needs persistent<br/>storage?}
-    Start -->|No| Stateless[Use Deployment]
+![Choose a controller from identity and lifecycle requirements. These are independent design questions; no single yes/no storage question selects every controller.](./images/workload-controller-selection.svg)
 
-    Stateful -->|Yes| StatefulSet[Use StatefulSet]
-    Stateful -->|No| Deployment2[Use Deployment<br/>with Volume]
+The important distinction is the workload's identity and lifecycle, not simply whether the program ever writes data. A Deployment can mount persistent storage, and a StatefulSet does not automatically coordinate replicated databases. Increasing replicas before checking shared-state and duplicate-processing behavior can make an application less correct. Define the required storage access mode and the application's concurrency model before scaling it.
 
-    Stateless --> Scale{Need<br/>scaling?}
-    Scale -->|Yes| HPA[Add HorizontalPodAutoscaler]
-    Scale -->|No| Done1[Done]
+**Check your reasoning:** Why can three replicas of the in-memory todo API return inconsistent lists even when all three Pods are healthy?
 
-    StatefulSet --> Replicas{Need<br/>replicas?}
-    Replicas -->|Yes| Replication[Configure Replication<br/>e.g., PostgreSQL Primary-Replica]
-    Replicas -->|No| Done2[Done]
-
-    style StatefulSet fill:#FFE0B2,stroke:#E65100,stroke-width:2px
-    style Stateless fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
-    style Deployment2 fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
-```
 
 ---
 

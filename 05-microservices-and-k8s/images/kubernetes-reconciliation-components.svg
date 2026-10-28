@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1038" viewBox="0 0 1200 1038" role="img" aria-labelledby="title description">
+<title id="title">Kubernetes turns a specification into observed running work</title>
+<desc id="description">Kubernetes was designed to keep reconciling desired and observed state, avoiding a fragile one-time list of SSH commands. The API server is the coordination interface; the scheduler chooses placement, and the node&#x27;s kubelet arranges execution through its runtime. These are cooperating watch-and-reconcile loops, not one central script. Acceptance, scheduling, container startup, and readiness can fail at different stages.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1038" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Kubernetes turns a specification into observed running work</text>
+<text id="text-2" x="40" y="83" class="muted">Read top to bottom as an overview; several controllers continue operating concurrently.</text>
+<rect x="40" y="150" width="1120" height="124" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">1. Submit the specification</text>
+<text id="text-5" x="62" y="218" class="body">kubectl sends the object to the API server.</text>
+<text id="text-6" x="62" y="243" class="body">The API validates and stores accepted state.</text>
+<path d="M600 274 L600 306" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="306" width="1120" height="124" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="62" y="340" class="heading" font-size="22px" style="font-size:22px">2. Controllers reconcile objects</text>
+<text id="text-10" x="62" y="374" class="body">Deployment and ReplicaSet controllers act through the API.</text>
+<text id="text-11" x="62" y="399" class="body">They create or adjust the required workload objects.</text>
+<path d="M600 430 L600 462" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="462" width="1120" height="124" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="62" y="496" class="heading" font-size="22px" style="font-size:22px">3. Scheduler assigns a node</text>
+<text id="text-15" x="62" y="530" class="body">An unassigned Pod needs placement.</text>
+<text id="text-16" x="62" y="555" class="body">The scheduler records a suitable node assignment through the API.</text>
+<path d="M600 586 L600 618" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="618" width="1120" height="124" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-19" x="62" y="652" class="heading" font-size="22px" style="font-size:22px">4. Kubelet runs the Pod</text>
+<text id="text-20" x="62" y="686" class="body">The selected node uses its container runtime.</text>
+<text id="text-21" x="62" y="711" class="body">Volumes and networking must also be available.</text>
+<path d="M600 742 L600 774" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="774" width="1120" height="124" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-24" x="62" y="808" class="heading" font-size="22px" style="font-size:22px">5. Components report status</text>
+<text id="text-25" x="62" y="842" class="body">Observed state returns through the API.</text>
+<text id="text-26" x="62" y="867" class="body">Controllers keep checking for differences and failures.</text>
+<rect x="40" y="948" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="978" class="body">The scheduler selects placement; the API server does not schedule and run containers itself.</text>
+</svg>

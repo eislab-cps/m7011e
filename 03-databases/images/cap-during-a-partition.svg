@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="651" viewBox="0 0 1200 651" role="img" aria-labelledby="title description">
+<title id="title">A network partition forces a consistency decision</title>
+<desc id="description">CAP concerns the guarantees a distributed system can maintain while nodes cannot communicate. Here consistency means linearizable behavior, not a table constraint, and availability has a specific all-requests guarantee. The branches describe different responses to that failure, not permanent labels for every operation of a product. A database can make different tradeoffs for different operations and settings.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="651" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A network partition forces a consistency decision</text>
+<text id="text-2" x="40" y="83" class="muted">The branches show which guarantee is relaxed during the same communication failure.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Nodes cannot communicate</text>
+<text id="text-5" x="62" y="218" class="body">Two groups of replicas cannot coordinate a shared, up-to-date history.</text>
+<path d="M600 260 V310 H310.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="540.0" height="149" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">Preserve one current order</text>
+<text id="text-9" x="62.0" y="428" class="body">Some operations must wait or fail.</text>
+<text id="text-10" x="62.0" y="453" class="body">Cannot promise success for every request.</text>
+<path d="M600 260 V310 H890.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620.0" y="360" width="540.0" height="149" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-13" x="642.0" y="394" class="heading" font-size="22px" style="font-size:22px">Keep accepting operations</text>
+<text id="text-14" x="642.0" y="428" class="body">Some results may reflect divergent state.</text>
+<text id="text-15" x="642.0" y="453" class="body">Reconciliation or restricted semantics are</text>
+<text id="text-16" x="642.0" y="478" class="body">needed.</text>
+<rect x="40" y="561" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="60" y="591" class="body">Choose the required behavior for an operation; a SQL or NoSQL label does not decide it.</text>
+</svg>

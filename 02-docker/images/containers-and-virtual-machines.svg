@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="742" viewBox="0 0 1200 742" role="img" aria-labelledby="title description">
+<title id="title">Containers and VMs isolate at different boundaries</title>
+<desc id="description">A VM can supply its own kernel; a Linux container uses the kernel of its Linux host. That difference explains why a container image can be lighter than a whole guest system, and why it cannot supply an arbitrary different kernel on its own. On macOS and in common Windows Linux-container setups, a Linux VM provides the kernel: containers and VMs are often used together.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="742" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Containers and VMs isolate at different boundaries</text>
+<text id="text-2" x="40" y="83" class="muted">Read each column from application files down to the infrastructure beneath them.</text>
+<rect x="40" y="150" width="540" height="454" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="188" class="heading">Virtual machine</text>
+<rect x="62" y="222" width="496" height="100" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-6" x="84" y="256" class="heading" font-size="22px" style="font-size:22px">Application + user-space libraries</text>
+<path d="M310 322 L310 348" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="62" y="348" width="496" height="100" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="84" y="382" class="heading" font-size="22px" style="font-size:22px">Guest operating-system kernel</text>
+<path d="M310 448 L310 474" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="62" y="474" width="496" height="100" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-12" x="84" y="508" class="heading" font-size="22px" style="font-size:22px">Hypervisor / virtualized hardware</text>
+<rect x="620" y="150" width="540" height="454" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="642" y="188" class="heading">Linux container</text>
+<rect x="642" y="222" width="496" height="100" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-16" x="664" y="256" class="heading" font-size="22px" style="font-size:22px">Application + user-space libraries</text>
+<path d="M890 322 L890 348" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="642" y="348" width="496" height="100" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-19" x="664" y="382" class="heading" font-size="22px" style="font-size:22px">Isolated processes share a Linux</text>
+<text id="text-20" x="664" y="408" class="heading" font-size="22px" style="font-size:22px">kernel</text>
+<path d="M890 448 L890 474" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="642" y="474" width="496" height="100" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-23" x="664" y="508" class="heading" font-size="22px" style="font-size:22px">Host resources / optional</text>
+<text id="text-24" x="664" y="534" class="heading" font-size="22px" style="font-size:22px">underlying VM</text>
+<rect x="40" y="652" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="682" class="body">An image packages user-space files; the runtime and host provide the running environment.</text>
+</svg>

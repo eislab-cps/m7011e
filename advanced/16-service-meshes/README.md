@@ -2,19 +2,25 @@
 
 Learn how to implement advanced traffic management, security, and observability with Istio service mesh.
 
+## Why a Mesh When Applications Can Already Use HTTP and TLS?
+
+Application libraries can implement TLS, retries, routing, and telemetry. In a system with many services and languages, repeating and updating those facilities consistently becomes operational work. A sidecar mesh puts selected transport behavior in managed proxies and distributes policy through a control plane. Istio's [architecture documentation](https://istio.io/latest/docs/ops/deployment/architecture/) describes those responsibilities.
+
+That also adds proxies, configuration, resource use, and failure modes to understand. A smaller system may be better served by its existing libraries and ingress configuration. The mesh does not understand whether Alice owns a todo or whether retrying a payment is safe: application identity, authorization, idempotency, and data correctness remain explicit responsibilities. This tutorial uses sidecars to make the distinction between transport policy and business behavior observable.
+
 ## Why This Tutorial Matters
 
 In Tutorial 15, you learned to monitor microservices with Prometheus and Grafana. But as your microservices architecture grows, you face new challenges:
 
-**Without a service mesh:**
-- ❌ Each service implements its own retry logic, timeouts, and circuit breakers
-- ❌ Service-to-service communication is unencrypted (security risk)
-- ❌ Difficult to implement canary deployments or A/B testing
-- ❌ No visibility into service-to-service traffic patterns
-- ❌ Hard to enforce access policies between services
-- ❌ Distributed tracing requires instrumentation and propagation of trace context
+**Responsibilities that need an implementation, with or without a mesh:**
+- Connection timeouts, retries, and limits must be chosen for the operation.
+- Transport encryption and workload authentication need a suitable TLS configuration.
+- Version routing needs a mechanism to select destinations.
+- Telemetry needs collection, export, and interpretation.
+- Access policies need an identity and an enforcement point.
+- Distributed traces need compatible instrumentation and propagated context.
 
-**With a service mesh:**
+**Facilities a mesh can centralize when configured:**
 - ✅ Configure retries, timeouts, and circuit breaking in mesh policies
 - ✅ Automatic mTLS between participating mesh workloads; strict policies can require it
 - ✅ Easy canary deployments and traffic splitting
@@ -32,39 +38,18 @@ A **service mesh** is a dedicated infrastructure layer that handles service-to-s
 
 ### How It Works
 
-```mermaid
-graph LR
-    subgraph "Pod A"
-        A[Service A]
-        PA[Envoy Proxy<br/>Sidecar]
-    end
+![A sidecar mesh intercepts eligible workload traffic. Read the request path top to bottom; the control plane configures it but does not carry the payload.](./images/mesh-sidecar-data-path.svg)
 
-    subgraph "Pod B"
-        B[Service B]
-        PB[Envoy Proxy<br/>Sidecar]
-    end
+Repeating transport policy in every application library is operational work. A sidecar mesh moves selected routing, connection security, and telemetry behavior into managed proxies. The application does not normally rewrite its URL to localhost to use the proxy; interception handles eligible traffic. Workload mTLS identifies and protects the proxy-to-proxy connection, not the end user's permission to modify an order.
 
-    subgraph "Control Plane"
-        Istiod[Istiod<br/>Configuration & Certs]
-    end
+**Check your reasoning:** Why can two workloads authenticate each other through mTLS while an API still needs Alice's access token and an ownership check?
 
-    A -->|localhost| PA
-    PA -->|mTLS| PB
-    PB -->|localhost| B
-
-    Istiod -.->|Configure| PA
-    Istiod -.->|Configure| PB
-
-    style PA fill:#e1f5ff
-    style PB fill:#e1f5ff
-    style Istiod fill:#ffe1f5
-```
 
 **Key Concept: Sidecar Pattern**
 - New Pods in a namespace labeled for sidecar injection get an Envoy proxy
-- All traffic goes through the sidecar proxy
+- Configured eligible workload traffic is intercepted by the sidecar; exclusions and bypasses depend on the installation
 - Proxies are configured by the Istio control plane
-- Your application code doesn't change!
+- Many transport policies can change without editing business handlers; tracing context and application authorization may still need application code
 
 ## Learning Objectives
 
@@ -169,50 +154,23 @@ spec:
 
 ### Istio Architecture
 
-```mermaid
-graph TB
-    subgraph "Data Plane (Envoy Proxies)"
-        P1[Pod 1<br/>App + Proxy]
-        P2[Pod 2<br/>App + Proxy]
-        P3[Pod 3<br/>App + Proxy]
-    end
+![The control plane distributes policy; proxies carry traffic. Dashed arrows distribute configuration and credentials; solid arrows depict eligible proxy traffic.](./images/istio-control-and-data-planes.svg)
 
-    subgraph "Control Plane (istiod)"
-        Pilot[Pilot<br/>Traffic Management]
-        Citadel[Citadel<br/>Certificate Authority]
-        Config[Configuration<br/>Validation]
-    end
+A control plane exists so many proxies can receive a consistent operating policy rather than being configured individually. In this sidecar deployment, istiod combines control-plane functions; names such as Pilot and Citadel describe responsibilities and history, not a requirement to install separate Pods for each label. Application requests flow through the data-plane proxies, while configuration and certificate operations involve the control plane.
 
-    P1 <-->|mTLS| P2
-    P2 <-->|mTLS| P3
-    P1 <-->|mTLS| P3
+**Check your reasoning:** If a routing rule is accepted but a proxy has not received it, which configuration would you inspect before blaming the backend code?
 
-    Pilot -.->|Configure Routes| P1
-    Pilot -.->|Configure Routes| P2
-    Pilot -.->|Configure Routes| P3
-
-    Citadel -.->|Issue Certs| P1
-    Citadel -.->|Issue Certs| P2
-    Citadel -.->|Issue Certs| P3
-
-    style P1 fill:#e1f5ff
-    style P2 fill:#e1f5ff
-    style P3 fill:#e1f5ff
-    style Pilot fill:#ffe1f5
-    style Citadel fill:#ffe1e1
-    style Config fill:#e1ffe1
-```
 
 **Components:**
 
 1. **Data Plane (Envoy Proxies)**
    - Lightweight proxies deployed as sidecars
-   - Handle all network traffic
+   - Handle eligible intercepted workload traffic
    - Enforce policies and collect telemetry
 
 2. **Control Plane (istiod)**
-   - **Pilot**: Distributes traffic rules to proxies
-   - **Citadel**: Manages certificates for mTLS
+   - **Configuration distribution**: istiod translates routing policy for proxies (historically associated with Pilot)
+   - **Certificate functions**: istiod supports workload certificates for mTLS (historically associated with Citadel)
    - **Configuration validation**: Handled within istiod; Galley is no longer a separate component
 
 ### Traffic Flow Example
@@ -311,10 +269,12 @@ Let's deploy a simple multi-service application to demonstrate Istio features.
 
 The `frontend` Pod is a shell-based test client, not a web server. It sends requests to the HTTP echo backend. This demo does not deploy a database or an external Gateway route.
 
-```mermaid
-graph LR
-    Client["frontend test client + Envoy"] -->|"HTTP over mesh mTLS"| Backend["backend v1/v2 + Envoy"]
-```
+![The demo client and backend each have an application and proxy. Arrows trace a test request through the configured mesh to one backend instance.](./images/mesh-demo-request-path.svg)
+
+The frontend in this exercise is a request-generating workload, not necessarily a human-facing web page. Its requests let you observe the proxy policies without changing backend application code. The mesh can choose versions according to weights or headers, but a short sample is not guaranteed to match the weights exactly. Browser-facing TLS and service-to-service mesh mTLS remain different connections.
+
+**Check your reasoning:** Why should curl run in the named application container rather than assuming the proxy container contains your test tools?
+
 
 ### Create Sample Application
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="835" viewBox="0 0 1200 835" role="img" aria-labelledby="title description">
+<title id="title">Distributed systems add compatibility checks between test scopes</title>
+<desc id="description">Independent releases make compatibility a distinct testing problem. A service can pass its unit tests while returning a field or status its consumer no longer understands. Contract checks make selected interface assumptions explicit; they do not replace testing against real dependencies or a few end-to-end journeys. Choose each scope based on the failure it can detect and the evidence it cannot supply.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="835" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Distributed systems add compatibility checks between test scopes</text>
+<text id="text-2" x="40" y="83" class="muted">The levels describe scope and purpose, not a mandatory order in one CI pipeline.</text>
+<path d="M400.0 150 H800.0 L850.0 278 H350.0 Z" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="600" y="193" class="heading" text-anchor="middle">User journey</text>
+<text id="text-5" x="600" y="229" class="body" text-anchor="middle">Does a selected operation work</text>
+<text id="text-6" x="600" y="254" class="body" text-anchor="middle">across the deployed system?</text>
+<path d="M296.6666666666667 290 H903.3333333333333 L953.3333333333333 418 H246.66666666666669 Z" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-8" x="600" y="333" class="heading" text-anchor="middle">Contract</text>
+<text id="text-9" x="600" y="369" class="body" text-anchor="middle">Do the producer and consumer agree on API behavior?</text>
+<path d="M193.33333333333337 430 H1006.6666666666666 L1056.6666666666665 558 H143.33333333333337 Z" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="600" y="473" class="heading" text-anchor="middle">Integration</text>
+<text id="text-12" x="600" y="509" class="body" text-anchor="middle">Does a service work with a real database or broker?</text>
+<path d="M90.0 570 H1110.0 L1160.0 698 H40.0 Z" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="600" y="613" class="heading" text-anchor="middle">Unit</text>
+<text id="text-15" x="600" y="649" class="body" text-anchor="middle">Do individual rules behave correctly under focused inputs?</text>
+<rect x="40" y="745" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="60" y="775" class="body">Compatibility, integration correctness, and user-visible behavior are separate questions.</text>
+</svg>

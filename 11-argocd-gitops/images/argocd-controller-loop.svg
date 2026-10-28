@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="522" viewBox="0 0 1200 522" role="img" aria-labelledby="title description">
+<title id="title">Desired state, synchronization, and health are different facts</title>
+<desc id="description">Argo CD exists to make the intended deployment inspectable and comparable with live resources. Synchronization says something about configuration alignment; health says something about the resulting resources. They are deliberately different because applying an invalid image name can align the manifest while leaving Pods unable to start. Changing Git again gives the controller a new intended state to reconcile.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="522" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Desired state, synchronization, and health are different facts</text>
+<text id="text-2" x="40" y="83" class="muted">Follow the loop while keeping manifest alignment separate from workload readiness.</text>
+<rect x="40.0" y="150" width="320.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Git revision + path</text>
+<text id="text-5" x="62.0" y="218" class="body">Repository configuration</text>
+<text id="text-6" x="62.0" y="243" class="body">selects what is rendered.</text>
+<text id="text-7" x="62.0" y="268" class="body">A local unpushed edit is</text>
+<text id="text-8" x="62.0" y="293" class="body">not part of that revision.</text>
+<rect x="440.0" y="150" width="320.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Controller comparison</text>
+<text id="text-11" x="462.0" y="218" class="body">Differences can make an</text>
+<text id="text-12" x="462.0" y="243" class="body">Application OutOfSync.</text>
+<text id="text-13" x="462.0" y="268" class="body">The selected sync policy</text>
+<text id="text-14" x="462.0" y="293" class="body">decides what is applied.</text>
+<path d="M360.0 237.0 L440.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Cluster resources</text>
+<text id="text-18" x="862.0" y="218" class="body">The workload starts, fails,</text>
+<text id="text-19" x="862.0" y="243" class="body">or becomes ready.</text>
+<text id="text-20" x="862.0" y="268" class="body">Synced manifests can still</text>
+<text id="text-21" x="862.0" y="293" class="body">describe an unhealthy app.</text>
+<path d="M760.0 237.0 L840.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1000.0 324 V372 H200.0 V324" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="297.0" y="384" width="606.0" height="30" fill="#fff"/>
+<text id="text-25" x="600" y="405" class="body" text-anchor="middle">The controller repeats its reads; this is not a write to Git</text>
+<rect x="40" y="432" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="462" class="body">Use the configured sync policy; detecting drift does not always mean applying it immediately.</text>
+</svg>

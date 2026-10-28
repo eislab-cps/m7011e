@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" role="img" aria-labelledby="title description">
+<title id="title">A push-based pipeline deploys with its own cluster access</title>
+<desc id="description">A push deployment automates commands that someone might otherwise run manually. It is straightforward, but the deployment job needs appropriate cluster access and its one-time success does not necessarily detect later drift. Separating build from deployment also makes it easier to identify which tested artifact and configuration actually reached the environment.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="500" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A push-based pipeline deploys with its own cluster access</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows follow a delivery action from CI toward the cluster.</text>
+<rect x="40.0" y="150" width="320.0" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Code and</text>
+<text id="text-5" x="62.0" y="210" class="heading" font-size="22px" style="font-size:22px">configuration</text>
+<text id="text-6" x="62.0" y="244" class="body">A commit triggers the</text>
+<text id="text-7" x="62.0" y="269" class="body">configured CI workflow.</text>
+<text id="text-8" x="62.0" y="294" class="body">The pipeline checks and</text>
+<text id="text-9" x="62.0" y="319" class="body">builds selected artifacts.</text>
+<rect x="440.0" y="150" width="320.0" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Deployment job</text>
+<text id="text-12" x="462.0" y="218" class="body">Holds an allowed path to</text>
+<text id="text-13" x="462.0" y="243" class="body">the cluster.</text>
+<text id="text-14" x="462.0" y="268" class="body">Runs the chosen deployment</text>
+<text id="text-15" x="462.0" y="293" class="body">commands.</text>
+<path d="M360.0 250.0 L440.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Running resources</text>
+<text id="text-19" x="862.0" y="218" class="body">The cluster accepts</text>
+<text id="text-20" x="862.0" y="243" class="body">desired-state changes.</text>
+<text id="text-21" x="862.0" y="268" class="body">Readiness and application</text>
+<text id="text-22" x="862.0" y="293" class="body">checks follow.</text>
+<path d="M760.0 250.0 L840.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="410" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-25" x="60" y="440" class="body">A completed deployment job is not continuous reconciliation or a complete application test.</text>
+</svg>

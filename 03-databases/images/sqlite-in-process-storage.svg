@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="474" viewBox="0 0 1200 474" role="img" aria-labelledby="title description">
+<title id="title">SQLite embeds SQL storage in the application process</title>
+<desc id="description">A separate database server is useful for remote, shared administration, but it is extra machinery for a local application or embedded device. SQLite supplies a relational engine as a library, avoiding a database network connection. That changes deployment and concurrency considerations; copying its file into many independent replicas does not create one shared, coordinated database.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="474" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">SQLite embeds SQL storage in the application process</text>
+<text id="text-2" x="40" y="83" class="muted">These stages can be library calls and file operations inside one process environment.</text>
+<rect x="40.0" y="150" width="320.0" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Application process</text>
+<text id="text-5" x="62.0" y="218" class="body">Calls the SQLite library</text>
+<text id="text-6" x="62.0" y="243" class="body">directly.</text>
+<text id="text-7" x="62.0" y="268" class="body">Does not need a separate</text>
+<text id="text-8" x="62.0" y="293" class="body">database server.</text>
+<rect x="440.0" y="150" width="320.0" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">SQLite library</text>
+<text id="text-11" x="462.0" y="218" class="body">Executes SQL and</text>
+<text id="text-12" x="462.0" y="243" class="body">coordinates file access.</text>
+<text id="text-13" x="462.0" y="268" class="body">Provides transaction</text>
+<text id="text-14" x="462.0" y="293" class="body">semantics.</text>
+<path d="M360.0 237.0 L440.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">Database file</text>
+<text id="text-18" x="862.0" y="218" class="body">Lives on storage available</text>
+<text id="text-19" x="862.0" y="243" class="body">to the process.</text>
+<text id="text-20" x="862.0" y="268" class="body">Needs a suitable access and</text>
+<text id="text-21" x="862.0" y="293" class="body">backup strategy.</text>
+<path d="M760.0 237.0 L840.0 237.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="384" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="414" class="body">Embedded versus client-server describes where the engine runs, not whether it understands SQL.</text>
+</svg>

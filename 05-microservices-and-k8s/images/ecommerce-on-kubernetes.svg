@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="676" viewBox="0 0 1200 676" role="img" aria-labelledby="title description">
+<title id="title">Application design and Kubernetes resources describe different layers</title>
+<desc id="description">A Deployment says how to maintain a workload; a Service says how to reach it; the application API says what an operation means. Keeping these layers separate helps explain why a healthy Pod count does not prove an order was processed correctly. Databases, caches, and notification workers also need their own persistence and failure rules. The picture is an illustrative design, not applications already included in this repository.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="676" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Application design and Kubernetes resources describe different layers</text>
+<text id="text-2" x="40" y="83" class="muted">Each branch combines an application responsibility with the resources needed to operate it.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Browser → public entry</text>
+<text id="text-5" x="62" y="218" class="body">Ingress or a gateway routes to the application APIs; Kubernetes manages their workloads.</text>
+<path d="M600 260 V310 H213.33333333333334 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="346.6666666666667" height="174" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">User capability</text>
+<text id="text-9" x="62.0" y="428" class="body">Deployment: replaceable API</text>
+<text id="text-10" x="62.0" y="453" class="body">replicas.</text>
+<text id="text-11" x="62.0" y="478" class="body">Owned user storage and</text>
+<text id="text-12" x="62.0" y="503" class="body">optional cache.</text>
+<path d="M600 260 V310 H600.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="426.6666666666667" y="360" width="346.6666666666667" height="174" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="448.6666666666667" y="394" class="heading" font-size="22px" style="font-size:22px">Product capability</text>
+<text id="text-16" x="448.6666666666667" y="428" class="body">Deployment: replaceable API</text>
+<text id="text-17" x="448.6666666666667" y="453" class="body">replicas.</text>
+<text id="text-18" x="448.6666666666667" y="478" class="body">Owned catalog storage.</text>
+<path d="M600 260 V310 H986.6666666666667 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="813.3333333333334" y="360" width="346.6666666666667" height="174" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="835.3333333333334" y="394" class="heading" font-size="22px" style="font-size:22px">Order capability</text>
+<text id="text-22" x="835.3333333333334" y="428" class="body">Deployment: replaceable API</text>
+<text id="text-23" x="835.3333333333334" y="453" class="body">replicas.</text>
+<text id="text-24" x="835.3333333333334" y="478" class="body">Owned orders and an explicit</text>
+<text id="text-25" x="835.3333333333334" y="503" class="body">notification mechanism.</text>
+<rect x="40" y="586" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="616" class="body">Kubernetes manages execution; it does not invent the application&#x27;s transaction or event semantics.</text>
+</svg>
