@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="730" viewBox="0 0 1200 730" role="img" aria-labelledby="title description">
+<title id="title">Keycloak identifies the user; Flask protects the todos</title>
+<desc id="description">The React code runs inside the browser. The login form is served by Keycloak.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="730" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">Keycloak identifies the user; Flask protects the todos</text>
+<text id="text-2" x="40" y="83" class="muted">The React code runs inside the browser. The login form is served by Keycloak.</text>
+<rect x="40" y="135" width="335" height="205" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="173" class="heading">Browser running React</text>
+<text id="text-5" x="62" y="208" class="body">my-frontend-app client</text>
+<text id="text-6" x="62" y="237" class="body">Starts sign-in using PKCE</text>
+<text id="text-7" x="62" y="266" class="body">Keeps tokens in memory</text>
+<text id="text-8" x="62" y="295" class="body">Calls the todo API</text>
+<rect x="825" y="135" width="335" height="225" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="847" y="173" class="heading">Keycloak</text>
+<text id="text-11" x="847" y="208" class="body">myapp realm</text>
+<text id="text-12" x="847" y="237" class="body">Users, credentials, roles</text>
+<text id="text-13" x="847" y="266" class="body">Creates login sessions</text>
+<text id="text-14" x="847" y="295" class="body">Signs tokens with private key</text>
+<path d="M375 210 L825 210" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="463.6" y="163" width="272.8" height="30" fill="#fff"/>
+<text id="text-17" x="600" y="184" class="body" text-anchor="middle">Sign-in and token exchange</text>
+<rect x="40" y="455" width="335" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="62" y="493" class="heading">Flask todo API</text>
+<text id="text-20" x="62" y="528" class="body">Verifies JWT + claims</text>
+<text id="text-21" x="62" y="557" class="body">Checks owner / admin role</text>
+<text id="text-22" x="62" y="586" class="body">Stores todos in memory</text>
+<path d="M207 340 L207 455" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="153.2" y="379" width="233.60000000000002" height="30" fill="#fff"/>
+<text id="text-25" x="270" y="400" class="body" text-anchor="middle">Request + access token</text>
+<path d="M375 546 L610 546 L610 318 L825 318" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="507.7" y="474" width="184.60000000000002" height="30" fill="#fff"/>
+<text id="text-28" x="600" y="495" class="body" text-anchor="middle">Fetch public keys</text>
+<rect x="463.6" y="501" width="272.8" height="30" fill="#fff"/>
+<text id="text-30" x="600" y="522" class="body" text-anchor="middle">(cached; no user password)</text>
+<rect x="825" y="495" width="335" height="150" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-32" x="847" y="533" class="heading">PostgreSQL</text>
+<text id="text-33" x="847" y="568" class="body">Keycloak identity data</text>
+<text id="text-34" x="847" y="597" class="body">Not the todo database</text>
+<path d="M992 360 L992 495" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="919.3" y="400" width="145.4" height="30" fill="#fff"/>
+<text id="text-37" x="992" y="421" class="body" text-anchor="middle">Identity data</text>
+<text id="text-38" x="40" y="696" class="muted">Logging in and being allowed to change a particular todo are separate decisions.</text>
+</svg>

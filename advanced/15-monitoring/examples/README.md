@@ -2,6 +2,19 @@
 
 These examples demonstrate how to instrument Python applications with Prometheus metrics. All services run inside Kubernetes.
 
+## Know Where the Example Commands Run
+
+| Command pattern | What to understand |
+| --- | --- |
+| `kubectl run ... --restart=Never -- curl ...` | Starts a client process inside the cluster. Kubernetes options come before `--`; the program and its arguments come afterward. An attached `--rm` client is temporary. |
+| `kubectl exec ... -c ... -- ...` | Runs a program in an existing container rather than starting a local program. Use that location to interpret `localhost` and Service names. |
+| `kubectl port-forward ...` | Supplies a local path to a Service for laptop-based tools and the local load generator. It does not make the Service public. |
+| `curl .../metrics` | Reads an export of measurements. Prometheus still needs a working scrape configuration to store those measurements. |
+| `kubectl run load-generator ...` | Starts a sustained workload in the cluster. Identify its Pod so you can stop the experiment when you finish. |
+| `./build-images.sh` | Builds local image artifacts. Publishing and selecting them in a Deployment are separate steps. |
+
+**Predict:** How should sending ten application requests affect a request counter? Why might a five-minute rate graph take time to show that change? Compare application logs, exporter data, target status, and the graph in that order. Read [the main tutorial's explanations](../README.md#read-the-monitoring-commands-as-an-experiment) and [command guide](../../../COMMANDS.md).
+
 ## Architecture
 
 The examples include:

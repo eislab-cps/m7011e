@@ -87,6 +87,24 @@ flowchart TB
 - kubectl configured and connected to LTU cluster
 - Git installed locally
 
+## Follow the Change from Your File to the Cluster
+
+There are several separate states: your working file, a local Git commit, the remote repository, Argo CD's desired manifests, and running resources. Each command moves or inspects a particular state:
+
+| Command below | What changes or is observed |
+| --- | --- |
+| `helm install ... --create-namespace --timeout 10m` | Bootstraps the Argo CD installation in the selected cluster. Namespace creation and a longer timeout do not by themselves establish that all workloads are ready. |
+| `kubectl get pods -n argocd -w` | Continuously watches Pod status. `-w` keeps the command open; `Ctrl+C` stops the watch without uninstalling Argo CD. |
+| `kubectl get secret ... -o jsonpath=...` piped to `base64 -d` | Reads and decodes the initial admin password. The final command prints a credential, not encrypted text. |
+| `kubectl port-forward svc/argocd-server -n argocd 8080:80` | Creates a temporary local connection to the Argo CD UI/API. Keep it running while using that local address. |
+| `git add`, `git commit`, `git push` | Select changes, record them locally, and publish them. Editing or committing alone does not update the remote branch Argo CD reads. |
+| `argocd app create ... --repo ... --path ... --revision ...` | Registers the source and destination Argo CD should manage. Those arguments select a repository, directory, and Git revision; they do not build a Docker image. |
+| `argocd app sync NAME` | Requests application of the desired manifests to the cluster. Check both synchronization and workload health afterward. |
+| `--auto-prune` / `--self-heal` | Enables deleting managed resources removed from Git / correcting detected live drift. These are active reconciliation behaviors. |
+| `git revert HEAD` followed by `git push` | Records and publishes a new commit undoing the selected commit's changes. Argo CD can then reconcile that new desired state. |
+
+**Predict and observe:** Change a value locally but do not push yet: should Argo CD see it? Push it, inspect the diff, synchronize if needed, then observe the running resources. Explain why `Synced` can coexist with an unhealthy application, and why a manual `kubectl scale` may later be undone by reconciliation. See [the command guide](../COMMANDS.md) for pipes and scope.
+
 ## Part 1: Install Argo CD
 
 Run the initial commands from `11-argocd-gitops/`. The provided bootstrap chart applies the pinned official manifests and requires cluster-admin permissions to create CRDs and cluster RBAC. It is intended for a dedicated course cluster. The `traefik` ingress class, cert-manager, named ClusterIssuer, and domain DNS must already be configured.

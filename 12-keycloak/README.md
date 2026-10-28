@@ -34,6 +34,47 @@ The chart pins Keycloak 23 and uses `start-dev` for the course exercise. Its pro
 
 ---
 
+## Before Deploying: Follow One Sign-In
+
+Suppose Alice opens the todo app. **Authentication** establishes that she is Alice. **Authorization** decides whether Alice may perform a particular action, such as deleting Bob's todo. A successful login settles the first question; the Flask API must still answer the second for every protected operation.
+
+![React runs in the browser, Keycloak authenticates users and stores identity data in PostgreSQL, and the Flask API verifies tokens and protects its own todo data.](./images/system-overview.svg)
+
+Read the arrows as messages between running programs. A redirect changes the page the browser visits. An API request sends a message in the background. When the browser shows the Keycloak login page, the password is submitted to Keycloak; the React app and Flask todo API do not handle that password.
+
+| Term you will configure | Concrete meaning in this tutorial | Question it answers |
+| --- | --- | --- |
+| Realm: `myapp` | An identity domain inside Keycloak containing users, roles, clients, and login settings. It is separate from a Kubernetes namespace. | Which identity system issued this identity? |
+| User | Alice's account, with an identifier used as token claim `sub`. | Who signed in? |
+| Client: `my-frontend-app` | Keycloak's registration of the React application, including its allowed redirect destinations. A client is an application, not a person. | Which application started the login? |
+| Redirect URI | An allowed browser destination, such as the local React app, to which Keycloak can return the sign-in result. | Where may the browser return? |
+| API audience: `todo-api` | An identifier included in the access token and checked by Flask. The Audience mapper adds it; it is separate from the frontend client ID. | Is this token intended for this API? |
+| Realm role: `admin` | A claim the example 3 API checks when granting access to other users' todos. | Does this user have the exceptional permission? |
+| Keycloak PostgreSQL database | Storage for Keycloak's identity and configuration data. The sample todo list remains in the Flask process's memory. | Which data survives which restart? |
+
+Keycloak's login session and the API's access token also have different jobs. The login session lets Keycloak recognize the browser during a later sign-in redirect, enabling single sign-on. The access token travels with an API request; Flask validates its signature and claims without receiving the user's password. Keycloak signs these tokens using a private key. The API can obtain the corresponding public keys, which verify signatures but cannot create valid signatures of their own.
+
+**HTTP and TLS connection:** A token is data carried in an HTTP header. A digital signature protects it against undetected alteration; it does not hide the contents or prevent a stolen bearer token from being used. HTTPS protects the connection carrying it. Review [the HTTP exchange](../01-basic-webapp/README.md#2-follow-one-http-request) and [TLS and certificates](../07-k8s-helloworld/README.md#before-deploying-how-https-reaches-your-application) if those distinctions are unfamiliar.
+
+The TLS certificate key and the realm's token-signing key serve different purposes. In this deployment, Traefik uses the TLS certificate to establish the browser's protected connection to the hostname. Keycloak uses its realm signing key to sign tokens; Flask uses the realm's published public keys to check those signatures. A browser trusting the HTTPS certificate does not, on its own, validate an API token.
+
+**Before typing commands, explain:** Where does Alice enter her password? Which component decides whether she can delete Bob's todo? Why does changing the React UI to show an Admin button not grant admin access? Keep your answers and check them against examples 1, 2, and 3.
+
+## Read the Setup Commands as Separate Operations
+
+| Command below | What it actually does |
+| --- | --- |
+| `./install.sh` | Runs Helm `upgrade --install` for the Keycloak chart, creates its namespace if needed, and waits for the PostgreSQL and Keycloak rollouts. It does not create the `myapp` realm, frontend client, or test users. |
+| `kubectl get pods -n keycloak -w` | Watches workload status. `Ctrl+C` ends the watch; it does not stop Keycloak. Pod readiness alone does not prove that the public hostname and certificate are correct. |
+| `python3 create-realm.py` or `./create-realm.sh` | Calls Keycloak's admin API to create identity configuration, using the administrator credentials set in the script. This is separate from Kubernetes deployment. |
+| The user and client creation scripts | Configure accounts and application registrations inside the selected realm. Check the realm and client details in the console afterward. |
+| `export KEYCLOAK_URL=...` | Sets the URL for backend programs started from this terminal. It does not change the frontend's JavaScript configuration or an already-running Pod. |
+| `./start-backend.sh` | Prepares the example's Python environment and starts its Flask API on port 5001. Keep the process running. |
+| `./start-frontend.sh` | Installs frontend dependencies and starts the React development server on port 3000, in a second terminal. |
+| `python -m pytest tests/` from `12-keycloak/` | Runs the supplied backend checks with test tokens and keys; it does not prove a live realm or browser redirect is configured correctly. |
+
+**Check each boundary:** A running Keycloak Pod, an existing realm, an allowed redirect, a valid token, and an authorized API action are five different observations. Verify them in that order rather than treating an installation script's success as a completed login integration. [The command guide](../COMMANDS.md) explains shell variables and foreground processes.
+
 ## Part 1: Quick Start - Deploy Keycloak
 
 ### Step 1: Configure Your Deployment
@@ -476,6 +517,14 @@ This section illustrates the adapter in a React app. For the Vite project from T
 | [2: Secure](./example-part-2-todo-secure/) | Verifies signatures, issuer, audience, and expiry. Every user manages only their own todos, regardless of roles. |
 | [3: RBAC](./example-part-3-todo-rbac/) | Adds an `admin` realm role that can view and manage everyone's todos. |
 
+### Follow the Browser During Sign-In
+
+![Eight steps show React generating a PKCE verifier, redirecting to Keycloak, exchanging the returned code, receiving tokens, and calling the Flask API with an access token.](./images/login-flow.svg)
+
+Follow the arrows before starting an example. The credential form belongs to Keycloak. The redirect returns a **code**, and React exchanges it with its verifier before it can call the protected API. In the diagram, `/token` abbreviates the realm's token endpoint. The access token is sent in an API request header; it is not a password and is not the one-use code.
+
+**Observe after login:** In browser developer tools, identify the visit to Keycloak, the return to the frontend, the token exchange, and a request to `/api/todos`. Which changes the browser's page, and which happen in the background? Inspect message types and destinations rather than copying credentials or complete tokens into your lab report.
+
 ### ⚙️ Configuration Required
 
 Before running the examples, you **MUST** update the Keycloak URL to match your deployment:
@@ -624,6 +673,14 @@ Open `http://localhost:3000` - you'll be redirected to Keycloak's login page. Lo
 Now let's protect your backend API by validating JWT tokens from Keycloak.
 
 > 💡 **Quick Start:** Want to see a working example first? Check out `example-part-2-todo-secure/` - run `./start-backend.sh` and `./start-frontend.sh` to see API protection in action, then come back here to understand how it works.
+
+### What the Backend Must Decide
+
+![The API requires a Bearer token, verifies the signature, validates required claims, and checks the requested operation. Missing or invalid authentication gives 401; a forbidden action by a valid user gives 403.](./images/token-validation.svg)
+
+Reading the JSON in a token only tells you what someone wrote. Verification establishes that the signed content matches the configured signing key; claim checks establish whether it is valid for this API now. The authorization check then relates that authenticated user to the particular data and operation. Examples 2 and 3 enforce these checks; example 1 deliberately omits cryptographic verification to demonstrate the failure.
+
+**Predict:** What should happen to a correctly signed token with the wrong `aud`? What if a valid token identifies Alice but the todo belongs to Bob? Explain which stage rejects each request before inspecting the code below.
 
 ### Install Dependencies
 
@@ -1500,32 +1557,7 @@ OAuth 2.0 defines multiple "flows" for obtaining access tokens, each suited for 
 
 #### OAuth 2.0 Architecture
 
-```mermaid
-graph TB
-    subgraph "OAuth 2.0 Ecosystem"
-        RO[Resource Owner<br/>User]
-        C[Client Application<br/>React/Flask App]
-        AS[Authorization Server<br/>Keycloak]
-        RS[Resource Server<br/>Your API]
-    end
-
-    RO -->|1. Initiates login| C
-    C -->|2. Redirect to login| AS
-    RO -->|3. Authenticate| AS
-    AS -->|4. Authorization code| C
-    C -->|5. Exchange code| AS
-    AS -->|6. Access token| C
-    C -->|7. API request + token| RS
-    RS -->|8. Verify token| AS
-    AS -->|9. Token valid| RS
-    RS -->|10. Protected data| C
-    C -->|11. Display data| RO
-
-    style RO fill:#e1f5ff
-    style C fill:#fff3e0
-    style AS fill:#f3e5f5
-    style RS fill:#e8f5e9
-```
+The [system overview](#before-deploying-follow-one-sign-in) maps these roles to the actual applications. The React code runs in the browser. Flask verifies tokens locally using cached public keys; it does not ask Keycloak to approve every API request.
 
 **Why this architecture matters:**
 - **Separation of concerns**: Authentication (AS) is separate from your application (C) and data (RS)
@@ -1535,109 +1567,30 @@ graph TB
 
 #### OAuth 2.0 Authorization Code Flow
 
-Authorization Code with PKCE supports public clients such as this SPA as well as confidential server clients. It uses a two-step process: first obtaining an authorization code, then exchanging it for tokens. This prevents tokens from ever appearing in the browser's address bar where they could be intercepted.
+The [sign-in image earlier in the tutorial](./images/login-flow.svg) follows the public React client. A public client cannot keep a client secret: its JavaScript is delivered to the user. PKCE instead binds each code exchange to a fresh verifier created for that sign-in attempt. [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636.html) defines this binding.
 
-**Key characteristics:**
-- **Two-phase exchange**: Code → Tokens
-- **PKCE-bound token exchange**: This SPA receives tokens in browser memory, while tokens stay out of the redirect URL
-- **State parameter**: Prevents CSRF attacks
-- **Single-use codes**: Each code can only be used once
-- **Short code lifetime**: Typically 60 seconds
+| Step in the image | What happens | Why it matters |
+| --- | --- | --- |
+| 1 | The adapter creates a random verifier and its S256 challenge. | The verifier stays with the browser that initiated sign-in. |
+| 2 | The browser goes to Keycloak with `client_id`, `redirect_uri`, `response_type=code`, `scope`, `state`, and the challenge. | Keycloak knows which registered application is requesting sign-in and where it may return the result. |
+| 3 | The user signs in on Keycloak's page. | The todo API does not need the user's password. An existing SSO session can avoid another password prompt. |
+| 4 | Keycloak redirects to the allowed app URL with a short-lived, one-use code. | A code is an intermediate result; it is not an API access token. The adapter checks the returned state. |
+| 5 | The adapter posts the code and verifier to the token endpoint over HTTPS. | Keycloak checks that the verifier matches the challenge from the initial request. |
+| 6 | Keycloak returns tokens to the adapter. | The adapter keeps them in browser memory rather than placing access tokens in the redirect URL. |
+| 7 | React sends the access token with an API request. | Flask must validate it and enforce application permissions. |
+| 8 | Flask returns the operation's result or an error. | A completed login does not guarantee that every requested operation is permitted. |
 
-```mermaid
-sequenceDiagram
-    participant User as 👤 Browser<br/>(User)
-    participant React as ⚛️ React<br/>Frontend
-    participant KC as 🔐 Keycloak<br/>(Auth Server)
-    participant API as 🐍 Flask<br/>API
+The diagram abbreviates realm endpoints as `/token` and login endpoints. For this realm, the token endpoint is `/realms/myapp/protocol/openid-connect/token`. The adapter's response mode determines whether the returned code appears in a URL fragment or query; avoid relying on a particular address-bar layout.
 
-    User->>React: 1. Click "Login"
-
-    React->>KC: 2. Redirect to /auth<br/>client_id, redirect_uri,<br/>response_type=code,<br/>scope=openid profile email
-
-    KC->>User: 3. Show login page
-
-    User->>KC: 4. Submit credentials<br/>(username + password)
-
-    Note over KC: 5. Verify credentials<br/>Create session<br/>Generate code
-
-    KC->>React: 6. Redirect with code<br/>http://localhost:3000/?code=ABC123
-
-    Note over React: Extract code from URL
-
-    React->>KC: 7. POST /token<br/>code=ABC123<br/>client_id, redirect_uri<br/>grant_type=authorization_code
-
-    Note over KC: 8. Validate code<br/>Check single-use<br/>Verify not expired<br/>Issue tokens
-
-    KC->>React: 9. Return tokens<br/>{access_token, id_token,<br/>refresh_token, expires_in}
-
-    Note over React: 10. Store tokens<br/>in memory<br/>(not localStorage!)
-
-    User->>React: 11. Add todo
-
-    React->>API: 12. POST /api/todos<br/>Authorization: Bearer <access_token>
-
-    Note over API: 13. Extract token<br/>Get kid from header
-
-    API->>KC: 14. GET /certs<br/>(fetch public keys)
-
-    KC->>API: 15. Return public keys
-
-    Note over API: 16. Verify signature<br/>Validate claims<br/>Extract user/roles
-
-    API->>React: 17. 201 Created<br/>{id, text, user_id}
-
-    React->>User: 18. Show new todo
-```
-
-**Understanding each step:**
-
-**Steps 1-2 (Authorization Request):**
-The React app constructs a URL with these critical parameters:
-- `client_id`: Identifies your application to Keycloak
-- `redirect_uri`: Where to send the user after login (must be pre-registered)
-- `response_type=code`: Tells Keycloak we want an authorization code
-- `scope`: What user information we're requesting (openid, profile, email)
-- `state`: Random value to prevent CSRF (Cross-Site Request Forgery)
-
-**Steps 3-4 (User Authentication):**
-Keycloak presents its login page. Notice that your application never sees the user's credentials - they go directly to Keycloak. This is a key security benefit of OAuth 2.0.
-
-**Step 5 (Code Generation):**
-After successful authentication, Keycloak:
-1. Creates a server-side session
-2. Generates a single-use authorization code
-3. Links the code to the session and client_id
-4. Sets a short expiration (typically 60 seconds)
-
-**Step 6 (Authorization Response):**
-Keycloak redirects back to your app with the code in the URL. The code is single-use and bound to the client, redirect URI, and PKCE challenge. The public SPA has no client secret.
-
-**Steps 7-9 (Token Exchange):**
-The JavaScript adapter exchanges the code for tokens from the browser over HTTPS:
-- The request includes your client_id and the PKCE code_verifier
-- For confidential clients, you'd also send client_secret
-- Keycloak verifies the code is valid, not expired, and not already used
-- Only then does Keycloak issue the actual tokens
-
-**Why use a code instead of returning tokens directly?**
-- **Security**: Tokens never appear in the browser's address bar where they could be logged or intercepted
-- **Single-use**: Even if a code is intercepted, it can only be used once
-- **Time-limited**: Codes expire in seconds, tokens in minutes/hours
-- **Binding**: The code is tied to the specific client_id that requested it
-
-**Steps 10-18 (Using the Access Token):**
-Now your app has an access token and can make authorized API calls. The Flask backend verifies each token without needing to call Keycloak (thanks to JWT's cryptographic signature), making this highly scalable.
+**Explain:** Why is a captured code alone insufficient when PKCE is enforced? Why would hard-coding a client secret in React not make that secret confidential? What additional protection does TLS provide that PKCE does not?
 
 ### OpenID Connect (OIDC)
 
 **OpenID Connect** is an **authentication layer** built on top of OAuth 2.0 (RFC 6749). It answers: **"Who are you?"**
 
-**The problem OIDC solves:**
-Imagine you're building the todo app with just OAuth 2.0. You can get an access token that allows you to call the API, but you don't know WHO the user is. Is it John? Mary? An admin? OAuth 2.0 doesn't tell you - it just says "this token can access todos."
+OAuth 2.0 defines how a client obtains and uses access to resources. **OpenID Connect adds a standard authentication protocol**, including an ID token addressed to the client. An access token may contain a user identifier or other claims, but that alone does not turn an arbitrary OAuth flow into a standard client login protocol. See [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html).
 
-**How OIDC solves it:**
-OIDC adds an **ID Token** that contains user information: name, email, username, roles. Now your React app can display "Welcome, John!" and show/hide admin features based on the user's role.
+The three token types have different destinations and audiences. In this application, `hasRealmRole()` reads roles from the **access token**, while `loadUserProfile()` fetches display information from Keycloak. Do not assume that roles are supplied by the ID token.
 
 #### What OIDC Adds to OAuth 2.0
 
@@ -1668,7 +1621,7 @@ OIDC adds an **ID Token** that contains user information: name, email, username,
 When our React app requests tokens, it includes scopes that determine what user information Keycloak includes:
 
 ```javascript
-// In our keycloak.init():
+// An adapter initialization can request these scopes:
 scope: "openid profile email"
 ```
 
@@ -1676,7 +1629,7 @@ scope: "openid profile email"
 
 - `openid` - **Required** - Turns on OIDC mode
   - Returns: `sub` (user ID like "f4c8a9e6-1234...")
-  - Without this: You only get OAuth 2.0, no user info
+  - Selects the OpenID Connect authentication protocol; the Keycloak adapter includes `openid`
 
 - `profile` - Requests profile information
   - Returns: name, family_name, given_name, preferred_username
@@ -1692,34 +1645,15 @@ scope: "openid profile email"
 
 #### OIDC vs OAuth 2.0 in Our Todo App
 
-| Aspect | OAuth 2.0 Only | OIDC (What We Use) |
-|--------|----------------|---------------------|
-| Purpose | "Can access todos" | "Can access todos AND know who you are" |
-| What you get | Access Token | Access Token + ID Token |
-| User display | Can't show username | "Welcome, testuser!" |
-| Role checking | Must decode access token | Easy - check `realm_access.roles` |
-| Example | Generic "User logged in" | "Test User (testuser) logged in as admin" |
+| Question | Mechanism in this example |
+| --- | --- |
+| How does React establish a standard login identity? | OpenID Connect's sign-in flow and ID token. |
+| Which token does React send to Flask? | The access token, with the `todo-api` audience configured. |
+| Where does Flask get the caller's user ID? | The `sub` claim in the validated access token. |
+| Where are realm roles checked? | In the access token; the API enforces the role and ownership rules. |
+| Where does the displayed profile come from? | `loadUserProfile()` in this sample. |
 
-```mermaid
-graph LR
-    subgraph "OAuth 2.0 Only"
-        A1[React App] -->|Access Token| A2[Flask API]
-        A2 -->|✅ Can call API| A3[Get Todos]
-        A1 -->|❌ Don't know who| A4[Show ???]
-    end
-
-    subgraph "With OIDC Our Todo App"
-        B1[React App] -->|Access Token| B2[Flask API]
-        B1 -->|ID Token| B5[User Info]
-        B2 -->|✅ Can call API| B3[Get Todos]
-        B5 -->|✅ Know user| B4["Welcome,<br/>testuser!"]
-        B5 -->|✅ Know role| B6[Show/Hide<br/>Admin]
-    end
-
-    style A4 fill:#ffebee
-    style B4 fill:#e8f5e9
-    style B6 fill:#e8f5e9
-```
+![An access token is sent to the Flask API, an ID token describes the client login, and a refresh token is sent only to Keycloak to obtain fresh tokens.](./images/token-types.svg)
 
 **In our todo app:**
 - **ID Token**: Establishes user identity for the frontend
@@ -1737,28 +1671,13 @@ When you add a todo, your React app sends an HTTP request to the Flask API. The 
 2. **What you can do** - To check if you have permission to add todos
 3. **That this is authentic** - To verify you're not an imposter
 
-JWTs solve all three problems in one self-contained package that doesn't require database lookups.
+A validated access token supplies authenticated claims. The API still needs authorization rules and access to its application data; a token alone does not establish ownership of a particular todo.
 
 #### JWT Structure
 
-A JWT consists of three Base64URL-encoded parts separated by dots:
+The signed JWTs used here have three Base64URL-encoded parts separated by dots. JWT also supports other forms, including encrypted tokens; this tutorial uses signed access tokens as described in [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519.html).
 
-```mermaid
-graph LR
-    JWT["eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"]
-
-    Header["Header<br/>{'alg':'RS256',<br/>'typ':'JWT',<br/>'kid':'abc123'}"]
-    Payload["Payload<br/>{'sub':'user-123',<br/>'name':'Test User',<br/>'roles':['admin']}"]
-    Signature["Signature<br/>(Cryptographic<br/>proof)"]
-
-    JWT -.->|Base64 decode| Header
-    JWT -.->|Base64 decode| Payload
-    JWT -.->|Verify with<br/>public key| Signature
-
-    style Header fill:#e3f2fd
-    style Payload fill:#fff3e0
-    style Signature fill:#f3e5f5
-```
+![A signed JWT has a header identifying the algorithm and key, a payload containing claims, and a signature verified with the public key. Decoding the readable parts does not verify the signature.](./images/jwt-structure.svg)
 
 ```
 eyJhbGciOi...  .  eyJzdWIiOi...  .  SflKxwRJSM...
@@ -1783,24 +1702,24 @@ In our todo app, Keycloak creates a header like this:
 ```
 
 **Why each field matters:**
-- `alg`: Flask needs to know which algorithm to use for verification
+- `alg`: Declares the signing algorithm. Flask explicitly permits `RS256`; it must not trust an arbitrary algorithm supplied by a token
 - `typ`: Identifies this as a JWT (vs other token types)
 - `kid`: Keycloak has multiple keys; this tells Flask which public key to fetch
 
 **Common algorithms:**
 - `RS256` - RSA with SHA-256 (what we use)
   - Asymmetric: Keycloak signs with private key, Flask verifies with public key
-  - Most secure for distributed systems
+  - Verifiers can check signatures without holding the private signing key
   - Public key can be shared safely
 
 - `HS256` - HMAC with SHA-256 (symmetric)
   - Both sides share a secret
-  - Simpler but less scalable
-  - Not suitable when multiple services need to verify
+  - Any verifier holding the shared secret can also create valid tokens
+  - Sharing that authority across services is a different trust model
 
 - `ES256` - ECDSA with SHA-256 (asymmetric)
-  - Smaller keys, faster
-  - Gaining popularity
+  - An elliptic-curve alternative to RSA
+  - Not the algorithm configured by these examples
 
 **2. Payload (Claims)**
 ```json
@@ -1942,94 +1861,29 @@ Keycloak issues three types of tokens:
 - Should NOT be sent to APIs (use access token instead)
 
 #### 3. Refresh Token
-**Purpose:** Obtain new access tokens without re-authentication
 
-```json
-{
-  "typ": "Refresh",
-  "scope": "openid profile email offline_access"
-}
-```
-
-- Long-lived (days/weeks)
-- Can be revoked by server
-- Single-use or rotation (new refresh token with each use)
-- Must be stored securely (not in localStorage!)
-- Used at `/token` endpoint with `grant_type=refresh_token`
+**Purpose:** Obtain fresh tokens from Keycloak while the relevant session remains usable. The refresh token goes to Keycloak's token endpoint, not to the Flask API. It does not have an unconditional days-or-weeks lifetime: normal refresh behavior depends on the configured SSO and client session idle and maximum settings. Offline access is a separate configuration.
 
 ### Token Refresh Flow
 
-**The problem:**
-Access tokens are short-lived (typically 5-15 minutes) for security. But you don't want users to re-login every 5 minutes! That would be terrible UX.
+![React awaits updateToken, refreshes with Keycloak if the access token expires soon, and then sends the current access token to Flask. A refresh failure reaches the application's error handling.](./images/token-refresh.svg)
 
-**The solution:**
-Refresh tokens are long-lived (days/weeks) and can be exchanged for new access tokens without requiring the user to log in again.
-
-**In our todo app:**
-Imagine you open the todo app at 9:00 AM and work on it throughout the day. Your access token expires at 9:05 AM, but the keycloak-js library automatically uses the refresh token to get a new access token at 9:04 AM (before expiration). You never notice anything - the app just works.
-
-```mermaid
-sequenceDiagram
-    participant React as ⚛️ React<br/>Frontend
-    participant API as 🐍 Flask<br/>API
-    participant KC as 🔐 Keycloak
-
-    Note over React: User working on todos<br/>for 10 minutes
-
-    React->>API: 1. POST /api/todos<br/>Authorization: Bearer <expired_token>
-
-    Note over API: 2. Check token expiration<br/>exp: 1638360000<br/>now: 1638360001<br/>❌ Expired!
-
-    API->>React: 3. 401 Unauthorized<br/>{"error": "Token has expired"}
-
-    Note over React: 4. Detect 401 error<br/>Automatically trigger<br/>token refresh
-
-    React->>KC: 5. POST /token<br/>grant_type=refresh_token<br/>refresh_token=eyJhbGc...
-
-    Note over KC: 6. Verify refresh token<br/>- Check signature<br/>- Check not expired<br/>- Check not revoked<br/>- Check session valid
-
-    KC->>React: 7. Return new tokens<br/>{<br/>"access_token": "eyJnew...",<br/>"refresh_token": "eyJnew...",<br/>"expires_in": 300<br/>}
-
-    Note over React: 8. Store new tokens<br/>Update in memory
-
-    React->>API: 9. Retry POST /api/todos<br/>Authorization: Bearer <new_token>
-
-    Note over API: 10. Verify new token<br/>✅ Valid!<br/>Create todo
-
-    API->>React: 11. 201 Created<br/>{id, text, user_id}
-
-    Note over React: User continues working<br/>Never noticed the refresh!
-```
-
-**Key points:**
-
-1. **Application-triggered refresh**: The adapter refreshes when the application calls `updateToken()`. The included app runs a periodic refresh; call and await `updateToken(30)` immediately before requests as well when adapting it.
-
-2. **Refresh token rotation**: Keycloak can issue a new refresh token with each refresh. This limits the damage if a refresh token is stolen - it becomes invalid after first use.
-
-3. **Revocation**: Refresh tokens and sessions can be revoked server-side. This API validates access tokens locally, so it does not detect session revocation until the access token expires; immediate revocation checks require introspection or another server-side mechanism. If you detect suspicious activity, revoke the refresh token and force re-login.
-
-4. **Security trade-off**:
-   - Short access token lifetime (5 min): Limits exposure if stolen
-   - Long refresh token lifetime (30 days): Good user experience
-   - Combined: Secure and convenient
-
-**Configuration in our todo app:**
-
-The React app explicitly calls the adapter to refresh tokens:
+Read the actual `getAccessToken()` function in the example frontend:
 
 ```javascript
-// In App.js, keycloak checks token every 60 seconds
-setInterval(() => {
-  keycloak.updateToken(70).then(refreshed => {
-    if (refreshed) {
-      console.log('Token refreshed');
-    }
-  });
-}, 60000);
+await keycloak.updateToken(30);
+return keycloak.token;
 ```
 
-This checks every minute: "Will my token expire in the next 70 seconds?" If yes, refresh it proactively.
+The `30` is a **minimum remaining validity in seconds**, not a new token lifetime and not a timer. If sufficient validity remains, the adapter can reuse the token. Otherwise it exchanges the refresh token with Keycloak. Awaiting the promise ensures the API request gets the current access token. The [JavaScript adapter documentation](https://www.keycloak.org/securing-apps/javascript-adapter) describes this method.
+
+The sample calls this before API requests and also schedules a periodic `updateToken(70)` check every 60 seconds. The application schedules those calls; the adapter does not refresh on a timer just because it was initialized. A failed API request is shown as an error, not automatically retried after every `401`.
+
+Keycloak can rotate refresh tokens according to its realm settings. Refresh-token reuse rules and maximum session duration depend on configuration. Inspect the realm settings rather than assuming that every refresh token is single-use or lasts 30 days.
+
+**Observe:** Keep the browser Network tab open. Calls made while enough access-token validity remains should not all trigger a token refresh. A refresh sends a request to Keycloak's token endpoint; a todo request goes to Flask. Identify the two destinations.
+
+**Revocation tradeoff:** The Flask example validates access tokens locally. Ending the Keycloak session prevents further refreshes but does not, by itself, invalidate every already-issued token at this API before its expiry. Immediate server-side revocation checking requires an additional design.
 
 ### How Keycloak Implements These Standards
 
@@ -2064,125 +1918,26 @@ Keycloak is a complete **Identity and Access Management (IAM)** solution that im
 
 ### Complete Authentication Flow with Keycloak
 
-Let's walk through the complete end-to-end flow: from opening the todo app in your browser to successfully adding your first todo. This brings together all the concepts we've covered.
+Trace one operation in `example-part-3-todo-rbac/`, using the [login flow](./images/login-flow.svg) and [API validation flow](./images/token-validation.svg):
 
-#### Real-World Scenario: First-Time User
+1. Alice opens React. The adapter redirects to Keycloak if she needs to sign in.
+2. Alice signs in at Keycloak. The adapter completes the code exchange with its verifier and receives tokens.
+3. Alice enters `Buy milk`. React refreshes the access token if needed, then posts the text to `/api/todos` with a Bearer authorization header.
+4. Flask obtains the matching public key from its cache, fetching keys from Keycloak when needed. It verifies the signature, issuer, audience, expiry, and required subject.
+5. Flask creates the todo with the validated `sub` as `user_id`. It does not trust an owner identifier supplied by the browser.
+6. Flask responds with `201 Created` and the todo. React reads the response and updates the list.
 
-You open http://localhost:3000 in your browser. You've never used the app before, so you need to log in. Let's trace every step:
+Now compare three requests for an existing todo owned by Bob:
 
-```mermaid
-sequenceDiagram
-    participant Browser as 👤 Browser<br/>(User)
-    participant React as ⚛️ React<br/>Todo Frontend
-    participant KC as 🔐 Keycloak<br/>(Auth Server)
-    participant API as 🐍 Flask<br/>Todo API
+| Request | Expected result in example 3 | Reason |
+| --- | --- | --- |
+| Delete it without an access token | `401` | No valid authenticated caller. |
+| Delete it with Alice's valid, ordinary-user token | `403` | Alice is authenticated but is neither its owner nor an admin. |
+| Delete it with a valid token carrying the `admin` realm role | `204` | This example grants admins permission to delete another user's todo. |
 
-    Browser->>React: 1. Visit http://localhost:3000
-    Note over React: App loads, runs keycloak.init()
+**Try and explain:** Create todos with two test users. Compare the lists each sees; then assign `admin` to one account and sign in again. Repeat with example 2: its backend does not implement an admin override. Explain why assigning a role in Keycloak only affects behavior if the application actually checks that role.
 
-    React->>KC: 2. Check auth status<br/>onLoad: 'login-required'
-    Note over KC: No valid session exists
-
-    KC-->>Browser: 3. Redirect to Keycloak login<br/>/auth?response_type=code&<br/>client_id=my-frontend-app&<br/>redirect_uri=http://localhost:3000
-
-    Browser->>KC: 4. GET /auth<br/>(follow redirect)
-
-    KC-->>Browser: 5. Show login page<br/>Username: _____<br/>Password: _____
-
-    Browser->>KC: 6. POST credentials<br/>username: testuser<br/>password: test123
-
-    Note over KC: 7. Authenticate user<br/>✓ Verify password<br/>✓ Create session<br/>✓ Generate auth code
-
-    KC-->>Browser: 8. Redirect with code<br/>http://localhost:3000/?<br/>code=ABC123&session_state=...
-
-    Browser->>React: 9. Load app with code in URL
-
-    React->>KC: 10. Exchange code for tokens<br/>POST /token<br/>grant_type=authorization_code<br/>code=ABC123<br/>client_id=my-frontend-app
-
-    Note over KC: 11. Validate code<br/>✓ Code matches session<br/>✓ Client authorized<br/>✓ Generate tokens
-
-    KC-->>React: 12. Return tokens<br/>{<br/>  access_token: "eyJhbGc...",<br/>  id_token: "eyJhbGc...",<br/>  refresh_token: "eyJhbGc...",<br/>  expires_in: 300<br/>}
-
-    Note over React: 13. Store tokens in memory<br/>Parse ID token:<br/>- sub: "user-uuid-123"<br/>- preferred_username: "testuser"<br/>- realm_access.roles: ["user"]
-
-    React-->>Browser: 14. Render todo app UI<br/>Welcome, testuser!<br/>[Add Todo: _____] [+]
-
-    Browser->>React: 15. User types "Buy milk"<br/>and clicks Add button
-
-    React->>API: 16. POST /api/todos<br/>Authorization: Bearer eyJhbGc...<br/>Content-Type: application/json<br/>{ "text": "Buy milk" }
-
-    Note over API: 17. Extract token from header<br/>Decode header (unverified)<br/>Extract kid: "abc-key-123"
-
-    API->>KC: 18. GET /certs<br/>(fetch public keys)
-
-    KC-->>API: 19. Return public keys<br/>{ "keys": [{<br/>  "kid": "abc-key-123",<br/>  "n": "...", "e": "..."<br/>}]}
-
-    Note over API: 20. Verify JWT signature<br/>✓ Signature valid<br/>✓ Not expired<br/>✓ Correct issuer<br/>Extract: user_id, roles
-
-    Note over API: 21. Authorization check passed<br/>Create todo:<br/>- id: 1<br/>- text: "Buy milk"<br/>- user_id: "user-uuid-123"<br/>- username: "testuser"
-
-    API-->>React: 22. 201 Created<br/>{ "id": 1,<br/>  "text": "Buy milk",<br/>  "completed": false,<br/>  "username": "testuser" }
-
-    React-->>Browser: 23. Update UI<br/>☐ Buy milk (testuser)
-```
-
-#### Step-by-Step Breakdown
-
-**Phase 1: Initial Page Load (Steps 1-5)**
-
-When you visit the todo app, React immediately initializes the Keycloak JavaScript adapter. Since you're not logged in, Keycloak redirects you to its login page. This happens automatically—you never see an empty todo list.
-
-**Phase 2: User Authentication (Steps 6-8)**
-
-You enter your credentials. Keycloak verifies them against its user database, creates a session, and generates a short-lived authorization code. Instead of sending tokens directly in the URL (insecure!), it sends this temporary code that can only be exchanged once.
-
-**Phase 3: Token Exchange (Steps 9-12)**
-
-The React app extracts the code from the URL and immediately exchanges it for real tokens. This happens in the background—the keycloak-js library handles it automatically. Keycloak returns:
-
-- **Access Token**: Proves you're authorized to access the todo API
-- **ID Token**: Contains identity claims; this app checks realm roles from the access token
-- **Refresh Token**: Allows getting new tokens when access token expires
-
-**Phase 4: User Session Established (Step 13-14)**
-
-React stores these tokens in memory (not localStorage, for security). It parses the ID token to get your username and displays "Welcome, testuser!" The app is now fully functional.
-
-**Phase 5: API Request with JWT (Steps 15-16)**
-
-When you add a todo, React sends the access token in the Authorization header:
-
-```javascript
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFiYy1rZXktMTIzIn0.eyJzdWIiOiJ1c2VyLXV1aWQtMTIzIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidGVzdHVzZXIiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidXNlciJdfSwiZXhwIjoxNzMwNzQ4MDAwLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmx0dS1tNzAxMWUtam9oYW4uc2UvcmVhbG1zL215YXBwIn0.signature-here
-```
-
-**Phase 6: JWT Verification (Steps 17-20)**
-
-The Flask API doesn't trust the token blindly. It:
-
-1. **Extracts the key ID (kid)** from the token header
-2. **Fetches Keycloak's public keys** (cached after first request)
-3. **Verifies the RSA signature** using the matching public key
-4. **Validates all claims**: expiration time, issuer, audience
-
-This cryptographic verification ensures the token was issued by Keycloak and hasn't been tampered with.
-
-**Phase 7: Authorization and Response (Steps 21-23)**
-
-After successful verification, Flask extracts the user ID from the token and creates the todo. The response includes the username from the token, and React updates the UI immediately.
-
-#### Key Security Features in This Flow
-
-1. **Authorization Code Flow** (steps 6-12): Most secure OAuth 2.0 flow, keeps tokens out of browser history
-2. **PKCE Protection**: The app explicitly selects `pkceMethod: 'S256'`, and the client enforces it
-3. **Short-Lived Access Tokens**: Expire after 5 minutes, limiting damage if stolen
-4. **Stateless API**: Flask doesn't need sessions or databases to verify authentication
-5. **Asymmetric Cryptography**: Private key stays in Keycloak, public key verifies signatures
-6. **No Shared Secrets**: The frontend is a "public" client—no client secret in JavaScript
-
-#### What Makes This Secure?
-
-Notice that the Flask API **never contacts Keycloak** during normal operation (except to fetch or refresh cached public keys). It doesn't ask "Is this token valid?"—it cryptographically *proves* validity by verifying the signature. This is why JWTs scale so well: millions of API requests can be validated without database lookups or network calls to the auth server.
+**Failure isolation exercise:** After the API has cached public keys, consider an unavailable Keycloak server. A still-valid access token with a cached key can be verified locally while the cache remains usable, but new logins and token refreshes need Keycloak. In this implementation the key cache has a five-minute lifetime and an unknown signing key triggers a refresh, so availability is not independent indefinitely. State which request you are testing before concluding that authentication is "up" or "down".
 
 ### Security Considerations
 
@@ -2204,14 +1959,14 @@ echo "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..." | base64 -d
 
 #### Token Storage Security
 
-| Location | Security | Notes |
-|----------|----------|-------|
-| **Memory** | ✅ Best | Lost on refresh, requires refresh token flow |
-| **SessionStorage** | ⚠️ OK | Cleared on tab close, vulnerable to XSS |
-| **LocalStorage** | ❌ Dangerous | Persists, highly vulnerable to XSS |
-| **Cookie (HttpOnly)** | ✅ Good | Not accessible to JavaScript, requires backend |
+| Location | Lifetime and access | Design consequence |
+|----------|---------------------|--------------------|
+| **Memory** | Cleared when the page is reloaded; used by the running adapter | Limits persistence, but malicious JavaScript can still act through the active app. |
+| **SessionStorage** | Survives reloads in the same tab; readable by JavaScript | Tab lifetime does not protect a token against XSS. |
+| **LocalStorage** | Persists across reloads and browser sessions; readable by JavaScript | A stolen token can outlive the page that originally obtained it. |
+| **Cookie (HttpOnly)** | Not directly readable by JavaScript; sent under cookie rules | Requires a corresponding server/session design and consideration of CSRF. It is not a drop-in setting for this Bearer-token sample. |
 
-**Our todo app uses memory** - most secure for SPAs.
+**This app keeps tokens in memory.** After a reload, the adapter can sign in through an existing Keycloak session. Memory storage reduces persistence; it does not eliminate XSS or make arbitrary scripts trustworthy.
 
 #### Common Attack Vectors
 
@@ -2297,7 +2052,7 @@ for key in keys['keys']:
 - [ ] Configure SMTP for password recovery emails
 - [ ] Enable MFA for admin accounts
 - [ ] Use HTTPS everywhere
-- [ ] Set appropriate token lifetimes (access: 5min, refresh: 30 days)
+- [ ] Configure access-token expiry and SSO/client session idle and maximum lifetimes for the application
 - [ ] Enable event logging and auditing
 - [ ] Backup database regularly
 - [ ] Keep Keycloak updated

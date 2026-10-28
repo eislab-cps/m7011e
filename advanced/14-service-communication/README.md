@@ -69,6 +69,23 @@ By the end of this tutorial, you will understand:
 
 ---
 
+## Understand What the Broker and Example Commands Start
+
+The broker is a running server. A producer and consumer are separate client processes, and their terminal commands remain distinct from the message operations in their Python code.
+
+| Command below | Meaning and observable result |
+| --- | --- |
+| `helm install rabbitmq -n rabbitmq . --set ...` | Installs this chart in the selected cluster. `--set` overrides chart values; the values affect broker configuration, not a running Python producer's environment automatically. |
+| `kubectl port-forward ... 15672:15672` | Opens the HTTP management UI locally. This is not the AMQP connection used by the Python examples. |
+| `kubectl port-forward ... 5672:5672` | Opens the AMQP listener used by the local producer and consumer. Keep the tunnel alive while running them. |
+| `pip install -r requirements.txt` in `examples/` | Installs the client dependencies. It does not start RabbitMQ. |
+| `python consumer_simple.py` | Starts a long-running client waiting for deliveries; an idle terminal can be the expected state. |
+| `python producer_simple.py` | Publishes the example messages, then finishes. A producer exiting is different from a consumer crashing. |
+| `python consumer_crash_demo.py` | Deliberately stops during processing. Use the queue's ready and unacknowledged counts to follow redelivery rather than treating the crash message as the only result. |
+| `export WORKER_ID=1` | Sets a label for a subsequently started process in that terminal; a second terminal needs its own setting. |
+
+**Predict and observe:** Publish while no consumer is running, inspect the ready count, then start a consumer and inspect ready versus unacknowledged messages. Consider a crash after a side effect but before its acknowledgment: why can redelivery repeat work? State what evidence establishes publishing, delivery, and successful processing; they are separate events. See [the command guide](../../COMMANDS.md).
+
 ## Part 1: Understanding RabbitMQ and Message Queues
 
 ### What is RabbitMQ?

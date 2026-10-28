@@ -2,6 +2,14 @@
 
 Quick guide to deploy Prometheus and Grafana monitoring for your microservices.
 
+## Understand the Commands and Their Evidence
+
+`./install.sh` deploys the chart and sample services into `monitoring`; it does not generate application load. `kubectl get pods` inspects workload state, while `kubectl describe` provides details and events when a workload is not ready.
+
+The two port forwards have different destinations: `3000:3000` opens Grafana and `9090:9090` opens Prometheus. They remain running in their terminals. Use Prometheus target status to establish whether data is being collected before interpreting a Grafana graph. `helm upgrade` changes cluster configuration; inspect the resulting resources and measurements after each change.
+
+**Observe:** Send a known number of requests to the sample API and compare the raw `/metrics` values with a Prometheus query after the next scrape. A reachable dashboard, a reachable exporter, and a successful scrape are separate checks. See [the main command explanations](./README.md#read-the-monitoring-commands-as-an-experiment) and [command guide](../../COMMANDS.md).
+
 ## Prerequisites
 
 - Kubernetes cluster running

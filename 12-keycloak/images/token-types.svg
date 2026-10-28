@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title description">
+<title id="title">Three tokens with three different jobs</title>
+<desc id="description">An OpenID Connect login can return all three. Their destinations and checks are different.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="570" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">Three tokens with three different jobs</text>
+<text id="text-2" x="40" y="83" class="muted">An OpenID Connect login can return all three. Their destinations and checks are different.</text>
+<rect x="40" y="135" width="350" height="290" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="173" class="heading">Access token</text>
+<text id="text-5" x="62" y="208" class="body">React → Flask API</text>
+<text id="text-6" x="62" y="237" class="body">Intended audience: todo-api</text>
+<text id="text-7" x="62" y="266" class="body">Carries user ID and realm roles</text>
+<text id="text-8" x="62" y="295" class="body"></text>
+<text id="text-9" x="62" y="324" class="body">Flask verifies it and checks</text>
+<text id="text-10" x="62" y="353" class="body">permission for this operation.</text>
+<rect x="425" y="135" width="350" height="290" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="447" y="173" class="heading">ID token</text>
+<text id="text-13" x="447" y="208" class="body">Keycloak → React client</text>
+<text id="text-14" x="447" y="237" class="body">Audience: my-frontend-app</text>
+<text id="text-15" x="447" y="266" class="body">Describes the sign-in identity</text>
+<text id="text-16" x="447" y="295" class="body"></text>
+<text id="text-17" x="447" y="324" class="body">Used in the client login flow.</text>
+<text id="text-18" x="447" y="353" class="body">Do not use it as an API token.</text>
+<rect x="810" y="135" width="350" height="290" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-20" x="832" y="173" class="heading">Refresh token</text>
+<text id="text-21" x="832" y="208" class="body">React → Keycloak /token</text>
+<text id="text-22" x="832" y="237" class="body">Used to obtain fresh tokens</text>
+<text id="text-23" x="832" y="266" class="body">Subject to session limits</text>
+<text id="text-24" x="832" y="295" class="body"></text>
+<text id="text-25" x="832" y="324" class="body">updateToken() uses it when</text>
+<text id="text-26" x="832" y="353" class="body">the access token expires soon.</text>
+<rect x="40" y="465" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="495" class="body">In this app, loadUserProfile() fetches the display profile; hasRealmRole() reads access-token roles.</text>
+<text id="text-29" x="60" y="523" class="body">The Flask API receives the access token, not the ID token or refresh token.</text>
+</svg>

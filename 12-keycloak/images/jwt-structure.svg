@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+<title id="title">The three parts of a signed JWT</title>
+<desc id="description">The access tokens in these examples use an RSA signature. They are signed, not encrypted.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="630" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">The three parts of a signed JWT</text>
+<text id="text-2" x="40" y="83" class="muted">The access tokens in these examples use an RSA signature. They are signed, not encrypted.</text>
+<rect x="40" y="113" width="1120" height="60" rx="14" fill="#f4f7fb" stroke="#d2dde7" stroke-width="2"/>
+<text id="text-4" x="600" y="151" class="code" text-anchor="middle">base64url(header)  .  base64url(payload)  .  signature</text>
+<rect x="40" y="205" width="350" height="270" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-6" x="62" y="243" class="heading">Header</text>
+<text id="text-7" x="62" y="278" class="body">alg: RS256</text>
+<text id="text-8" x="62" y="307" class="body">kid: signing-key identifier</text>
+<text id="text-9" x="62" y="336" class="body"></text>
+<text id="text-10" x="62" y="365" class="body">The API fixes allowed algorithms.</text>
+<text id="text-11" x="62" y="394" class="body">It uses kid to select a key.</text>
+<rect x="425" y="205" width="350" height="270" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-13" x="447" y="243" class="heading">Payload: claims</text>
+<text id="text-14" x="447" y="278" class="body">iss: issuing realm URL</text>
+<text id="text-15" x="447" y="307" class="body">aud: todo-api</text>
+<text id="text-16" x="447" y="336" class="body">sub: user identifier</text>
+<text id="text-17" x="447" y="365" class="body">exp: expiry time</text>
+<text id="text-18" x="447" y="394" class="body">realm_access.roles: roles</text>
+<rect x="810" y="205" width="350" height="270" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-20" x="832" y="243" class="heading">Signature</text>
+<text id="text-21" x="832" y="278" class="body">Keycloak signs with private key.</text>
+<text id="text-22" x="832" y="307" class="body">API verifies with public key.</text>
+<text id="text-23" x="832" y="336" class="body"></text>
+<text id="text-24" x="832" y="365" class="body">Changing a claim breaks</text>
+<text id="text-25" x="832" y="394" class="body">signature verification.</text>
+<rect x="40" y="510" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="540" class="body">Anyone holding the token can decode its header and payload.</text>
+<text id="text-28" x="60" y="568" class="body">Treat it as a credential: decoding is not verification, and Base64URL is not encryption.</text>
+</svg>

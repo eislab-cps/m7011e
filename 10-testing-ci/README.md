@@ -37,6 +37,23 @@ By the end of this tutorial, you will:
 
 The example service and tests shown below are included in `examples/`, `backend-tests/`, and `frontend-tests/`. This is a separate database-backed example using `title`, `todo_id`, and `user_id`; its API differs from the `text` and `id` API in Tutorials 1 and 9. The frontend tests mock fetch, so they do not require a running backend.
 
+## Understand What Each Test Command Proves
+
+Tests execute code and compare observations with assertions. Identify which dependencies are real, replaced with a mock, or not involved before interpreting a green result.
+
+| Command below | What it runs and how to interpret it |
+| --- | --- |
+| `python3 -m venv .venv`, activation, and `pip install -r requirements.txt` | Prepare the local test environment; these steps do not execute assertions. |
+| `pytest test_unit.py -v` | Collect and run selected unit tests. `-v` shows individual names and outcomes; mocked dependencies mean those tests do not prove a real database connection works. |
+| `pytest test_api.py` | Exercise the Flask app through its test client. This tests HTTP behavior without starting a public development server. |
+| `pytest test_integration.py` | Connect to a real PostgreSQL instance. The supplied fixture drops, creates, and later removes `test_tododb`, so use a disposable test instance and the intended connection settings. |
+| `--cov=../examples --cov-report=term-missing` | Measure executed lines in the service code and list unexecuted lines. Coverage alone does not measure the quality of assertions or impose a passing threshold. |
+| `npm ci` | Install the frontend test dependencies from the lockfile. A missing or mismatched lockfile is an installation failure, not a failed component assertion. |
+| `npm test -- --coverage` | Run the configured test script; `--` forwards the following option to that script. Browser-like component tests do not automatically exercise the real Flask service. |
+| `git push` after adding a workflow | Publishes a commit; GitHub Actions then starts only if the configured event and branch filters match. Inspect the workflow run rather than assuming publication means tests passed. |
+
+**Make a useful test fail:** Change one behavior covered by an assertion, run that test, and explain the failure before restoring the implementation. If changing the behavior does not fail the test, what was the test actually checking? See [the command guide](../COMMANDS.md#separate-installing-building-and-running) for environment and npm syntax.
+
 ## Part 1: Understanding the Testing Pyramid
 
 ```mermaid

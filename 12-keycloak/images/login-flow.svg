@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="940" viewBox="0 0 1200 940" role="img" aria-labelledby="title description">
+<title id="title">Sign-in with Authorization Code and PKCE</title>
+<desc id="description">Read from top to bottom. The browser changes location during sign-in, then React resumes.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="940" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">Sign-in with Authorization Code and PKCE</text>
+<text id="text-2" x="40" y="83" class="muted">Read from top to bottom. The browser changes location during sign-in, then React resumes.</text>
+<rect x="40" y="118" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="156" class="heading">Browser + React</text>
+<text id="text-5" x="62" y="191" class="body">Public client: no client secret</text>
+<rect x="440" y="118" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="462" y="156" class="heading">Keycloak</text>
+<text id="text-8" x="462" y="191" class="body">Authenticates and issues tokens</text>
+<rect x="840" y="118" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="862" y="156" class="heading">Flask API</text>
+<text id="text-11" x="862" y="191" class="body">Verifies tokens and permissions</text>
+<path d="M200 212 V820" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<path d="M600 212 V820" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<path d="M1000 212 V820" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<rect x="40" y="240" width="320" height="70" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-16" x="58" y="268" class="body">1. Create verifier + challenge</text>
+<text id="text-17" x="58" y="295" class="body">Keep the verifier in this browser</text>
+<path d="M200 365 L600 365" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="219.5" y="314" width="361.0" height="30" fill="#fff"/>
+<text id="text-20" x="400" y="335" class="body" text-anchor="middle">2. Redirect: code challenge + state</text>
+<rect x="440" y="388" width="320" height="40" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-22" x="600" y="414" class="body" text-anchor="middle">3. Sign in on Keycloak page</text>
+<path d="M600 470 L200 470" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="214.6" y="428" width="370.8" height="30" fill="#fff"/>
+<text id="text-25" x="400" y="449" class="body" text-anchor="middle">4. Redirect back with a one-use code</text>
+<path d="M200 565 L600 565" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="239.1" y="515" width="321.8" height="30" fill="#fff"/>
+<text id="text-28" x="400" y="536" class="body" text-anchor="middle">5. POST /token: code + verifier</text>
+<path d="M600 650 L200 650" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="239.1" y="601" width="321.8" height="30" fill="#fff"/>
+<text id="text-31" x="400" y="622" class="body" text-anchor="middle">6. Access + ID + refresh tokens</text>
+<path d="M200 740 L1000 740" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="350.9" y="688" width="498.20000000000005" height="30" fill="#fff"/>
+<text id="text-34" x="600" y="709" class="body" text-anchor="middle">7. API call: Authorization: Bearer &lt;access token&gt;</text>
+<path d="M1000 815 L200 815" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="326.4" y="767" width="547.2" height="30" fill="#fff"/>
+<text id="text-37" x="600" y="788" class="body" text-anchor="middle">8. Validate token, check permission, return the result</text>
+<rect x="40" y="850" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-39" x="60" y="880" class="body">PKCE binds the code exchange to the browser that started sign-in. TLS protects the messages.</text>
+</svg>

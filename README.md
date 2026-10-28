@@ -13,6 +13,21 @@ Clone this repository and start with [Tutorial 1](./01-basic-webapp/README.md). 
 
 These are teaching examples. Some store data in memory or use development servers; deployment on Kubernetes alone does not make an application ready for production.
 
+## How to Work Through a Tutorial
+
+For each command, identify **where it runs**, **what it changes**, and **what result would show that it worked**. Read [Understanding the commands](./COMMANDS.md) if shell syntax, ports, environment variables, or Kubernetes options are unfamiliar.
+
+Work in small steps:
+
+1. **Predict:** Write down what you expect the next command to do. Does it read information, start a process, change a deployment, or delete something?
+2. **Run and observe:** Run one step, then inspect its output, the browser Network tab, or the relevant application logs.
+3. **Explain:** Describe the result in your own words. An error message is evidence about which part of the system you have reached.
+4. **Change one thing:** Try a different request body, port, replica count, or configuration value. Predict the difference before running it.
+
+Keep a short lab record with the command, your prediction, the observed result, and an explanation. Being able to adapt a command and diagnose its failure is part of the exercise.
+
+Start with [an HTTP request and response](./01-basic-webapp/README.md#2-follow-one-http-request) before studying APIs, [service boundaries](./05-microservices-and-k8s/README.md#start-with-one-business-operation) before deploying microservices, and [TLS and certificates](./07-k8s-helloworld/README.md#before-deploying-how-https-reaches-your-application) before configuring HTTPS. The [Keycloak overview](./12-keycloak/README.md#before-deploying-follow-one-sign-in) connects these ideas to authentication.
+
 ## Main Tutorials
 
 Work through tutorials 1-13 in order. Tutorials 3-5 explain concepts and include illustrative snippets; the other tutorials provide application files, deployment charts, or exercises to follow.

@@ -2,6 +2,24 @@
 
 This guide provides step-by-step instructions to help you begin working with Kubernetes on the LTU-Rancher cluster.
 
+## What the Setup Commands Actually Configure
+
+`kubectl` and Helm are clients on your computer. Kubernetes runs elsewhere. A **kubeconfig** tells the clients which API server to contact and which credentials and context to use. Installing the clients and configuring access are separate steps.
+
+| Command below | Meaning and scope |
+| --- | --- |
+| `kubectl version --client` | Prints the local client version without checking cluster access. |
+| `helm version`, `docker --version` | Check that those local programs are installed. They do not prove that a cluster or application is reachable. |
+| `mkdir -p .kube` | Creates the local configuration directory if needed. `-p` also permits an already-existing directory. |
+| `chmod 700 .kube` | Restricts directory access to its owner. |
+| `cp ... ~/.kube/m7011e.yaml` | Copies the downloaded configuration to your own machine. Replace the source filename; this does not create cluster resources. |
+| `chmod 600 ...` | Allows only the owner to read and write the configuration file. These permissions do not encrypt the credentials in it. |
+| `export KUBECONFIG=...` | Selects that file for programs started from the current shell. Another terminal needs its own setting. |
+| `kubectl config current-context` | Reads the selected context from local configuration. A context groups a cluster, identity, and optionally a namespace. |
+| `kubectl get nodes` | Makes an authenticated request to the selected API server. A Forbidden response indicates a permissions decision; a timeout indicates a different problem. |
+
+**Check your understanding:** Before any later `apply`, `install`, or `delete`, identify the selected cluster and namespace. Explain why changing your terminal's directory does not change your Kubernetes context. See [the command guide](../COMMANDS.md) for shell and namespace syntax.
+
 ## 1. Install kubectl
 Install the `kubectl` command-line tool to interact with and manage Kubernetes clusters.
 
@@ -26,7 +44,7 @@ Once everything is installed, verify your setup by running the commands below. N
 kubectl version --client
 ```
 Expected output (versions may vary):
-```bash
+```text
 Client Version: version.Info{Major:"1", Minor:"27", GitVersion:"v1.27.4", GitCommit:"fa3d7990104d7c1f16943a67f11b154b71f6a132", GitTreeState:"clean", BuildDate:"2023-07-19T12:20:54Z", GoVersion:"go1.20.6", Compiler:"gc", Platform:"linux/amd64"}
 Kustomize Version: v5.0.1
 ```
@@ -36,7 +54,7 @@ Kustomize Version: v5.0.1
 helm version
 ```
 Expected output (versions may vary):
-```bash
+```text
 version.BuildInfo{Version:"v3.12.2", GitCommit:"1e210a2c8cc5117d1055bfaa5d40f51bbc2e345e", GitTreeState:"clean", GoVersion:"go1.20.5"}
 ```
 
@@ -45,7 +63,7 @@ version.BuildInfo{Version:"v3.12.2", GitCommit:"1e210a2c8cc5117d1055bfaa5d40f51b
 docker --version
 ```
 Expected output (versions may vary):
-```bash
+```text
 Docker version 20.10.24+dfsg1, build 297e128
 ```
 
@@ -120,7 +138,7 @@ kubectl get nodes
 ```
 
 Expected output (node names and details will vary):
-```bash
+```text
 NAME                STATUS   ROLES                              AGE   VERSION
 ubuntu-8gb-hel1-1   Ready    control-plane,etcd,master,worker   77m   v1.33.3+k3s1
 ```

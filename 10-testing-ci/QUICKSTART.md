@@ -2,6 +2,14 @@
 
 Run the included examples and set up a CI pipeline. Start commands from the repository root unless stated otherwise.
 
+## Understand the Commands Before the Quick Start
+
+The [main tutorial's test-command explanations](./README.md#understand-what-each-test-command-proves) distinguish installation, unit tests, API tests, integration tests, and coverage. `pytest -v` executes assertions and prints individual outcomes; `pip install` only installs their dependencies. `npm test -- --coverage` forwards `--coverage` to the configured npm test script.
+
+Integration tests use a real PostgreSQL server and recreate `test_tododb`; use a disposable test instance. Unit tests and Flask test-client tests do not establish that this database connection works. A port forward supplies a connection path, not the required database permissions.
+
+For each test run, write down which component is real and which is mocked. Deliberately break one covered behavior, observe the failed assertion, and restore it. Explain why coverage can be high while an incorrect result still escapes weak assertions. See [the command guide](../COMMANDS.md) for environment setup and argument syntax.
+
 ## Prerequisites
 
 - Python 3.10+

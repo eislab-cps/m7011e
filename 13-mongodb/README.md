@@ -70,6 +70,24 @@ The following table lists the configurable parameters in `values.yaml`:
 | `DBMemory` | Memory limit | `512Mi` |
 | `DBStorage` | Storage size for persistent volume | `10Gi` |
 
+## Read the Database Commands Before Running Them
+
+MongoDB's server stores documents; `mongosh` is a client that sends operations to that server. A Kubernetes port forward only supplies a route between your local client and the cluster. It does not authenticate you or select which documents to query.
+
+| Command below | Meaning in this setup |
+| --- | --- |
+| `./install.sh` / `helm install mongodb -f values.yaml -n db .` | Alternative installation paths for this one standalone database instance. The script runs Helm; neither path creates a replica set. |
+| `kubectl get pods -n db` / `kubectl get pvc -n db` | Inspect the running database process / its storage claim. A ready Pod and a bound claim answer different questions. |
+| `kubectl port-forward -n db svc/mongodb-service 27017:27017` | Open a local-to-cluster tunnel. With `27018:27017`, the local client must use 27018. |
+| `mongosh .../appdb?authSource=admin` | Connect to application database `appdb` while authenticating the configured root account against `admin`. The authentication database and data database need not be the same. |
+| `kubectl exec ... -- mongosh ...` | Run the client inside the Pod instead of on your laptop. The meaning of `localhost` changes with that execution location. |
+| `mongodump ... --archive > backup.archive` through `kubectl exec` | Create an archive inside the remote command's output stream and save it to a local file. The shell performing `>` determines the file's location. |
+| `helm upgrade ...` | Update Kubernetes configuration; editing initialization credentials is not itself a password rotation on an initialized database. |
+
+In mongosh, `use appdb` selects the database for subsequent operations; the first write creates it if necessary. `find()` reads matching documents, while `insertOne`, `updateOne`, and `deleteOne` change data. Read the predicate and expected result before executing a write. Deleting a Pod while retaining its volume and deleting the PVC have different persistence consequences.
+
+**Predict and verify:** Insert a document, record its identifier, and read it back. Open a new client session and query the same database. Explain why closing mongosh should leave the document intact, whereas a write to an in-memory Python list would disappear when that API process restarts. See [the command guide](../COMMANDS.md) for ports and redirection.
+
 ## Installation
 
 ### Step 1: Configure Values

@@ -2,6 +2,14 @@
 
 This directory contains a sample application structured for GitOps deployment with Argo CD.
 
+## Follow Each Configuration Change
+
+`git init` creates local repository metadata; `git add` selects changes; `git commit` records a local revision; `git push` publishes it. Argo CD follows a configured remote revision and path, so an unpushed edit cannot become its desired state.
+
+`helm template` locally renders the chart with an environment's values. `helm lint` checks chart structure and common problems. Neither command installs the application or proves that the image can start. `argocd app create` registers the source and destination, while synchronization asks Argo CD to apply the desired manifests.
+
+**Observe:** Render a value change, commit it, inspect the remote revision after pushing, then compare Argo CD's synchronization and health status. Explain which of these states changes at each command. Read [the main command walkthrough](../README.md#follow-the-change-from-your-file-to-the-cluster) and [shell command guide](../../COMMANDS.md) before the exercise.
+
 ## Directory Structure
 
 ```

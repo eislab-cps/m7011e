@@ -2,6 +2,16 @@
 
 Run commands from `advanced/16-service-meshes/examples/`. Istio installation may take several minutes.
 
+## Understand the Commands in the Experiment
+
+The installer configures Istio; the namespace label requests sidecars for new eligible Pods; `kubectl apply -f simple-demo.yaml` creates this demo. These are three different changes. `kubectl get pods` should show ready application and proxy containers before you test traffic.
+
+`kubectl exec deploy/client -c client -- ...` starts the following program in the client container. The shell loop repeats requests from there, so `hello:8080` is the in-cluster destination rather than a laptop hostname. `-H` adds an HTTP header used by a routing rule. `time` measures the command's elapsed execution time, which also includes kubectl and process-start overhead.
+
+When a command uses `kubectl apply -f - <<EOF`, the local shell supplies the following YAML to kubectl on standard input; `-f -` reads that input instead of a file. The policy changes live cluster configuration and remains in effect after your terminal command returns.
+
+**Predict:** Write down which header, version distribution, delay, or error rate the next policy should produce. Change one policy at a time and send several requests. A 70/30 policy is a routing weight, not a guarantee of exactly seven v1 responses in ten requests. Read [the main command explanations](../README.md#understand-the-control-plane-and-traffic-commands) and [shell guide](../../../COMMANDS.md).
+
 ## What This Demo Shows
 
 - **Automatic sidecar injection** - Istio adds Envoy proxy to your pods

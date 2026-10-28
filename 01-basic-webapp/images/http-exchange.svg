@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title description">
+<title id="title">HTTP: one request, one response</title>
+<desc id="description">The browser and curl can both send messages to the same Flask API.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="660" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">HTTP: one request, one response</text>
+<text id="text-2" x="40" y="83" class="muted">The browser and curl can both send messages to the same Flask API.</text>
+<rect x="40" y="130" width="260" height="175" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="168" class="heading">Client</text>
+<text id="text-5" x="62" y="203" class="body">Browser JavaScript</text>
+<text id="text-6" x="62" y="232" class="body">or curl in a terminal</text>
+<text id="text-7" x="62" y="261" class="body">Chooses method + URL</text>
+<rect x="900" y="130" width="260" height="175" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="922" y="168" class="heading">Flask server</text>
+<text id="text-10" x="922" y="203" class="body">localhost:8000</text>
+<text id="text-11" x="922" y="232" class="body">Matches API route</text>
+<text id="text-12" x="922" y="261" class="body">Returns status + data</text>
+<path d="M300 190 L900 190" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="444.0" y="145" width="312.0" height="30" fill="#fff"/>
+<text id="text-15" x="600" y="166" class="body" text-anchor="middle">1. POST /api/todos + JSON body</text>
+<path d="M900 268 L300 268" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="463.6" y="223" width="272.8" height="30" fill="#fff"/>
+<text id="text-18" x="600" y="244" class="body" text-anchor="middle">2. 201 Created + JSON body</text>
+<rect x="40" y="350" width="540" height="230" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-20" x="62" y="388" class="heading">Illustrative request</text>
+<rect x="620" y="350" width="540" height="230" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-22" x="642" y="388" class="heading">Illustrative response</text>
+<text id="text-23" x="62" y="426" class="code">POST /api/todos HTTP/1.1</text>
+<text id="text-24" x="62" y="454" class="code">Host: localhost:8000</text>
+<text id="text-25" x="62" y="482" class="code">Content-Type: application/json</text>
+<text id="text-26" x="62" y="510" class="code">Content-Length: 21</text>
+<text id="text-27" x="62" y="538" class="code"></text>
+<text id="text-28" x="62" y="566" class="code">{&quot;text&quot;:&quot;Learn HTTP&quot;}</text>
+<text id="text-29" x="642" y="426" class="code">HTTP/1.1 201 CREATED</text>
+<text id="text-30" x="642" y="454" class="code">Content-Type: application/json</text>
+<text id="text-31" x="642" y="482" class="code">Content-Length: 28</text>
+<text id="text-32" x="642" y="510" class="code"></text>
+<text id="text-33" x="642" y="538" class="code">{&quot;id&quot;:1,&quot;text&quot;:&quot;Learn HTTP&quot;}</text>
+<text id="text-34" x="40" y="625" class="muted">HTTP delivers the response; your JavaScript decides how to update the page.</text>
+</svg>

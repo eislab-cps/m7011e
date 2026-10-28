@@ -2,7 +2,15 @@
 
 Run these steps from `advanced/16-service-meshes/`. The installer uses a matching Istio release and sample add-ons; check the supported Kubernetes versions in the main README.
 
-**⚡ Super Quick Start:** Want to see it working in under 2 minutes? Check out [examples/README.md](./examples/README.md) - just copy-paste 4 commands!
+For a smaller experiment, use [the simple demo](./examples/README.md). Read what each command changes, predict the routing result, and compare it with repeated requests.
+
+## Understand Each Layer Before Applying It
+
+`./install-istio.sh` installs the control plane and sample observability add-ons, and labels the default namespace for injection. `export PATH=...` only selects the downloaded CLI for this terminal. The application manifests create workloads, while routing and security manifests configure how their proxies handle traffic.
+
+`kubectl exec ... -c frontend -- curl ...` runs the request in the application container. `istioctl proxy-config ...` inspects a proxy's configuration; it does not send a user request. A namespace label affects newly created eligible Pods, so inspect existing Pods for an actual proxy before interpreting the results.
+
+For each experiment, predict the response, apply one policy, run multiple requests, and compare the observed distribution or delay with your prediction. Remove the active fault-injection policy before measuring an unrelated scenario. The [main command walkthrough](./README.md#understand-the-control-plane-and-traffic-commands) and [shell guide](../../COMMANDS.md) explain flags, scope, and cleanup.
 
 ## Step 1: Install Istio
 

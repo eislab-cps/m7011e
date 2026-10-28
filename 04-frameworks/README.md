@@ -13,6 +13,22 @@ By the end of this tutorial, you will understand:
 - How to choose different frameworks for different services (polyglot architecture)
 - How framework features and service boundaries affect microservice design
 
+## Read One Request Through a Framework
+
+This is a comparison guide, not an installation script. Use the [HTTP exchange from Tutorial 1](../01-basic-webapp/README.md#2-follow-one-http-request) to interpret each framework's code. First find the entry point, then the handler, then the response:
+
+| Code or command you encounter | What it means |
+| --- | --- |
+| A Flask route decorator or an Express `app.get(...)` registration | Associates an HTTP method and path with a handler. Registering a handler does not send a request. |
+| Reading a request body | Parses data supplied by a client. Validation and authorization remain separate application responsibilities. |
+| Returning JSON | Builds the response representation; the status code communicates the outcome. |
+| A browser `fetch(...)` | Starts an HTTP request. Awaiting `response.json()` then parses the response body; it does not send another request. |
+| React state update | Schedules rendering from the updated state. It does not by itself write data to the backend. |
+| A server-rendered page | The server generates HTML that the browser can display. Interactive client code may make later requests. |
+| `npm run NAME` in later tutorials | Runs `scripts.NAME` from that project's `package.json`. The meaning comes from the project configuration, not from npm guessing a framework. |
+
+**Compare, then explain:** Take one todo-creation handler. Identify where input is parsed, where invalid input is rejected, where data is saved, and where the response is formed. Which parts are framework facilities, and which rules would still be your responsibility in another framework? Avoid choosing a framework only because its shortest sample has fewer lines.
+
 ## Introduction
 
 Choosing the right framework is critical for building modern microservices. Unlike monolithic applications where you pick one framework for everything, microservices let you choose the **best framework for each service's specific needs**.
@@ -355,7 +371,7 @@ JavaScript downloads and "hydrates" (adds interactivity)
 - ✅ Perfect SEO
 - ✅ Cheap hosting (just static files)
 - ✅ Excellent scalability (CDN)
-- ✅ Most secure (no server-side code)
+- Static delivery removes runtime server rendering, while browser code, dependencies, and any APIs still need security controls
 
 **Disadvantages:**
 - ❌ Only works for content that doesn't change often

@@ -2,7 +2,7 @@
 
 This tutorial guides you through building a simple todo list application demonstrating fundamental web application concepts including REST APIs, client-server architecture, and frontend-backend communication.
 
-> **Note**: This application comes with CORS (Cross-Origin Resource Sharing) pre-configured, so the frontend can communicate with the backend out of the box. Just install dependencies and run!
+The application includes CORS configuration for the two local development ports. First follow a request through the system below; then use the running application to check that explanation against real network messages.
 
 ## Learning Objectives
 
@@ -24,21 +24,43 @@ By completing this tutorial, you will understand:
 
 A web application typically consists of two parts:
 
-```mermaid
-%%{init: {'sequence': {'mirrorActors': false}}}%%
-sequenceDiagram
-    participant Client as Client<br/>(Browser)
-    participant Server as Server<br/>(Backend)
-
-    Client->>Server: HTTP/HTTPS Request
-    Server->>Client: Response
-```
+![A client sends an HTTP request to the Flask server, which returns a status code and JSON response.](./images/http-exchange.svg)
 
 - **Client (Frontend)**: The user interface running in the browser (HTML, CSS, JavaScript)
 - **Server (Backend)**: Processes requests, handles business logic, manages data (Python, Node.js, Java, etc.)
 - **Communication**: They talk via HTTP protocol using structured messages
 
-### 2. JSON-RPC vs REST
+### 2. Follow One HTTP Request
+
+**HTTP** is an agreement about how a client asks for a resource or operation and how a server replies. Opening a page requests HTML; loading its JavaScript and images can trigger more requests. Our page also sends HTTP requests when you add or delete a todo. The browser's [HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview) describes the same request/response model.
+
+Read `http://localhost:8000/api/todos` in pieces:
+
+| Piece | Meaning in this application |
+| --- | --- |
+| `http` | Scheme: use HTTP without TLS for this local exercise. `https` uses TLS to protect the connection. |
+| `localhost` | Host: the same computer as the program making this request. |
+| `8000` | Port: where the Flask process is listening. A machine can have many servers on different ports. |
+| `/api/todos` | Path: the resource Flask routes to a handler. This does not have to correspond to a file on disk. |
+
+A **request** has a method, a target, headers, and sometimes a body. `POST /api/todos` asks our API to create a todo. `Content-Type: application/json` tells the server how to interpret the body; `{"text":"Learn HTTP"}` is the data. Flask reads that data and changes its in-memory list.
+
+A **response** has a status code, headers, and sometimes a body. This handler returns `201 Created`, a JSON content type, and the created todo with its assigned ID. JavaScript reads the response and updates the displayed list. HTTP does not automatically update the page or save data to a database.
+
+| Observation | What it tells you |
+| --- | --- |
+| `200 OK` when listing todos | The server handled the read; an empty `[]` is still a successful result. |
+| `201 Created` after adding one | The API created a todo and returned it. |
+| `204 No Content` after deletion | The operation succeeded and there is no JSON response body to parse. |
+| `400 Bad Request` for missing text | The server received the request but rejected the input. |
+| `404 Not Found` for an unknown path or todo | The requested route or resource was not found. |
+| Connection refused | No process accepted the connection at that host and port; there is no HTTP status code. |
+
+The method and status describe the message's meaning; JSON describes its data. A response can contain an application error in valid JSON. Being able to decode JSON therefore does not establish that the operation succeeded.
+
+**Predict before running:** If the API returns `201` but you never update the DOM, will a new item appear on the page? If the backend restarts, will an in-memory todo survive? Verify both after the Quick Start.
+
+### 3. JSON-RPC vs REST
 
 There are different ways for clients and servers to communicate:
 
@@ -129,7 +151,7 @@ DELETE /api/todos/1
 
 **This tutorial uses REST** because it's the most common pattern for modern web APIs and leverages HTTP methods naturally.
 
-### 3. HTTP Methods
+### 4. HTTP Methods
 
 REST APIs use different HTTP methods to indicate the type of operation:
 
@@ -142,7 +164,7 @@ REST APIs use different HTTP methods to indicate the type of operation:
 
 *Idempotent: Calling it multiple times has the same effect as calling it once
 
-### 4. JSON Data Format
+### 5. JSON Data Format
 
 Web APIs typically exchange data in JSON (JavaScript Object Notation):
 
@@ -160,7 +182,7 @@ Web APIs typically exchange data in JSON (JavaScript Object Notation):
 - Native support in JavaScript
 - Lightweight compared to XML
 
-### 5. CORS (Cross-Origin Resource Sharing)
+### 6. CORS (Cross-Origin Resource Sharing)
 
 **CORS** is a browser security mechanism that controls cross-origin HTTP requests initiated by JavaScript. An **origin** is defined by the tuple (protocol, domain, port). Different origins include:
 - `http://localhost:8080` (frontend)
@@ -198,7 +220,7 @@ CORS(app, resources={
 })
 ```
 
-### 6. API Documentation with Swagger/OpenAPI
+### 7. API Documentation with Swagger/OpenAPI
 
 **Why API documentation matters:**
 - Helps developers understand how to use your API
@@ -292,6 +314,8 @@ flowchart TB
 
 ## Quick Start
 
+These commands start two different local processes. The backend on port 8000 handles todo data; the file server on port 8080 delivers HTML and JavaScript. Keep both terminals open. Use [the command guide](../COMMANDS.md) if `cd`, `source`, or `-m` is unfamiliar.
+
 #### Step 1: Set Up and Run the Backend
 
 ```bash
@@ -316,6 +340,8 @@ API will be available at: http://localhost:8000
 ```
 
 The backend is now running! Keep this terminal open.
+
+`python3 -m venv .venv` creates a directory containing an isolated Python environment. `source` activates it in this shell. `pip install -r` reads the dependency list; it does not start the application. `python3 app.py` starts Flask and waits for requests. You can confirm this independently of the frontend by opening `http://localhost:8000/api/todos`.
 
 #### Step 2: Serve the Frontend from an HTTP Server
 
@@ -393,6 +419,30 @@ This is a great way to test your API without needing to use the frontend or writ
 ---
 
 ## Test the Application
+
+### Inspect the Protocol Yourself
+
+With the backend running, use another terminal. Predict the status code and response body for each command before running it:
+
+```bash
+curl -i http://localhost:8000/api/todos
+
+curl -i -X POST http://localhost:8000/api/todos \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"Learn HTTP"}'
+
+curl -i -X POST http://localhost:8000/api/todos \
+  -H 'Content-Type: application/json' \
+  -d '{}'
+```
+
+`curl` is an HTTP client. `-i` includes response headers, making the status code visible. `-X POST` selects the method, `-H` adds a request header, and `-d` supplies the body. The backslashes continue a single command across lines. The first command reads data; the second changes the server's list; the third should be rejected with `400`.
+
+Open the browser's **Network** tab, add a todo through the page, and inspect the matching request. Find the method, URL, request body, status code, response headers, and response body. The request resembles the one sent by curl because both clients speak HTTP. For a JSON request from the other origin, you may also see an `OPTIONS` CORS preflight before `POST`.
+
+**Explain your observations:** Why does an empty list return `200`, while an invalid create request returns `400`? Stop the backend and repeat the first command: why is that failure different from `404`? Restart it and inspect the list again: which process was storing the todos?
+
+### Exercise the User Interface
 
 1. **Add a todo**: Type something in the input box and click "Add Todo"
 2. **View todos**: Your todos appear in a list below

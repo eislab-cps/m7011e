@@ -26,6 +26,23 @@ A **database** is an organized collection of structured data stored electronical
 
 ---
 
+## Read the Database Examples as Operations
+
+This chapter compares data models; the snippets are not a sequence to paste into one terminal. SQL runs in a SQL client, Redis commands in a Redis client, and MongoDB examples in mongosh or a driver. Tutorials [8](../08-postgresql/README.md) and [13](../13-mongodb/README.md) explain how to start and connect to real databases.
+
+| Operation in a snippet | What to identify before running it |
+| --- | --- |
+| `SELECT ... FROM ... WHERE ...` | The table, selected columns, and predicate. A read can return zero rows successfully. |
+| `INSERT ...` | The new row/document and the constraints that can reject it. This changes stored data. |
+| `UPDATE ... WHERE ...` | Which existing records match. Omitting the predicate can update every row. |
+| `DELETE ... WHERE ...` | Which records will be removed. Compare with a read using the same predicate first. |
+| `BEGIN`, `COMMIT`, `ROLLBACK` | The boundary of a transaction: start it, make changes durable, or abandon its uncommitted changes. |
+| An index definition | The query pattern it helps and the extra storage and write work it requires. |
+
+In Tutorial 1, restarting Flask loses the Python list. A database moves ownership of durable records into another component. The API still has to send a query, handle an error, and translate the result into an HTTP response. Installing a database does not automatically connect the API to it.
+
+**Reason through a change:** Model a todo with an owner and completion state. Write down what must remain true if two requests update it concurrently. Identify which transaction, constraint, or application rule preserves each requirement. Explain why a successful HTTP response and a committed database change are related but separate observations.
+
 ## Database Fundamentals
 
 ### ACID Properties (Transactions)

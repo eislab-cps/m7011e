@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="715" viewBox="0 0 1200 715" role="img" aria-labelledby="title description">
+<title id="title">A service boundary changes how you build and operate software</title>
+<desc id="description">Use a business responsibility and a stable API to decide where the boundary belongs.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="715" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">A service boundary changes how you build and operate software</text>
+<text id="text-2" x="40" y="83" class="muted">Use a business responsibility and a stable API to decide where the boundary belongs.</text>
+<rect x="40" y="130" width="525" height="405" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="168" class="heading">Modular monolith</text>
+<text id="text-5" x="62" y="203" class="body">One deployable application</text>
+<rect x="65" y="245" width="475" height="85" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="87" y="283" class="heading">Orders module</text>
+<rect x="65" y="405" width="475" height="85" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="87" y="443" class="heading">Notifications module</text>
+<path d="M300 330 L300 405" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="129.29999999999998" y="355" width="341.40000000000003" height="30" fill="#fff"/>
+<text id="text-12" x="300" y="376" class="body" text-anchor="middle">Function call in the same process</text>
+<rect x="635" y="130" width="525" height="405" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="657" y="168" class="heading">Separate services</text>
+<text id="text-15" x="657" y="203" class="body">Two deployments with an API contract</text>
+<rect x="660" y="245" width="475" height="85" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-17" x="682" y="283" class="heading">Orders service</text>
+<rect x="660" y="405" width="475" height="85" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-19" x="682" y="443" class="heading">Notifications service</text>
+<path d="M897 330 L897 405" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="760.6" y="355" width="272.8" height="30" fill="#fff"/>
+<text id="text-22" x="897" y="376" class="body" text-anchor="middle">Network request or message</text>
+<rect x="40" y="570" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="600" class="body">A remote call can time out after the other service has already performed the action.</text>
+<text id="text-25" x="60" y="628" class="body">Decide who owns retries, duplicate detection, and recovery before splitting the services.</text>
+<text id="text-26" x="40" y="687" class="muted">A container is a packaging boundary; a microservice is an application design and deployment boundary.</text>
+</svg>

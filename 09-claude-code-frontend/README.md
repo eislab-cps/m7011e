@@ -14,6 +14,24 @@ Example of a generated React Todo List app below:
 
 ---
 
+## Know Which Instructions Run Where
+
+This tutorial alternates between shell commands and natural-language requests to a coding assistant. Type fenced `bash` commands into your terminal. Type the quoted development requests into the assistant conversation. A generated change still needs inspection and verification.
+
+| Step or command | What happens |
+| --- | --- |
+| `cd /path/to/m7011e` and `ls` | Select and inspect the local project directory before allowing the assistant to work there. |
+| `claude` | Starts the assistant CLI in that directory. It does not start Flask or the React application. |
+| A request to scaffold a Vite application | Creates project files and may install dependencies. Inspect `package.json` and the generated diff to see the actual changes. |
+| `npm install` | Installs JavaScript dependencies locally; it does not serve a page. |
+| `npm run dev` | Runs the project's configured development server. Read the URL it actually prints rather than assuming port 3000. |
+| `python3 app.py` in Tutorial 1's backend | Starts a separate API process on port 8000. React still needs this API to read and change todos. |
+| `npm run build` | Checks the production build and produces assets. A successful build does not prove that HTTP requests to Flask are correct. |
+
+**For each generated feature:** Read the event handler, find its HTTP call, and predict the method, path, body, and expected status. Use the browser Network tab to check the prediction. Reload the page to establish whether a todo was saved on the backend or only added to local React state. Explain any discrepancy before asking for another feature.
+
+Include this in development requests: **"Explain each command before running it, show which files change, and tell me how I can verify the result myself."** The goal is to retain enough understanding to diagnose the generated application. Review [HTTP](../01-basic-webapp/README.md#2-follow-one-http-request) and [the command guide](../COMMANDS.md) when needed.
+
 ## Getting Started with Claude Code
 
 ### Directory Structure

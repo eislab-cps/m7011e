@@ -37,21 +37,69 @@ By the end of this tutorial, you will understand:
 
 This is a conceptual guide. Images such as `user-service:v2` are placeholders for services you must build and publish; the repository does not contain those applications. YAML fragments illustrate individual fields. Follow Tutorials 6-7 for a complete deployment. Ingress examples require a compatible controller, and TLS examples also require cert-manager and the named issuer.
 
+## Read the Kubernetes Commands as State Changes
+
+The service names and images in this conceptual chapter are examples. Inspect the YAML and identify its namespace, image, ports, and selectors; use Tutorials 6–7 for a runnable deployment. These commands act on the cluster selected by your kubeconfig:
+
+| Command pattern | What it changes or observes |
+| --- | --- |
+| `kubectl apply -f FILE` | Sends the desired resource definitions from a file to the API server. Acceptance does not mean the Pods are ready. |
+| `kubectl scale deployment NAME --replicas=5` | Changes the desired number of instances of that Deployment. It does not create five different microservices. |
+| `kubectl autoscale ... --min=3 --max=10 --cpu-percent=70` | Creates an autoscaling policy. The controller needs usable metrics and CPU requests; it may subsequently change the replica count you set manually. |
+| `kubectl set image deployment/NAME CONTAINER=IMAGE` | Changes the named container's image in the Pod template, causing the Deployment controller to roll out replacements. |
+| `kubectl rollout status deployment/NAME` | Waits for and reports rollout progress. It checks the deployment process, not every business operation. |
+| `kubectl rollout undo deployment/NAME` | Requests a previous Pod-template revision. It does not undo database migrations or external side effects. |
+
+`-n NAME` selects a namespace for namespaced resources. A Pod name identifies an instance; a Deployment name identifies the controller that manages changing instances. Use [the command guide](../COMMANDS.md) to distinguish a local CLI operation from a remote process.
+
+**Predict:** If you set replicas to five, which resources should increase in number, and which API contract should remain the same? After an image update, why can some old and new Pods coexist? What evidence would you collect before calling the update successful?
+
 ## What are Microservices?
 
-**Microservices** is an architectural style that structures an application as a collection of small, autonomous services. Instead of building one large, monolithic application where all functionality is tightly coupled, you decompose the system into independent services that each handle a specific business capability.
+**Microservices** is an architectural style in which an application is made from services organized around business responsibilities, with explicit network interfaces and independent deployment. "Micro" does not specify a line count. A modular application can have clear internal boundaries while remaining one deployment; splitting it into processes introduces new failure and coordination problems.
+
+### Start with One Business Operation
+
+Imagine a customer places an order and the application sends a confirmation email. In a modular monolith, the order module can call a notification function in the same process. With separate services, Orders sends an HTTP request or a message to Notifications. That boundary changes the engineering problem:
+
+![A modular monolith calls a notification function inside one deployment; separate Orders and Notifications services communicate across a network and can be deployed separately.](./images/service-boundary.svg)
+
+| Question | Function call inside one process | Call to another service |
+| --- | --- | --- |
+| How is the destination identified? | A function or module reference | An address or Service name, a port, and an API or message contract |
+| What crosses the boundary? | Values and references supported by the language | Serialized data, such as JSON, that the receiver understands |
+| What does failure look like? | An exception, error result, or process failure | Also disconnection, timeout, duplicate delivery, or a response lost after the work succeeded |
+| How is a change released? | The application is redeployed | One service can be redeployed if its contract remains compatible |
+
+Suppose Notifications sends the email, but its response is lost. Orders sees a timeout. Retrying may send a second email; never retrying may leave another order without a confirmation. Independent processes do not solve this ambiguity. You need decisions about retries, identifiers for duplicate detection, and recovery.
+
+For a service boundary, explain **the responsibility it owns**, **the interface others depend on**, and **why it needs to change or scale independently**. The original [microservices article by Lewis and Fowler](https://martinfowler.com/articles/microservices.html) describes independent deployability as a central reason for using services as components.
+
+### Distinguish the Things Called a Service
+
+| Term | Meaning |
+| --- | --- |
+| Microservice | An application component with a responsibility and a deployment boundary, such as Orders. |
+| Container | A packaged process environment. Packaging an application in a container does not determine its architecture. |
+| Pod | Kubernetes' unit for running one or more closely related containers. |
+| Deployment | A controller's specification for keeping application replicas running and updating them. |
+| Kubernetes Service | A stable network endpoint that selects a changing set of Pods. It does not implement the Orders business logic. |
+
+Two replicas of Orders are two instances of the same service. A frontend and backend in two containers do not by themselves demonstrate independently deployable business services. All of these may initially run on one machine.
+
+**Design exercise:** Sketch Orders and Notifications. Label the request or message, the data owner, and what the customer sees if Notifications is unavailable. Decide whether an email outage should reject the order. Compare that decision with a payment failure; why might the boundaries and recovery rules differ?
 
 ### Core Characteristics
 
 Each microservice:
 
-1. **Runs Independently**: Operates in its own process or container, isolated from other services. If the Payment Service crashes, the User Service continues running normally. This isolation is achieved through containerization (Docker) and orchestration (Kubernetes). Each service has its own memory space, CPU allocation, and file system. When one service experiences a memory leak or crashes due to a bug, it doesn't affect the memory or stability of other services. The operating system or container runtime treats each service as a separate, independent application.
+1. **Runs Independently**: A service runs in a separate process, often packaged in a container. A crash can be contained to that process, but its callers can still fail if they depend on it. Shared hosts, resource exhaustion, and shared infrastructure can also affect several services. Containers and Kubernetes help manage isolation and recovery; service boundaries and failure handling determine what remains usable.
 
-2. **Communicates Over Networks**: Services talk to each other using standard network protocols like HTTP/REST, gRPC, or message queues. This is fundamentally different from monoliths where components communicate via in-memory function calls. When the Order Service needs user information, it makes an HTTP request to the User Service over the network (e.g., `GET http://user-service:5000/api/users/123`). This network communication adds latency (typically 1-50ms) but provides the isolation and independence that enables separate deployments. Services serialize data to JSON or Protocol Buffers, send it over TCP/IP, and the receiving service deserializes it back into objects.
+2. **Communicates Over Networks**: Services exchange requests or messages using interfaces such as HTTP/JSON, gRPC, or a message broker. For example, Orders can request `GET http://user-service:5000/api/users/123`. The receiver reconstructs values from the serialized message; it cannot use an object reference from the caller's memory. Latency and availability vary, so define timeouts and failure behavior explicitly.
 
 3. **Deploys Independently**: You can update the Order Service to version 2.0 without touching or redeploying the User Service. This enables multiple teams to work simultaneously without coordination bottlenecks. Independent deployment means each service has its own CI/CD pipeline, its own release schedule, and its own version number. When you deploy Order Service v2.0, Kubernetes performs a rolling update of just the Order Service Pods while all other services continue running their current versions. This is possible because services communicate through well-defined APIs (REST endpoints) that maintain backward compatibility.
 
-4. **Owns Its Data**: Each service has its own database. The Product Service owns the product database, and no other service directly queries that database. This is called the "database-per-service" pattern. Data ownership means the Product Service is the only service that can read or write to the `products` table. If the Order Service needs product information, it must call the Product Service API (`GET /api/products/456`) rather than querying the database directly. This prevents tight coupling between services and allows the Product Service team to change their database schema, switch databases (PostgreSQL to MongoDB), or optimize queries without breaking other services. However, this pattern makes operations that would be simple database JOINs in a monolith more complex - requiring multiple API calls or eventual consistency patterns.
+4. **Owns Its Data**: A service controls its data model and exposes access through an API or published events. In a database-per-service design, other services do not reach into its private tables. Separate logical databases or schemas can share a database server; a separate physical machine is not required. This reduces schema coupling but makes cross-service queries and transactions harder, requiring deliberate consistency and integration choices.
 
 5. **Can Use Different Technologies**: The User Service might use Python/Flask for rapid development, while the Payment Service uses Java/Spring for enterprise integration, and the Analytics Service uses Go for high performance. This is called a "polyglot" architecture. Technology independence works because services communicate through language-agnostic protocols (HTTP/JSON, gRPC). The User Service doesn't care that the Payment Service is written in Java - it just sends an HTTP POST request and receives JSON back. This allows teams to choose technologies that fit their specific requirements: Python for machine learning libraries, Go for low-latency APIs, Java for accessing enterprise systems, Node.js for real-time event handling. However, it also increases operational complexity since you need expertise in multiple languages, different monitoring tools, and diverse dependency management systems.
 
@@ -151,7 +199,7 @@ ecommerce-app/
 
 All runs in one process on port 5000
 All shares the same PostgreSQL database
-One bug crashes everything
+A process-level crash interrupts all modules in that process
 ```
 
 ### Microservices Architecture

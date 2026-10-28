@@ -2,6 +2,14 @@
 
 Quick guide to deploy and access RabbitMQ on Kubernetes using kubectl port-forward.
 
+## Understand the Deployment and Connection Commands
+
+The Helm command deploys a **broker**, not the local Python clients. `-n rabbitmq` selects its namespace; `.` selects this local chart; `--set KEY=VALUE` overrides chart configuration. Inspect Pods, Services, and the PVC after installation rather than assuming that command acceptance means the broker is ready.
+
+Keep the two listener ports distinct: `15672:15672` forwards the HTTP management UI, while `5672:5672` forwards AMQP for producers and consumers. Both are **local:remote** mappings. Run each needed port forward in a separate terminal and keep it open. `Ctrl+C` closes that connection path without uninstalling RabbitMQ.
+
+**Predict:** If the UI opens but the AMQP tunnel is stopped, should `producer_simple.py` connect? Use the queue counts to distinguish a client connection, a published message, and an acknowledged delivery. [The main tutorial](./README.md#understand-what-the-broker-and-example-commands-start) and [command guide](../../COMMANDS.md) explain the remaining flags and processes.
+
 ## Prerequisites
 
 - Kubernetes cluster running and kubectl configured

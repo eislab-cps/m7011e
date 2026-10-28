@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title description">
+<title id="title">Refresh first, then call the API</title>
+<desc id="description">The application calls updateToken(); the adapter does not schedule every refresh by itself.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="760" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">Refresh first, then call the API</text>
+<text id="text-2" x="40" y="83" class="muted">The application calls updateToken(); the adapter does not schedule every refresh by itself.</text>
+<rect x="40" y="120" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="158" class="heading">Browser + React</text>
+<text id="text-5" x="62" y="193" class="body">Holds the current tokens</text>
+<rect x="440" y="120" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="462" y="158" class="heading">Keycloak</text>
+<text id="text-8" x="462" y="193" class="body">Checks the refresh and session</text>
+<rect x="840" y="120" width="320" height="93" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="862" y="158" class="heading">Flask API</text>
+<text id="text-11" x="862" y="193" class="body">Receives a current access token</text>
+<path d="M200 214 V650" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<path d="M600 214 V650" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<path d="M1000 214 V650" stroke="#aabacb" stroke-width="2" stroke-dasharray="7 7"/>
+<rect x="40" y="245" width="320" height="75" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-16" x="60" y="274" class="body">await updateToken(30)</text>
+<text id="text-17" x="60" y="302" class="body">Enough time left? Reuse token.</text>
+<path d="M200 385 L600 385" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="234.2" y="334" width="331.6" height="30" fill="#fff"/>
+<text id="text-20" x="400" y="355" class="body" text-anchor="middle">Expires soon? POST refresh grant</text>
+<path d="M600 465 L200 465" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="214.6" y="415" width="370.8" height="30" fill="#fff"/>
+<text id="text-23" x="400" y="436" class="body" text-anchor="middle">New tokens if session is still valid</text>
+<path d="M200 550 L1000 550" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="390.1" y="500" width="419.8" height="30" fill="#fff"/>
+<text id="text-26" x="600" y="521" class="body" text-anchor="middle">API request with the current access token</text>
+<path d="M1000 630 L200 630" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="532.2" y="581" width="135.60000000000002" height="30" fill="#fff"/>
+<text id="text-29" x="600" y="602" class="body" text-anchor="middle">API response</text>
+<rect x="40" y="675" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-31" x="60" y="705" class="body">A failed refresh reaches the app error handler. The sample does not automatically retry every 401.</text>
+</svg>

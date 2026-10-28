@@ -43,6 +43,22 @@ By the end of this tutorial, you will understand:
 
 ---
 
+## Read the Monitoring Commands as an Experiment
+
+The sample application handles requests and exposes measurements. Prometheus scrapes those measurements; Grafana queries Prometheus. Opening a dashboard does not create traffic or prove that a scrape is succeeding.
+
+| Command below | What it does and where to observe it |
+| --- | --- |
+| `./install.sh` | Installs the monitoring chart into namespace `monitoring`, including its sample services. It does not install the Istio mesh from Tutorial 16. |
+| `kubectl port-forward ... svc/grafana 3000:3000` | Opens a local route to the dashboard UI. A working Grafana page alone does not prove Prometheus can reach a target. |
+| `kubectl port-forward ... svc/prometheus 9090:9090` | Opens Prometheus so you can inspect target health and query stored time series directly. |
+| `curl .../api/orders` versus `curl .../metrics` | Calls an application operation versus reading its metric exposition. Reading `/metrics` is not the same workload as creating an order. |
+| `kubectl run ... --image=curlimages/curl --restart=Never -- curl ...` | Starts a client inside the cluster. The first options configure the Pod; arguments after `--` belong to the program in the container. `--rm` on an attached temporary client requests its deletion when it exits. |
+| `kubectl logs -f ...` | Follows application logs, a different signal from scraped metrics. `Ctrl+C` ends the follow, not the workload. |
+| `./build-images.sh` / `./push-images.sh NAME` in `examples/` | Builds images locally / uploads tagged images to a registry. Update the chart to use the intended images before deploying them. |
+
+**Measure a controlled change:** Note a counter's current value, send a known number of application requests, and wait for a scrape. Compare the raw metric, the Prometheus query, and the dashboard. Explain why a rate over a time window and an instantaneous counter value are different numbers. An empty graph can mean no matching series, a failed scrape, or an unsuitable time range; check those separately. See [the command guide](../../COMMANDS.md).
+
 ## Part 1: Understanding Monitoring Fundamentals
 
 ### The Four Golden Signals

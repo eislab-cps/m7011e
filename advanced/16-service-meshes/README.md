@@ -87,9 +87,27 @@ By the end of this tutorial, you will understand:
 
 The included installer pins Istio 1.31.3 and matching sample add-ons. Check [Istio/Kubernetes compatibility](https://istio.io/latest/docs/releases/supported-releases/) before changing versions. Run commands from `advanced/16-service-meshes/`. You need permissions to install cluster-wide Istio resources.
 
+## Understand the Control Plane and Traffic Commands
+
+The installer configures cluster infrastructure; the demo runs application traffic through sidecar proxies. Changing a routing policy changes how proxies handle requests, not the application's source code.
+
+| Command below | Meaning and scope |
+| --- | --- |
+| `./install-istio.sh` | Downloads the pinned CLI if needed, installs Istio's demo control plane, configures the tracing provider, enables default-namespace injection, and installs the matching sample add-ons. These are real cluster changes. |
+| `export PATH=...:$PATH` | Makes the downloaded `istioctl` available in this terminal. It does not install another control plane or change every terminal's environment. |
+| `kubectl label namespace default istio-injection=enabled --overwrite` | Configures automatic sidecar injection for newly created eligible Pods. Existing Pods are not retroactively given a sidecar. `--overwrite` allows updating an existing label value. |
+| `kubectl apply -f examples/simple-demo.yaml` from the tutorial root | Creates the demo workloads and traffic configuration. From inside `examples/`, use the shorter path shown below. Relative paths depend on the current directory. |
+| `./test-demo.sh 20` from `examples/` | Waits for demo readiness, then sends 20 requests from the client workload and counts response versions. Twenty is a sample count, not a promised exact 70/30 split. |
+| `kubectl exec ... -c client -- curl ...` | Starts curl inside the application container. `-c` matters because the Pod also contains a proxy container. |
+| `istioctl proxy-config clusters ...` | Inspects the proxy's received configuration. This provides stronger evidence about transport settings than simply assuming that installed Istio implies encryption. |
+| `kubectl apply -f security/mtls-strict.yaml` | Applies a policy requiring mTLS for its targeted traffic. Confirm what workloads and namespaces the policy selects. |
+| `istioctl uninstall --purge -y` | Removes mesh installation resources; `-y` skips the confirmation prompt. Follow the cleanup section to remove demo resources and injection settings too. |
+
+**Predict and test:** Why can an old Pod lack a sidecar after its namespace is labeled? Why will 20 weighted requests not necessarily produce exactly 14 v1 and 6 v2 responses? Distinguish the browser-facing TLS from Tutorial 7, workload-to-workload mTLS, and user authorization from Tutorial 12: each authenticates or protects a different boundary. See [the command guide](../../COMMANDS.md).
+
 ## Quick Start - Try It Now!
 
-Want to see Istio in action immediately? Try our 5-minute demo:
+Use this small demo to connect each setup command to an observable routing result. Installation and image downloads may take several minutes:
 
 ```bash
 # From advanced/16-service-meshes/

@@ -16,6 +16,26 @@ By completing this tutorial, you will understand:
 
 ---
 
+## Read the Build and Run Commands
+
+The commands in this tutorial run through your Docker daemon. An **image** is a build artifact; a **container** is an instance created from one. Building, running, inspecting, and publishing are different operations:
+
+| Command you will use | What it does and how to read it |
+| --- | --- |
+| `docker build -t todo-backend .` | Reads the Dockerfile and build context from `.` and tags the resulting image `todo-backend`. It does not start the API. Files outside the context cannot be copied by this build. |
+| `docker run -p 8000:8000 todo-backend` | Creates and starts a container, publishing **host port 8000 → container port 8000**. The API must still listen on the container's network interface. |
+| `docker run -d ...` | Starts the container detached, returning control to the terminal. Detaching does not mean the application is ready. |
+| `docker ps` / `docker ps -a` | Lists running containers / all containers, including those that exited. Inspect exit state when a container disappears from `docker ps`. |
+| `docker logs CONTAINER` | Reads the application's standard output and error. It is evidence about why the process started or exited. |
+| `docker exec -it CONTAINER bash` | Starts a shell inside an existing running container. `-i` keeps input open; `-t` allocates a terminal. The image must contain the requested shell. |
+| `docker compose up --build` | Builds where needed and starts the services described by the Compose file. Compose service names identify destinations between containers on their network. |
+| `docker compose stop` / `docker compose down` | Stops containers / removes the project's containers and networks. Removing containers is different from deleting named volumes; adding `-v` requests volume removal. |
+| `docker tag` / `docker push` | Gives an image another name / uploads it to a registry. Neither operation replaces an already-running container. |
+
+The browser uses published **host** ports. A backend container uses a database's Compose hostname and **container** port. In each case, `localhost` means the caller's own network environment; see [the command guide](../COMMANDS.md#understand-ports-and-foreground-processes).
+
+**Predict and check:** Build an image and inspect `docker ps`: should a new container exist yet? Run it, then inspect the published port. Edit a source file that was copied into the image: why is a rebuild and container replacement necessary unless you explicitly configured a bind mount? Use the logs and an HTTP request to distinguish "container exists" from "API works".
+
 ## What is Docker?
 
 **Docker** is a platform for developing, shipping, and running applications inside containers.

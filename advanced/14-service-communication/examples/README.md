@@ -2,6 +2,14 @@
 
 Run commands from `advanced/14-service-communication/examples/`. These examples demonstrate RabbitMQ message queues with **automatic retry on crash** using message acknowledgments.
 
+## What Each Process Does
+
+`pip install -r requirements.txt` installs the Python AMQP client dependencies; it does not start a broker. `kubectl port-forward ... 5672:5672` keeps a local connection path to the cluster's broker open. Run producers and consumers in separate terminals with that path available.
+
+`consumer_simple.py` waits for deliveries. `producer_simple.py` publishes and exits. The crash demo intentionally ends a consumer before some work is acknowledged; inspect ready and unacknowledged queue counts before and after reconnecting a consumer. A worker identifier labels a process; it does not create a separate queue automatically.
+
+**Explain the result:** Why can a consumer legitimately wait without printing more output? Why does redelivery after a crash not imply that its side effect could never have happened already? Read the [main command explanations](../README.md#understand-what-the-broker-and-example-commands-start) and [shell guide](../../../COMMANDS.md) before running the experiment.
+
 ## Prerequisites
 
 1. **Deploy RabbitMQ** to your Kubernetes cluster (see main Tutorial 14 README)

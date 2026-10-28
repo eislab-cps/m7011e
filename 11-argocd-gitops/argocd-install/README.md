@@ -2,6 +2,20 @@
 
 This Helm chart simplifies the installation of Argo CD on the LTU Kubernetes cluster for the M7011E course.
 
+## Read the Installation Commands
+
+These steps bootstrap Argo CD itself. Deploying your application through Argo CD is a later, separate operation described in [the main tutorial](../README.md#follow-the-change-from-your-file-to-the-cluster).
+
+| Command | What happens |
+| --- | --- |
+| `helm install ... -n argocd --create-namespace ...` | Reads this chart locally and creates release resources in the selected Kubernetes cluster. The chart also installs cluster-level resources. |
+| `kubectl get pods -n argocd -w` | Watches the installation's workload status; stop the watch with `Ctrl+C` when you have inspected readiness. |
+| `kubectl get secret ...` piped to `base64 -d` | Retrieves and decodes the initial administrator password. This prints a credential. |
+| `kubectl port-forward ... 8080:80` | Exposes a temporary local route to the Argo CD server; use a second terminal for other work. |
+| `helm uninstall` / namespace deletion | Removes release resources / requests deletion of everything namespaced there. These are different scopes. |
+
+**Check:** Can you explain why a working local port forward does not prove that public DNS, ingress routing, and TLS are correct? Inspect each separately. See [the command guide](../../COMMANDS.md).
+
 ## What This Chart Does
 
 1. Installs Argo CD using the official manifests (namespace created via Helm)

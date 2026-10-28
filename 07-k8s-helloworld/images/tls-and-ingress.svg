@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-labelledby="title description">
+<title id="title">HTTPS: HTTP carried inside a protected connection</title>
+<desc id="description">A simplified certificate-based TLS 1.3 handshake, followed by the route used in this chart.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="780" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">HTTPS: HTTP carried inside a protected connection</text>
+<text id="text-2" x="40" y="83" class="muted">A simplified certificate-based TLS 1.3 handshake, followed by the route used in this chart.</text>
+<rect x="40" y="120" width="1120" height="46" rx="14" fill="#f4f7fb" stroke="#d2dde7" stroke-width="2"/>
+<text id="text-4" x="58" y="150" class="body">1. Client and server negotiate TLS and exchange key-agreement material.</text>
+<rect x="40" y="177" width="1120" height="46" rx="14" fill="#f4f7fb" stroke="#d2dde7" stroke-width="2"/>
+<text id="text-6" x="58" y="207" class="body">2. Server presents its certificate chain and proves possession of its private key.</text>
+<rect x="40" y="234" width="1120" height="46" rx="14" fill="#f4f7fb" stroke="#d2dde7" stroke-width="2"/>
+<text id="text-8" x="58" y="264" class="body">3. Browser checks the hostname, certificate dates, and chain to a trusted root.</text>
+<rect x="40" y="291" width="1120" height="46" rx="14" fill="#f4f7fb" stroke="#d2dde7" stroke-width="2"/>
+<text id="text-10" x="58" y="321" class="body">4. Both derive traffic keys; HTTP data is encrypted and protected against alteration.</text>
+<text id="text-11" x="40" y="393" class="heading">Where the encrypted connection ends in Tutorial 7</text>
+<rect x="40" y="427" width="290" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-13" x="62" y="465" class="heading">Browser</text>
+<text id="text-14" x="62" y="500" class="body">Checks the certificate</text>
+<text id="text-15" x="62" y="529" class="body">Sends HTTPS request</text>
+<rect x="455" y="427" width="290" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-17" x="477" y="465" class="heading">Traefik ingress</text>
+<text id="text-18" x="477" y="500" class="body">Uses the TLS Secret</text>
+<text id="text-19" x="477" y="529" class="body">Terminates browser TLS</text>
+<rect x="870" y="427" width="290" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-21" x="892" y="465" class="heading">Service → Nginx</text>
+<text id="text-22" x="892" y="500" class="body">Forwards to a ready Pod</text>
+<text id="text-23" x="892" y="529" class="body">HTTP on port 80 here</text>
+<path d="M330 496 L455 496" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="335.0" y="451" width="116.0" height="30" fill="#fff"/>
+<text id="text-26" x="393" y="472" class="body" text-anchor="middle">HTTPS :443</text>
+<path d="M745 496 L870 496" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="758.8" y="451" width="96.4" height="30" fill="#fff"/>
+<text id="text-29" x="807" y="472" class="body" text-anchor="middle">HTTP :80</text>
+<rect x="40" y="598" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-31" x="60" y="628" class="body">The ingress-to-Pod hop is a separate connection. This chart does not encrypt that hop.</text>
+<rect x="40" y="682" width="1120" height="88" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-33" x="60" y="712" class="body">A staging certificate can enable encryption and still fail browser trust checks.</text>
+<text id="text-34" x="60" y="740" class="body">A certificate does not establish that an application is honest or bug-free.</text>
+</svg>

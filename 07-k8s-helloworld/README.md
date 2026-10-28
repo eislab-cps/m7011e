@@ -4,6 +4,30 @@ This tutorial will guide you through deploying a simple application using Helm t
 
 Run the following commands from `07-k8s-helloworld/`. The cluster needs the `traefik` ingress class, cert-manager, a `letsencrypt-staging` ClusterIssuer, and DNS for your chosen hostname pointing to the ingress controller. Check these with course staff if you use another cluster.
 
+## Before Deploying: How HTTPS Reaches Your Application
+
+You already used HTTP locally in [Tutorial 1](../01-basic-webapp/README.md#2-follow-one-http-request). Now a browser will contact a public hostname through a shared ingress controller. Follow the request before installing the chart:
+
+![A TLS handshake authenticates the server and establishes encrypted HTTP traffic to Traefik; the separate connection from Traefik to the Nginx Service uses HTTP in this chart.](./images/tls-and-ingress.svg)
+
+**DNS** maps your hostname to an address used to reach the ingress controller. **TLS** protects a connection against reading and undetected modification and, with normal certificate validation, authenticates the server for the requested hostname. **HTTP** carries the actual request and response inside that connection. These solve different problems; a DNS record alone does not configure a route or create a certificate. These protection goals are specified in [TLS 1.3](https://www.rfc-editor.org/rfc/rfc8446.html#section-1).
+
+A certificate contains a public key and names it is valid for, with a signature from its issuer. During a normal certificate-based TLS handshake, the server proves it has the matching private key; that private key is not sent to the browser. The browser checks the hostname, validity period, and certificate chain against trusted roots. The handshake establishes traffic keys used to encrypt and integrity-protect application messages. A valid certificate establishes a protected connection to that hostname; it does not establish that the application's content is trustworthy.
+
+In this chart, **Traefik terminates TLS**: it holds the certificate/key through the referenced Kubernetes Secret, decrypts the browser's request, and forwards a separate HTTP request through the Service to Nginx on port 80. The `tls:` block in an Ingress describes the browser-facing connection. It does not automatically encrypt the next hop to the Pod.
+
+| Configuration | What it contributes | What to inspect |
+| --- | --- | --- |
+| Domain DNS | An address through which the ingress controller can be reached | Does your configured hostname resolve? |
+| Ingress `rules.host` | Selects the application's route from the HTTP hostname | Does the host match your browser URL? |
+| Ingress `tls.hosts` and `secretName` | Selects the hostname and certificate Secret for TLS | Does the certificate cover this hostname? |
+| `cert-manager.io/cluster-issuer` | Asks cert-manager to obtain a certificate using an existing issuer | Is the Certificate ready, and which issuer signed it? |
+| Service selector and port | Selects ready application endpoints and the port to forward to | Does the Service have a matching, ready Pod? |
+
+The default Let's Encrypt **staging** issuer is for testing issuance. Its certificates can support encrypted traffic, but their chain is not trusted by normal browsers. That explains the warning; encryption and certificate trust are separate checks. Issuance also requires proving domain control, which is separate from the browser's later TLS handshake.
+
+**Predict:** What should fail if DNS is wrong? What if the hostname resolves but the certificate covers a different name? What if TLS succeeds but the Service has no ready endpoints? Return to these questions while verifying the deployment.
+
 ## Understanding Helm
 Helm is a package manager for Kubernetes that simplifies application deployment and management. Think of it like `apt` for Ubuntu or `brew` for macOS, but specifically designed for Kubernetes applications.
 
@@ -104,6 +128,20 @@ A **namespace** in Kubernetes is like a virtual cluster within your physical clu
 
 Think of namespaces as folders on your computer - they help organize and separate your applications.
 
+## Read the Deployment and Inspection Commands
+
+| Command below | What you ask for | Evidence to inspect |
+| --- | --- | --- |
+| `kubectl create namespace helloworld` | Create a named scope for this exercise's resources. | The namespace exists; this alone does not create an app or network isolation. |
+| `helm install helloworld -f values.yaml -n helloworld .` | Render this directory's chart with the file's values and create a release in the selected cluster. | The release exists; then inspect Pods, routing, and certificates separately. |
+| `kubectl get pods -n helloworld` | Read Pod status. | `READY 1/1` is more informative than `Running` alone. Neither proves public HTTPS works. |
+| `kubectl get all -n helloworld` | Read a common subset of workload resources. | Despite its name, it does not list every resource type; inspect Ingresses and Certificates explicitly. |
+| `kubectl describe ...` | Read detailed resource state and recent associated events. | Look for image, scheduling, endpoint, or certificate errors relevant to that resource. |
+| `helm upgrade ...` | Apply a new rendered release revision. | Check that the intended field changed and the workload became ready. |
+| `helm rollback ...` | Restore an earlier release revision's configuration. | Inspect the restored resources; external effects and stored data are separate. |
+
+**Observe in stages:** First render locally, then check the workload, then the Service, then routing, then TLS, then the browser response. Explain why a Pod can be ready while the public hostname still fails. `Ctrl+C` stops a watch or port forward; cleanup commands at the end delete resources instead.
+
 ## Deploy the Application
 ### 1. Create Namespace
 Create a dedicated namespace for your hello world application:
@@ -147,7 +185,7 @@ kubectl get configmap hello-world-html -n helloworld -o yaml
 
 ### Expected Output
 Your pods should show as `Running`:
-```bash
+```text
 NAME                           READY   STATUS    RESTARTS   AGE
 hello-world-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
 ```
@@ -206,6 +244,8 @@ To see what Kubernetes resources Helm will create:
 ```bash
 helm template helloworld -f values.yaml .
 ```
+
+This renders templates with your values and prints YAML; it does not contact the cluster to install anything. Locate your domain in both `rules.host` and `tls.hosts`, then locate the Service name and its port. Explain how a browser request reaches that Service before applying a change. After deployment, inspect the browser's certificate details and compare its subject names and issuer with your prediction above.
 
 ### Rollback Changes
 If an update causes issues:

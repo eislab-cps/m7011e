@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
+<title id="title">A signed token still has to pass the API checks</title>
+<desc id="description">This flow describes examples 2 and 3. Example 1 deliberately skips signature and expiry checks.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="800" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="31px" style="font-size:31px" font-weight="700">A signed token still has to pass the API checks</text>
+<text id="text-2" x="40" y="83" class="muted">This flow describes examples 2 and 3. Example 1 deliberately skips signature and expiry checks.</text>
+<rect x="40" y="125" width="755" height="97" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="163" class="heading">1. Read the Authorization header</text>
+<text id="text-5" x="62" y="198" class="body">Require the Bearer scheme and a well-formed token.</text>
+<rect x="860" y="125" width="300" height="97" rx="14" fill="#fff0f1" stroke="#d7a4ad" stroke-width="2"/>
+<text id="text-7" x="882" y="163" class="heading">401</text>
+<text id="text-8" x="882" y="198" class="body">missing / malformed token</text>
+<path d="M795 175 L860 175" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M417 222 L417 252" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="252" width="755" height="97" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-12" x="62" y="290" class="heading">2. Verify the signature</text>
+<text id="text-13" x="62" y="325" class="body">Use the configured RS256 algorithm and the matching cached public key.</text>
+<rect x="860" y="252" width="300" height="97" rx="14" fill="#fff0f1" stroke="#d7a4ad" stroke-width="2"/>
+<text id="text-15" x="882" y="290" class="heading">401</text>
+<text id="text-16" x="882" y="325" class="body">signature cannot be verified</text>
+<path d="M795 302 L860 302" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M417 349 L417 379" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="379" width="755" height="97" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-20" x="62" y="417" class="heading">3. Validate required claims</text>
+<text id="text-21" x="62" y="452" class="body">Check issuer, todo-api audience, expiry, and a non-empty subject.</text>
+<rect x="860" y="379" width="300" height="97" rx="14" fill="#fff0f1" stroke="#d7a4ad" stroke-width="2"/>
+<text id="text-23" x="882" y="417" class="heading">401</text>
+<text id="text-24" x="882" y="452" class="body">token is not valid here</text>
+<path d="M795 429 L860 429" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M417 476 L417 506" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="506" width="755" height="97" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-28" x="62" y="544" class="heading">4. Check the requested operation</text>
+<text id="text-29" x="62" y="579" class="body">Only the owner may edit a todo; example 3 also permits admins.</text>
+<rect x="860" y="506" width="300" height="97" rx="14" fill="#fff0f1" stroke="#d7a4ad" stroke-width="2"/>
+<text id="text-31" x="882" y="544" class="heading">403</text>
+<text id="text-32" x="882" y="579" class="body">valid user, forbidden action</text>
+<path d="M795 556 L860 556" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M417 603 L417 654" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="654" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-36" x="60" y="684" class="body">Execute the endpoint and return its result: for example 200 OK, 201 Created, or 204 No Content.</text>
+<text id="text-37" x="40" y="766" class="muted">The API fetches public keys when its cache needs them; it does not ask Keycloak to approve every request.</text>
+</svg>

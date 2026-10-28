@@ -31,6 +31,22 @@ The following table lists the configurable parameters in `values.yaml`:
 | `DBMemory` | Memory limit | `1000Mi` |
 | `DBStorage` | Storage size for persistent volume | `10Gi` |
 
+## Read the Database Commands Before Running Them
+
+There are three places involved: your laptop runs the CLI, Kubernetes runs the database process, and persistent storage holds its data. A database client is a fourth program connecting to that process. Installing `psql` does not install another PostgreSQL server in the cluster.
+
+| Command below | Meaning in this setup |
+| --- | --- |
+| `./create_namespace.sh` / `kubectl create namespace db` | Alternative ways to create the same namespace. Run one path. |
+| `./install.sh` / `helm install postgresql -f values.yaml -n db .` | Alternative ways to install this chart. The script invokes that Helm installation; it does not create application tables. |
+| `kubectl port-forward -n db svc/postgres-service 5432:5432` | Keep a **local:remote** tunnel open. It does not make the database publicly available through an Ingress. |
+| `psql -h localhost -p 5432 -U postgres` | Start a local client, connecting to that local tunnel as database user `postgres`. `-h`, `-p`, and `-U` select host, port, and database user. |
+| `kubectl exec -it -n db postgres-statefulset-0 -- psql -U postgres` | Start the client inside the database Pod. `--` separates kubectl's options from the program it runs; no laptop port forward is needed for this path. |
+| `helm upgrade ...` | Change the Kubernetes configuration. Changing initialization credentials in values is not a SQL password-change command on an already-initialized database. |
+| `pg_dump ... > backup.sql` through `kubectl exec` | Run the dump in the Pod, but write the output file on your laptop because the local shell handles `>`. |
+
+**Predict:** If the tunnel uses `5433:5432`, which port belongs in your local client's `-p` option? If the Pod is replaced but reuses its PVC, why should committed rows remain? Explain why deleting the PVC is a different operation from restarting a Pod. See [the command guide](../COMMANDS.md#understand-ports-and-foreground-processes).
+
 ## Installation
 
 ### Step 1: Configure Values
