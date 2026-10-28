@@ -19,7 +19,7 @@ Install a container runtime to package and run applications as containers. Choos
 - **Podman:** [https://podman.io/getting-started/installation](https://podman.io/getting-started/installation)
 
 ## 4. Verification
-Once everything is installed, verify your setup by running the commands below. Note that newer versions may be available after this tutorial was written and should work fine, but older versions might not be compatible.
+Once everything is installed, verify your setup by running the commands below. Note that the example version strings are illustrative. Choose a kubectl version within one minor version of the cluster API server; see the [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/). Match the server version shown in Rancher when possible.
 
 ### kubectl
 ```bash
@@ -85,13 +85,16 @@ cd ~
 mkdir -p .kube
 
 # Set proper permissions
-chmod 755 .kube
+chmod 700 .kube
 
 # Copy the downloaded config file (replace with your actual filename)
-cp ~/Downloads/ltu-m7011e-johan.yaml ~/.kube/config
+cp ~/Downloads/ltu-m7011e-johan.yaml ~/.kube/m7011e.yaml
 
 # Set proper permissions for the config file
-chmod 600 ~/.kube/config
+chmod 600 ~/.kube/m7011e.yaml
+
+# Select the course config for this shell
+export KUBECONFIG="$HOME/.kube/m7011e.yaml"
 ```
 
 #### Windows (PowerShell)
@@ -103,12 +106,16 @@ cd $env:USERPROFILE
 New-Item -Path ".kube" -ItemType Directory -Force
 
 # Copy the downloaded config file (adjust path as needed)
-Copy-Item -Path "Downloads\ltu-m7011e-johan.yaml" -Destination ".kube\config"
+Copy-Item -Path "Downloads\ltu-m7011e-johan.yaml" -Destination ".kube\m7011e.yaml"
+$env:KUBECONFIG = "$env:USERPROFILE\.kube\m7011e.yaml"
 ```
+
+The commands above keep any existing default kubeconfig. Set `KUBECONFIG` again in each new terminal used for the course, or configure your shell profile.
 
 ### 5. Verify Connection
 Test your cluster connection:
 ```bash
+kubectl config current-context
 kubectl get nodes
 ```
 
@@ -119,3 +126,5 @@ ubuntu-8gb-hel1-1   Ready    control-plane,etcd,master,worker   77m   v1.33.3+k3
 ```
 
 If you see output similar to the above showing your cluster nodes in "Ready" status, your kubectl is properly configured and connected to the cluster.
+
+If your course account cannot list nodes, check access to your assigned namespace instead with `kubectl get pods -n YOUR_NAMESPACE`. A Forbidden response can indicate namespace-scoped permissions rather than a connection failure.

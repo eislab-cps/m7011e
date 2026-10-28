@@ -26,6 +26,7 @@ ADMIN_PASSWORD = "admin-change-this-password"
 # Client configuration
 CLIENT_ID = "my-frontend-app"
 CLIENT_NAME = "My Frontend Application"
+API_AUDIENCE = "todo-api"
 CLIENT_TYPE = "public"  # "public" for frontend apps, "confidential" for backend APIs
 
 # Frontend URLs - Add all URLs where your frontend might be accessed
@@ -50,7 +51,7 @@ def get_admin_token():
     }
 
     try:
-        response = requests.post(url, data=data, verify=not INSECURE)
+        response = requests.post(url, data=data, verify=not INSECURE, timeout=10)
         response.raise_for_status()
         print("✅ Admin token obtained\n")
         return response.json()["access_token"]
@@ -87,15 +88,29 @@ def create_client(token, client_id, client_name, client_type, root_url):
         "redirectUris": redirect_uris,
         "webOrigins": web_origins,
         "standardFlowEnabled": True,
-        "directAccessGrantsEnabled": True,
+        "directAccessGrantsEnabled": False,
         "serviceAccountsEnabled": client_type == "confidential",
-        "authorizationServicesEnabled": False
+        "authorizationServicesEnabled": False,
+        "attributes": {
+            "pkce.code.challenge.method": "S256",
+            "post.logout.redirect.uris": "+"
+        },
+        "protocolMappers": [{
+            "name": "todo-api-audience",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-audience-mapper",
+            "config": {
+                "included.custom.audience": API_AUDIENCE,
+                "id.token.claim": "false",
+                "access.token.claim": "true"
+            }
+        }]
     }
 
     url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/clients"
 
     try:
-        response = requests.post(url, json=client_data, headers=headers, verify=not INSECURE)
+        response = requests.post(url, json=client_data, headers=headers, verify=not INSECURE, timeout=10)
 
         if response.status_code == 201:
             print(f"✅ Client '{client_id}' created successfully\n")
@@ -126,7 +141,7 @@ def get_client_secret(token, client_id, headers):
     try:
         # Get the client's internal UUID
         url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/clients?clientId={client_id}"
-        response = requests.get(url, headers=headers, verify=not INSECURE)
+        response = requests.get(url, headers=headers, verify=not INSECURE, timeout=10)
         response.raise_for_status()
 
         clients = response.json()
@@ -138,14 +153,14 @@ def get_client_secret(token, client_id, headers):
 
         # Get client secret
         secret_url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/clients/{client_uuid}/client-secret"
-        secret_response = requests.get(secret_url, headers=headers, verify=not INSECURE)
+        secret_response = requests.get(secret_url, headers=headers, verify=not INSECURE, timeout=10)
         secret_response.raise_for_status()
 
         client_secret = secret_response.json()["value"]
         print("✅ Client secret retrieved\n")
 
         print("=" * 40)
-        print("⚠️  SAVE THIS SECRET - IT WON'T BE SHOWN AGAIN!")
+        print("⚠️  STORE THIS CLIENT SECRET SECURELY")
         print("=" * 40)
         print(f"Client ID: {client_id}")
         print(f"Client Secret: {client_secret}")

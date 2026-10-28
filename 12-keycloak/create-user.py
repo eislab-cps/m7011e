@@ -44,7 +44,7 @@ def get_admin_token():
     }
 
     try:
-        response = requests.post(url, data=data, verify=not INSECURE)
+        response = requests.post(url, data=data, verify=not INSECURE, timeout=10)
         response.raise_for_status()
         print("✅ Admin token obtained\n")
         return response.json()["access_token"]
@@ -76,7 +76,7 @@ def create_user(token, username, email, first_name, last_name, password):
     url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/users"
 
     try:
-        response = requests.post(url, json=user_data, headers=headers, verify=not INSECURE)
+        response = requests.post(url, json=user_data, headers=headers, verify=not INSECURE, timeout=10)
 
         if response.status_code == 201:
             # Get user ID from Location header
@@ -91,7 +91,7 @@ def create_user(token, username, email, first_name, last_name, password):
                 "temporary": False
             }
             pwd_url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/users/{user_id}/reset-password"
-            pwd_response = requests.put(pwd_url, json=password_data, headers=headers, verify=not INSECURE)
+            pwd_response = requests.put(pwd_url, json=password_data, headers=headers, verify=not INSECURE, timeout=10)
 
             if pwd_response.status_code == 204:
                 print("✅ Password set successfully\n")

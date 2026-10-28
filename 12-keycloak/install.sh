@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 # Installation script for Keycloak tutorial
 # Self-contained deployment with PostgreSQL and Keycloak
@@ -9,30 +12,16 @@ echo "Keycloak Installation Script"
 echo "============================"
 echo ""
 
-# Step 1: Create namespace
-echo "Step 1: Creating namespace..."
-kubectl create namespace $NAMESPACE 2>/dev/null || echo "Namespace $NAMESPACE already exists"
-
-# Step 2: Deploy PostgreSQL and Keycloak
-echo ""
-echo "Step 2: Deploying PostgreSQL and Keycloak..."
-helm install keycloak \
-    -n $NAMESPACE \
-    ./keycloak-chart
+# Deploy both components; PostgreSQL initializes the configured database.
+helm upgrade --install keycloak --create-namespace -n "$NAMESPACE" ./keycloak-chart
 
 echo ""
 echo "Waiting for PostgreSQL to be ready..."
-kubectl wait --for=condition=ready pod -l app=postgres -n $NAMESPACE --timeout=180s
-
-# Step 3: Create Keycloak database
-echo ""
-echo "Step 3: Creating Keycloak database..."
-kubectl exec -n $NAMESPACE postgres-statefulset-0 -- \
-    psql -U keycloak -d postgres -c "CREATE DATABASE keycloak;" 2>/dev/null || echo "Database already exists (this is fine)"
+kubectl rollout status statefulset/postgres-statefulset -n "$NAMESPACE" --timeout=180s
 
 echo ""
 echo "Waiting for Keycloak to be ready..."
-kubectl wait --for=condition=ready pod -l app=keycloak -n $NAMESPACE --timeout=300s
+kubectl rollout status deployment/keycloak -n "$NAMESPACE" --timeout=300s
 
 echo ""
 echo "============================"

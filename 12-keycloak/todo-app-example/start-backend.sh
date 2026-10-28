@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 # Script to start the Flask backend
 
@@ -27,7 +30,7 @@ echo ""
 
 # Start the server
 echo "Starting Flask server..."
-echo "Backend will be available at: http://localhost:5000"
+echo "Backend will be available at: http://localhost:5001"
 echo ""
 
 python app.py

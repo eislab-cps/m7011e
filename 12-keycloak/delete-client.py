@@ -38,7 +38,7 @@ def get_admin_token():
     }
 
     try:
-        response = requests.post(url, data=data, verify=not INSECURE)
+        response = requests.post(url, data=data, verify=not INSECURE, timeout=10)
         response.raise_for_status()
         print("✅ Admin token obtained\n")
         return response.json()["access_token"]
@@ -61,7 +61,7 @@ def delete_client(token, client_id):
     url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/clients?clientId={client_id}"
 
     try:
-        response = requests.get(url, headers=headers, verify=not INSECURE)
+        response = requests.get(url, headers=headers, verify=not INSECURE, timeout=10)
         response.raise_for_status()
         clients = response.json()
 
@@ -74,7 +74,7 @@ def delete_client(token, client_id):
 
         # Delete client
         delete_url = f"{KEYCLOAK_URL}/admin/realms/{REALM}/clients/{client_uuid}"
-        response = requests.delete(delete_url, headers=headers, verify=not INSECURE)
+        response = requests.delete(delete_url, headers=headers, verify=not INSECURE, timeout=10)
 
         if response.status_code == 204:
             print(f"✅ Client '{client_id}' deleted successfully\n")

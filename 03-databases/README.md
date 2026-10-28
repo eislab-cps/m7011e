@@ -28,7 +28,7 @@ A **database** is an organized collection of structured data stored electronical
 
 ## Database Fundamentals
 
-### ACID Properties (Relational Databases)
+### ACID Properties (Transactions)
 
 **ACID** ensures reliable transaction processing:
 
@@ -46,7 +46,7 @@ COMMIT
 ```
 If any step fails, the entire transaction rolls back.
 
-### BASE Properties (NoSQL Databases)
+### BASE Properties (Eventually Consistent Systems)
 
 **BASE** prioritizes availability and scalability:
 
@@ -61,38 +61,22 @@ If any step fails, the entire transaction rolls back.
 
 ### CAP Theorem
 
-The **CAP theorem** states you can only guarantee **two** of the following three:
+The **CAP theorem** describes a trade-off during a network partition: a distributed system cannot guarantee both linearizable consistency and availability for every request. Partition tolerance is not a feature that a networked system can simply opt out of.
+
+- **Consistency:** Reads observe a single, up-to-date ordering of operations (linearizability). This differs from the integrity constraints in ACID consistency.
+- **Availability:** Every request to a non-failing node eventually receives a successful response.
+- **Partition tolerance:** Nodes may be unable to communicate, so the system must decide whether to reject some operations or accept potentially inconsistent results.
 
 ```mermaid
 flowchart TD
-    CAP["CAP Theorem<br/>Pick 2 of 3"]
-
-    C["Consistency<br/>All nodes see same data"]
-    A["Availability<br/>Every request gets response"]
-    P["Partition Tolerance<br/>System works despite network failures"]
-
-    CAP --> C
-    CAP --> A
-    CAP --> P
-
-    CP["CP: Consistency + Partition Tolerance<br/>MongoDB, HBase, Redis"]
-    AP["AP: Availability + Partition Tolerance<br/>Cassandra, DynamoDB, CouchDB"]
-    CA["CA: Consistency + Availability<br/>Traditional RDBMS (single node)"]
-
-    C --> CP
-    P --> CP
-
-    A --> AP
-    P --> AP
-
-    C --> CA
-    A --> CA
-
-    style CAP fill:#e1f5ff,stroke:#01579b
-    style CP fill:#fff9c4,stroke:#f57f17
-    style AP fill:#f3e5f5,stroke:#4a148c
-    style CA fill:#e8f5e9,stroke:#2e7d32
+    Partition["Network partition"]
+    CP["Preserve consistency<br/>Some requests must wait or fail"]
+    AP["Preserve availability<br/>Some responses may be stale"]
+    Partition --> CP
+    Partition --> AP
 ```
+
+Behavior depends on the database topology, operation, and consistency settings; a product name alone does not establish its guarantees. SQL does not imply a single node, and NoSQL does not imply eventual consistency. MongoDB, for example, supports [multi-document transactions on replica sets and sharded clusters](https://www.mongodb.com/docs/manual/data-modeling/enforce-consistency/transactions/).
 
 ---
 
@@ -105,7 +89,7 @@ flowchart TD
 - ACID transactions
 - Relationships via foreign keys
 - Mature ecosystem and standards
-- Vertical scaling (more powerful servers)
+- Vertical scaling, read replicas, and distributed options depending on the database
 
 **Use cases:**
 - Financial systems
@@ -117,7 +101,7 @@ flowchart TD
 
 **Characteristics:**
 - Flexible/dynamic schema
-- BASE properties (eventual consistency)
+- Consistency and transaction guarantees vary by database and configuration
 - Horizontal scaling (add more servers)
 - Optimized for specific data models
 - High performance for specific use cases
@@ -203,7 +187,7 @@ flowchart LR
 - **Rich data types**: JSON, Arrays, UUID, Geospatial
 - **Advanced features**: Window functions, CTEs, full-text search
 - **Extensions**: PostGIS (geospatial), TimescaleDB (time-series)
-- **Strong consistency**: Data is always accurate
+- **Integrity and transactions**: Enforce constraints and select appropriate isolation levels
 - **Mature tooling**: pgAdmin, DBeaver, DataGrip
 
 ### Data Model
@@ -243,7 +227,7 @@ WHERE posts.published_at > '2024-01-01';
 
 ❌ **Avoid PostgreSQL when:**
 - Need extreme horizontal scalability (billions of records)
-- Schema changes frequently (highly dynamic data)
+- Consider migration costs for frequent schema changes; PostgreSQL also supports JSONB
 - Simple key-value lookups only
 - Real-time analytics on streaming data
 
@@ -331,9 +315,9 @@ db.users.aggregate([
 - Real-time analytics and caching
 
 ❌ **Avoid MongoDB when:**
-- Complex multi-document transactions are critical
+- Compare transaction requirements and costs with a relational design; MongoDB supports multi-document transactions on replica sets and sharded clusters
 - Heavy use of joins across collections
-- Strict schema enforcement required
+- Check whether MongoDB schema validation meets your constraints
 - Data has many-to-many relationships
 
 ### Example Use Cases
@@ -474,8 +458,8 @@ flowchart LR
 
 ❌ **Avoid SQLite when:**
 - High concurrency (many simultaneous writes)
-- Multi-user networked applications
-- Very large datasets (> 100 GB)
+- Many clients need to open the same database file over a network filesystem
+- A workload needs multiple concurrent writers beyond SQLite's single-writer model
 - Need advanced database features
 - Require high write throughput
 
@@ -623,25 +607,25 @@ CREATE (techcorp:Company {name: 'TechCorp'})
 
 // Create relationships
 CREATE (alice)-[:FOLLOWS]->(bob)
-CREATE (bob)-[:WORKS_AT {since: 2020}]->(techcorp)
+CREATE (bob)-[:WORKS_AT {since: 2020}]->(techcorp);
 
 // Find friends of friends
 MATCH (person:Person)-[:FOLLOWS]->(friend)-[:FOLLOWS]->(fof)
 WHERE person.name = 'Alice'
-RETURN fof.name
+RETURN fof.name;
 
 // Find shortest path
 MATCH path = shortestPath(
   (alice:Person {name: 'Alice'})-[*]-(company:Company {name: 'TechCorp'})
 )
-RETURN path
+RETURN path;
 
 // Recommendation: Find people who like similar posts
 MATCH (me:Person {name: 'Alice'})-[:LIKED]->(post)<-[:LIKED]-(other:Person)
 WHERE NOT (me)-[:FOLLOWS]->(other)
 RETURN other.name, COUNT(post) AS common_likes
 ORDER BY common_likes DESC
-LIMIT 10
+LIMIT 10;
 ```
 
 ### When to Use Graph Database
@@ -713,16 +697,23 @@ flowchart LR
 ### How Vector Databases Work
 
 **1. Generate Embeddings:**
+
+This optional example requires the `openai` and `pymilvus` Python packages, an `OPENAI_API_KEY` environment variable, and a running Milvus server. API calls may incur charges. See the [OpenAI embeddings guide](https://developers.openai.com/api/docs/guides/embeddings). Use the same embedding model for stored documents and queries.
 ```python
-# Using OpenAI to create embeddings
-import openai
+from openai import OpenAI
+
+client = OpenAI()  # Reads OPENAI_API_KEY from the environment
+
+def get_embedding(text):
+    response = client.embeddings.create(
+        input=text,
+        model="text-embedding-ada-002",
+        encoding_format="float"
+    )
+    return response.data[0].embedding
 
 text = "Docker is a containerization platform"
-response = openai.Embedding.create(
-    input=text,
-    model="text-embedding-ada-002"
-)
-vector = response['data'][0]['embedding']  # 1536-dimensional vector
+vector = get_embedding(text)  # 1536-dimensional vector
 # [0.002, -0.015, 0.031, ..., 0.008]
 ```
 
@@ -751,12 +742,13 @@ data = [
     [vector]  # 1536-dimensional vector
 ]
 collection.insert(data)
+collection.flush()
 
 # Create index for fast search
 index_params = {
     "metric_type": "COSINE",
     "index_type": "IVF_FLAT",
-    "params": {"nlist": 128}
+    "params": {"nlist": 1}  # Tiny teaching dataset; tune for larger collections
 }
 collection.create_index("embedding", index_params)
 collection.load()
@@ -769,7 +761,7 @@ query = "What is containerization?"
 query_vector = get_embedding(query)
 
 # Search in Milvus
-search_params = {"metric_type": "COSINE", "params": {"nprobe": 10}}
+search_params = {"metric_type": "COSINE", "params": {"nprobe": 1}}
 results = collection.search(
     data=[query_vector],
     anns_field="embedding",
@@ -787,17 +779,15 @@ results = collection.search(
 ### Vector Similarity Metrics
 
 ```python
-# Cosine Similarity (most common)
-# Measures angle between vectors, range: -1 to 1
-similarity = dot(v1, v2) / (norm(v1) * norm(v2))
+from math import dist, sqrt
 
-# Euclidean Distance
-# Measures straight-line distance
-distance = sqrt(sum((v1 - v2)^2))
-
-# Dot Product
-# Raw similarity measure
-similarity = dot(v1, v2)
+# Non-zero vectors of equal dimension
+v1, v2 = [1.0, 2.0], [2.0, 1.0]
+dot_product = sum(a * b for a, b in zip(v1, v2))
+norm1 = sqrt(sum(a * a for a in v1))
+norm2 = sqrt(sum(b * b for b in v2))
+cosine_similarity = dot_product / (norm1 * norm2)  # -1 to 1
+euclidean_distance = dist(v1, v2)
 ```
 
 ### When to Use Vector Database
@@ -870,39 +860,15 @@ User asks: "How do I deploy to Kubernetes?"
 |---------|-----------|---------|-------|--------|-------------|-------|-----------|
 | **Type** | Relational | Document | Key-Value | Relational | Time-Series | Graph | Vector |
 | **Schema** | Fixed | Flexible | Schema-less | Fixed | Fixed | Flexible | Vectors + Metadata |
-| **ACID** | ✅ Full | ⚠️ Partial | ⚠️ Partial | ✅ Full | ✅ Full | ✅ Full | ⚠️ Partial |
-| **Scaling** | Vertical | Horizontal | Horizontal | Single-node | Vertical | Horizontal | Horizontal |
+| **Transactions** | ACID | ACID on replica sets/sharded clusters | Limited; durability depends on persistence | ACID | ACID (PostgreSQL) | ACID | Product-dependent |
+| **Scaling** | Vertical, replicas, distributed extensions | Replication and sharding | Replication and clustering | Single-node | PostgreSQL-based; deployment-dependent | Deployment-dependent | Product-dependent |
 | **Joins** | ✅ Excellent | ⚠️ Limited | ❌ No | ✅ Excellent | ✅ Excellent | ✅ Native | ❌ No |
 | **Performance** | Fast | Very Fast | Extremely Fast | Fast | Very Fast | Fast (graphs) | Very Fast (similarity) |
 | **Use Case** | General | Documents | Caching | Embedded | Time-data | Relationships | AI/ML Search |
 
 ### Performance Characteristics
 
-```mermaid
-%%{init: {'theme':'base'}}%%
-graph TD
-    subgraph "Read Performance"
-        R1["Redis: Extremely Fast<br/>(sub-millisecond)"]
-        R2["MongoDB: Very Fast<br/>(single-digit ms)"]
-        R3["PostgreSQL: Fast<br/>(ms to tens of ms)"]
-    end
-
-    subgraph "Write Performance"
-        W1["InfluxDB: Highest<br/>(millions/sec)"]
-        W2["MongoDB: Very High<br/>(tens of thousands/sec)"]
-        W3["PostgreSQL: High<br/>(thousands/sec)"]
-    end
-
-    subgraph "Scalability"
-        S1["MongoDB: Excellent<br/>(horizontal sharding)"]
-        S2["Cassandra: Excellent<br/>(linear scalability)"]
-        S3["PostgreSQL: Good<br/>(vertical + replication)"]
-    end
-
-    style R1 fill:#4caf50,color:#fff
-    style W1 fill:#2196f3,color:#fff
-    style S1 fill:#ff9800,color:#fff
-```
+Latency and throughput depend on queries, indexes, dataset size, hardware, concurrency, and durability settings. An in-memory key-value lookup and a transactional SQL join perform different work, so a universal speed ranking is misleading. Benchmark representative workloads before choosing a database.
 
 ---
 
@@ -1052,7 +1018,9 @@ You've learned about:
 ## What's Next?
 
 - **Tutorial 4**: Learn about frameworks and choosing the right tech stack for microservices
-- **Tutorial 5**: Set up Kubernetes and start deploying containerized applications with orchestration!
+- **Tutorial 5**: Learn microservices and Kubernetes concepts
+- **Tutorials 6-7**: Set up cluster access and deploy an application
+- **Tutorials 8 and 13**: Deploy PostgreSQL and MongoDB
 
 ---
 

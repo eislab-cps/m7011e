@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 name: postgresql
 description: A Helm chart for deploying PostgreSQL
 type: application

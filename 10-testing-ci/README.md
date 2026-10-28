@@ -35,6 +35,8 @@ By the end of this tutorial, you will:
 
 ---
 
+The example service and tests shown below are included in `examples/`, `backend-tests/`, and `frontend-tests/`. This is a separate database-backed example using `title`, `todo_id`, and `user_id`; its API differs from the `text` and `id` API in Tutorials 1 and 9. The frontend tests mock fetch, so they do not require a running backend.
+
 ## Part 1: Understanding the Testing Pyramid
 
 ```mermaid
@@ -52,6 +54,8 @@ graph TB
     style INT fill:#FFD700
     style E2E fill:#FF6B6B
 ```
+
+The percentages are an illustrative balance, not prescribed quotas. Choose the mix based on application risks.
 
 **Unit Tests (70%)**:
 - Test individual functions in isolation
@@ -79,16 +83,18 @@ graph TB
 
 ```bash
 cd 10-testing-ci/backend-tests
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
 **requirements.txt:**
 ```txt
 flask==3.0.0
-pytest==7.4.3
+pytest==8.3.5
 pytest-cov==4.1.0
 pytest-mock==3.12.0
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 redis==5.0.1
 bcrypt==4.1.2
 requests==2.31.0
@@ -100,22 +106,26 @@ requests==2.31.0
 ```python
 from flask import Flask, request, jsonify
 import psycopg2
-from datetime import datetime
+import os
+from datetime import datetime, timezone
 
 app = Flask(__name__)
+
 
 # Database connection
 def get_db_connection():
     return psycopg2.connect(
-        host='localhost',
-        database='tododb',
-        user='postgres',
-        password='postgres'
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", "5432"),
+        database=os.getenv("DB_NAME", "tododb"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres"),
     )
+
 
 def create_todo(title, description, user_id):
     """Create a new todo item"""
-    if not title:
+    if not isinstance(title, str) or not title.strip():
         raise ValueError("Title is required")
 
     if len(title) > 200:
@@ -130,7 +140,7 @@ def create_todo(title, description, user_id):
         VALUES (%s, %s, %s, %s, %s)
         RETURNING todo_id
         """,
-        (title, description, user_id, False, datetime.utcnow())
+        (title, description, user_id, False, datetime.now(timezone.utc)),
     )
 
     todo_id = cursor.fetchone()[0]
@@ -139,6 +149,7 @@ def create_todo(title, description, user_id):
     conn.close()
 
     return todo_id
+
 
 def get_todos_by_user(user_id):
     """Get all todos for a user"""
@@ -152,23 +163,26 @@ def get_todos_by_user(user_id):
         WHERE user_id = %s
         ORDER BY created_at DESC
         """,
-        (user_id,)
+        (user_id,),
     )
 
     todos = []
     for row in cursor.fetchall():
-        todos.append({
-            'todo_id': row[0],
-            'title': row[1],
-            'description': row[2],
-            'completed': row[3],
-            'created_at': row[4].isoformat()
-        })
+        todos.append(
+            {
+                "todo_id": row[0],
+                "title": row[1],
+                "description": row[2],
+                "completed": row[3],
+                "created_at": row[4].isoformat(),
+            }
+        )
 
     cursor.close()
     conn.close()
 
     return todos
+
 
 def mark_todo_complete(todo_id, user_id):
     """Mark a todo as complete"""
@@ -182,7 +196,7 @@ def mark_todo_complete(todo_id, user_id):
         WHERE todo_id = %s AND user_id = %s
         RETURNING todo_id
         """,
-        (todo_id, user_id)
+        (todo_id, user_id),
     )
 
     result = cursor.fetchone()
@@ -195,46 +209,51 @@ def mark_todo_complete(todo_id, user_id):
 
     return True
 
-@app.route('/api/todos', methods=['POST'])
+
+@app.route("/api/todos", methods=["POST"])
 def create_todo_endpoint():
     """Create todo endpoint"""
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON object required"}), 400
 
     try:
         todo_id = create_todo(
-            data.get('title'),
-            data.get('description'),
-            data.get('user_id')
+            data.get("title"), data.get("description"), data.get("user_id")
         )
 
-        return jsonify({'todo_id': todo_id}), 201
+        return jsonify({"todo_id": todo_id}), 201
     except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({"error": str(e)}), 400
+    except Exception:
+        return jsonify({"error": "Internal server error"}), 500
 
-@app.route('/api/todos/<int:user_id>', methods=['GET'])
+
+@app.route("/api/todos/<int:user_id>", methods=["GET"])
 def get_todos_endpoint(user_id):
     """Get user todos endpoint"""
     try:
         todos = get_todos_by_user(user_id)
-        return jsonify({'todos': todos}), 200
-    except Exception as e:
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({"todos": todos}), 200
+    except Exception:
+        return jsonify({"error": "Internal server error"}), 500
 
-@app.route('/api/todos/<int:todo_id>/complete', methods=['PUT'])
+
+@app.route("/api/todos/<int:todo_id>/complete", methods=["PUT"])
 def complete_todo_endpoint(todo_id):
     """Mark todo complete endpoint"""
-    data = request.get_json()
-    user_id = data.get('user_id')
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON object required"}), 400
+    user_id = data.get("user_id")
 
     try:
         mark_todo_complete(todo_id, user_id)
-        return jsonify({'success': True}), 200
+        return jsonify({"success": True}), 200
     except ValueError as e:
-        return jsonify({'error': str(e)}), 404
-    except Exception as e:
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({"error": str(e)}), 404
+    except Exception:
+        return jsonify({"error": "Internal server error"}), 500
 ```
 
 ### Unit Tests
@@ -245,14 +264,17 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import sys
-sys.path.append('../examples')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "examples"))
 
 from todo_service import create_todo, get_todos_by_user, mark_todo_complete
+
 
 class TestCreateTodo:
     """Unit tests for create_todo function"""
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_create_todo_success(self, mock_get_db):
         """Test creating a todo successfully"""
         # Arrange
@@ -263,7 +285,7 @@ class TestCreateTodo:
         mock_get_db.return_value = mock_conn
 
         # Act
-        todo_id = create_todo('Buy milk', 'From the store', 1)
+        todo_id = create_todo("Buy milk", "From the store", 1)
 
         # Assert
         assert todo_id == 123
@@ -272,40 +294,41 @@ class TestCreateTodo:
         mock_cursor.close.assert_called_once()
         mock_conn.close.assert_called_once()
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_create_todo_empty_title_fails(self, mock_get_db):
         """Test that empty title raises ValueError"""
         # Act & Assert
         with pytest.raises(ValueError, match="Title is required"):
-            create_todo('', 'Description', 1)
+            create_todo("", "Description", 1)
 
         # Database should not be called
         mock_get_db.assert_not_called()
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_create_todo_long_title_fails(self, mock_get_db):
         """Test that title > 200 chars raises ValueError"""
-        long_title = 'a' * 201
+        long_title = "a" * 201
 
         # Act & Assert
         with pytest.raises(ValueError, match="Title too long"):
-            create_todo(long_title, 'Description', 1)
+            create_todo(long_title, "Description", 1)
 
         # Database should not be called
         mock_get_db.assert_not_called()
+
 
 class TestGetTodosByUser:
     """Unit tests for get_todos_by_user function"""
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_get_todos_returns_list(self, mock_get_db):
         """Test getting todos returns correct format"""
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_cursor.fetchall.return_value = [
-            (1, 'Buy milk', 'From store', False, datetime(2024, 1, 15, 10, 30)),
-            (2, 'Walk dog', 'In park', True, datetime(2024, 1, 15, 11, 0))
+            (1, "Buy milk", "From store", False, datetime(2024, 1, 15, 10, 30)),
+            (2, "Walk dog", "In park", True, datetime(2024, 1, 15, 11, 0)),
         ]
         mock_conn.cursor.return_value = mock_cursor
         mock_get_db.return_value = mock_conn
@@ -315,13 +338,13 @@ class TestGetTodosByUser:
 
         # Assert
         assert len(todos) == 2
-        assert todos[0]['todo_id'] == 1
-        assert todos[0]['title'] == 'Buy milk'
-        assert todos[0]['completed'] == False
-        assert todos[1]['todo_id'] == 2
-        assert todos[1]['completed'] == True
+        assert todos[0]["todo_id"] == 1
+        assert todos[0]["title"] == "Buy milk"
+        assert todos[0]["completed"] == False
+        assert todos[1]["todo_id"] == 2
+        assert todos[1]["completed"] == True
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_get_todos_empty_list(self, mock_get_db):
         """Test getting todos for user with no todos"""
         # Arrange
@@ -337,10 +360,11 @@ class TestGetTodosByUser:
         # Assert
         assert todos == []
 
+
 class TestMarkTodoComplete:
     """Unit tests for mark_todo_complete function"""
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_mark_complete_success(self, mock_get_db):
         """Test marking todo as complete"""
         # Arrange
@@ -357,7 +381,7 @@ class TestMarkTodoComplete:
         assert result == True
         mock_conn.commit.assert_called_once()
 
-    @patch('todo_service.get_db_connection')
+    @patch("todo_service.get_db_connection")
     def test_mark_complete_not_found(self, mock_get_db):
         """Test marking non-existent todo fails"""
         # Arrange
@@ -371,23 +395,22 @@ class TestMarkTodoComplete:
         with pytest.raises(ValueError, match="Todo not found"):
             mark_todo_complete(999, 1)
 
+
 # Pytest fixtures for reusable test setup
 @pytest.fixture
 def mock_db_connection():
     """Fixture to provide a mocked database connection"""
-    with patch('todo_service.get_db_connection') as mock:
+    with patch("todo_service.get_db_connection") as mock:
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
         mock.return_value = mock_conn
-        yield {
-            'connection': mock_conn,
-            'cursor': mock_cursor,
-            'get_db': mock
-        }
+        yield {"connection": mock_conn, "cursor": mock_cursor, "get_db": mock}
 ```
 
 ### Integration Tests
+
+Use a disposable PostgreSQL instance. The fixture creates and drops `test_tododb`; it must not contain data you want to keep. It patches the service connection so the tests use the same database they initialize. Export `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_PASSWORD` when using non-default connection settings.
 
 **`backend-tests/test_integration.py`:**
 ```python
@@ -395,27 +418,34 @@ import pytest
 import psycopg2
 from datetime import datetime
 import sys
-sys.path.append('../examples')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "examples"))
 
 from todo_service import create_todo, get_todos_by_user, mark_todo_complete
 
-# Test database configuration
+# Use a disposable PostgreSQL instance; this fixture recreates the test DB.
+import os
+
 TEST_DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'test_tododb',
-    'user': 'postgres',
-    'password': 'postgres'
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", "5432"),
+    "database": "test_tododb",
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", "postgres"),
 }
 
-@pytest.fixture(scope='module')
+
+@pytest.fixture(scope="module")
 def test_database():
     """Set up test database"""
     # Connect to default database to create test database
     conn = psycopg2.connect(
-        host=TEST_DB_CONFIG['host'],
-        database='postgres',
-        user=TEST_DB_CONFIG['user'],
-        password=TEST_DB_CONFIG['password']
+        host=TEST_DB_CONFIG["host"],
+        port=TEST_DB_CONFIG["port"],
+        database="postgres",
+        user=TEST_DB_CONFIG["user"],
+        password=TEST_DB_CONFIG["password"],
     )
     conn.autocommit = True
     cursor = conn.cursor()
@@ -447,10 +477,11 @@ def test_database():
 
     # Cleanup
     conn = psycopg2.connect(
-        host=TEST_DB_CONFIG['host'],
-        database='postgres',
-        user=TEST_DB_CONFIG['user'],
-        password=TEST_DB_CONFIG['password']
+        host=TEST_DB_CONFIG["host"],
+        port=TEST_DB_CONFIG["port"],
+        database="postgres",
+        user=TEST_DB_CONFIG["user"],
+        password=TEST_DB_CONFIG["password"],
     )
     conn.autocommit = True
     cursor = conn.cursor()
@@ -458,9 +489,13 @@ def test_database():
     cursor.close()
     conn.close()
 
+
 @pytest.fixture(autouse=True)
-def clean_database(test_database):
-    """Clean database before each test"""
+def clean_database(test_database, monkeypatch):
+    """Direct the service to the test DB and clean it before each test."""
+    monkeypatch.setattr(
+        "todo_service.get_db_connection", lambda: psycopg2.connect(**test_database)
+    )
     conn = psycopg2.connect(**test_database)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM todos")
@@ -468,13 +503,14 @@ def clean_database(test_database):
     cursor.close()
     conn.close()
 
+
 class TestTodoIntegration:
     """Integration tests with real database"""
 
     def test_create_and_retrieve_todo(self, test_database):
         """Test creating and retrieving a todo"""
         # Create todo
-        todo_id = create_todo('Integration test todo', 'Test description', 1)
+        todo_id = create_todo("Integration test todo", "Test description", 1)
 
         assert todo_id is not None
         assert isinstance(todo_id, int)
@@ -483,46 +519,46 @@ class TestTodoIntegration:
         todos = get_todos_by_user(1)
 
         assert len(todos) == 1
-        assert todos[0]['todo_id'] == todo_id
-        assert todos[0]['title'] == 'Integration test todo'
-        assert todos[0]['completed'] == False
+        assert todos[0]["todo_id"] == todo_id
+        assert todos[0]["title"] == "Integration test todo"
+        assert todos[0]["completed"] == False
 
     def test_multiple_users_isolation(self, test_database):
         """Test that users only see their own todos"""
         # Create todos for different users
-        user1_todo = create_todo('User 1 todo', 'Description', 1)
-        user2_todo = create_todo('User 2 todo', 'Description', 2)
+        user1_todo = create_todo("User 1 todo", "Description", 1)
+        user2_todo = create_todo("User 2 todo", "Description", 2)
 
         # User 1 should only see their todo
         user1_todos = get_todos_by_user(1)
         assert len(user1_todos) == 1
-        assert user1_todos[0]['todo_id'] == user1_todo
+        assert user1_todos[0]["todo_id"] == user1_todo
 
         # User 2 should only see their todo
         user2_todos = get_todos_by_user(2)
         assert len(user2_todos) == 1
-        assert user2_todos[0]['todo_id'] == user2_todo
+        assert user2_todos[0]["todo_id"] == user2_todo
 
     def test_mark_todo_complete_workflow(self, test_database):
         """Test complete todo workflow"""
         # Create todo
-        todo_id = create_todo('Complete me', 'Test', 1)
+        todo_id = create_todo("Complete me", "Test", 1)
 
         # Verify it's not complete
         todos = get_todos_by_user(1)
-        assert todos[0]['completed'] == False
+        assert todos[0]["completed"] == False
 
         # Mark complete
         mark_todo_complete(todo_id, 1)
 
         # Verify it's complete
         todos = get_todos_by_user(1)
-        assert todos[0]['completed'] == True
+        assert todos[0]["completed"] == True
 
     def test_mark_complete_wrong_user_fails(self, test_database):
         """Test user cannot complete another user's todo"""
         # User 1 creates todo
-        todo_id = create_todo('User 1 todo', 'Description', 1)
+        todo_id = create_todo("User 1 todo", "Description", 1)
 
         # User 2 tries to complete it
         with pytest.raises(ValueError, match="Todo not found"):
@@ -537,21 +573,25 @@ import pytest
 from unittest.mock import patch
 import json
 import sys
-sys.path.append('../examples')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "examples"))
 
 from todo_service import app
+
 
 @pytest.fixture
 def client():
     """Flask test client"""
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
+
 
 class TestTodoAPI:
     """Test Flask API endpoints"""
 
-    @patch('todo_service.create_todo')
+    @patch("todo_service.create_todo")
     def test_create_todo_endpoint_success(self, mock_create, client):
         """Test POST /api/todos success"""
         # Arrange
@@ -559,21 +599,19 @@ class TestTodoAPI:
 
         # Act
         response = client.post(
-            '/api/todos',
-            data=json.dumps({
-                'title': 'Test todo',
-                'description': 'Test description',
-                'user_id': 1
-            }),
-            content_type='application/json'
+            "/api/todos",
+            data=json.dumps(
+                {"title": "Test todo", "description": "Test description", "user_id": 1}
+            ),
+            content_type="application/json",
         )
 
         # Assert
         assert response.status_code == 201
         data = json.loads(response.data)
-        assert data['todo_id'] == 123
+        assert data["todo_id"] == 123
 
-    @patch('todo_service.create_todo')
+    @patch("todo_service.create_todo")
     def test_create_todo_endpoint_validation_error(self, mock_create, client):
         """Test POST /api/todos with validation error"""
         # Arrange
@@ -581,45 +619,41 @@ class TestTodoAPI:
 
         # Act
         response = client.post(
-            '/api/todos',
-            data=json.dumps({
-                'title': '',
-                'description': 'Test',
-                'user_id': 1
-            }),
-            content_type='application/json'
+            "/api/todos",
+            data=json.dumps({"title": "", "description": "Test", "user_id": 1}),
+            content_type="application/json",
         )
 
         # Assert
         assert response.status_code == 400
         data = json.loads(response.data)
-        assert 'error' in data
+        assert "error" in data
 
-    @patch('todo_service.get_todos_by_user')
+    @patch("todo_service.get_todos_by_user")
     def test_get_todos_endpoint(self, mock_get_todos, client):
         """Test GET /api/todos/<user_id>"""
         # Arrange
         mock_get_todos.return_value = [
             {
-                'todo_id': 1,
-                'title': 'Test todo',
-                'description': 'Test',
-                'completed': False,
-                'created_at': '2024-01-15T10:30:00'
+                "todo_id": 1,
+                "title": "Test todo",
+                "description": "Test",
+                "completed": False,
+                "created_at": "2024-01-15T10:30:00",
             }
         ]
 
         # Act
-        response = client.get('/api/todos/1')
+        response = client.get("/api/todos/1")
 
         # Assert
         assert response.status_code == 200
         data = json.loads(response.data)
-        assert 'todos' in data
-        assert len(data['todos']) == 1
-        assert data['todos'][0]['title'] == 'Test todo'
+        assert "todos" in data
+        assert len(data["todos"]) == 1
+        assert data["todos"][0]["title"] == "Test todo"
 
-    @patch('todo_service.mark_todo_complete')
+    @patch("todo_service.mark_todo_complete")
     def test_complete_todo_endpoint_success(self, mock_complete, client):
         """Test PUT /api/todos/<id>/complete"""
         # Arrange
@@ -627,17 +661,17 @@ class TestTodoAPI:
 
         # Act
         response = client.put(
-            '/api/todos/1/complete',
-            data=json.dumps({'user_id': 1}),
-            content_type='application/json'
+            "/api/todos/1/complete",
+            data=json.dumps({"user_id": 1}),
+            content_type="application/json",
         )
 
         # Assert
         assert response.status_code == 200
         data = json.loads(response.data)
-        assert data['success'] == True
+        assert data["success"] == True
 
-    @patch('todo_service.mark_todo_complete')
+    @patch("todo_service.mark_todo_complete")
     def test_complete_todo_endpoint_not_found(self, mock_complete, client):
         """Test PUT /api/todos/<id>/complete with non-existent todo"""
         # Arrange
@@ -645,15 +679,15 @@ class TestTodoAPI:
 
         # Act
         response = client.put(
-            '/api/todos/999/complete',
-            data=json.dumps({'user_id': 1}),
-            content_type='application/json'
+            "/api/todos/999/complete",
+            data=json.dumps({"user_id": 1}),
+            content_type="application/json",
         )
 
         # Assert
         assert response.status_code == 404
         data = json.loads(response.data)
-        assert 'error' in data
+        assert "error" in data
 ```
 
 ### Running Tests
@@ -663,7 +697,7 @@ class TestTodoAPI:
 pytest
 
 # Run with coverage
-pytest --cov=examples --cov-report=html
+pytest test_unit.py test_api.py --cov=../examples --cov-report=html
 
 # Run specific test file
 pytest backend-tests/test_unit.py
@@ -683,13 +717,9 @@ pytest -s
 
 **Example output:**
 ```
-======================== test session starts ========================
-collected 15 items
+collected 16 items
 
-backend-tests/test_unit.py ............                      [ 80%]
-backend-tests/test_api.py ...                                [100%]
-
-==================== 15 passed in 0.45s ====================
+16 passed
 ```
 
 ---
@@ -700,12 +730,14 @@ backend-tests/test_api.py ...                                [100%]
 
 ```bash
 cd 10-testing-ci/frontend-tests
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event
+npm ci
 ```
+
+The included `package.json` supplies React, Jest, Babel, and the jsdom environment. `jest.config.cjs` transforms JSX and ES modules, including the example component in `src/`. This is an isolated Jest example; the Vite app from Tutorial 9 can use Vitest with its own setup.
 
 ### Example: TodoList Component to Test
 
-**`examples/TodoList.jsx`:**
+**`frontend-tests/src/TodoList.jsx`:**
 ```jsx
 import React, { useState, useEffect } from 'react';
 
@@ -825,7 +857,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { TodoList } from '../examples/TodoList';
+import { TodoList } from './src/TodoList';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -833,7 +865,7 @@ global.fetch = jest.fn();
 describe('TodoList Component', () => {
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('Loading and Error States', () => {
@@ -1084,7 +1116,7 @@ npm test -- --coverage
 npm test -- --watch
 
 # Run specific test file
-npm test TodoList.test.jsx
+npm test -- TodoList.test.jsx
 ```
 
 ---
@@ -1098,6 +1130,7 @@ npm test TodoList.test.jsx
 name: CI Pipeline
 
 on:
+  workflow_call:
   push:
     branches: [main, develop]
   pull_request:
@@ -1143,7 +1176,7 @@ jobs:
           python-version: '3.11'
 
       - name: Cache pip dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -1179,10 +1212,10 @@ jobs:
       - name: Generate coverage report
         run: |
           cd 10-testing-ci/backend-tests
-          pytest --cov=../examples --cov-report=xml --cov-report=html
+          pytest test_unit.py test_api.py --cov=../examples --cov-report=xml --cov-report=html
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: ./10-testing-ci/backend-tests/coverage.xml
           flags: backend
@@ -1198,10 +1231,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Cache npm dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -1219,7 +1252,7 @@ jobs:
           npm test -- --coverage --watchAll=false
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: ./10-testing-ci/frontend-tests/coverage/lcov.info
           flags: frontend
@@ -1250,6 +1283,9 @@ jobs:
           black --check 10-testing-ci/examples
 
   security-scan:
+    permissions:
+      contents: read
+      security-events: write
     name: Security Scan
     runs-on: ubuntu-latest
 
@@ -1266,7 +1302,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 ```
@@ -1303,14 +1339,13 @@ jobs:
       - name: Run tests with coverage
         run: |
           cd 10-testing-ci/backend-tests
-          pytest --cov=../examples --cov-report=term-missing --cov-fail-under=80
+          pytest test_unit.py test_api.py --cov=../examples --cov-report=term-missing --cov-report=xml --cov-fail-under=80
 
-      - name: Comment PR with coverage
-        uses: py-cov-action/python-coverage-comment-action@v3
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
         with:
-          GITHUB_TOKEN: ${{ github.token }}
-          MINIMUM_GREEN: 80
-          MINIMUM_ORANGE: 60
+          name: backend-coverage
+          path: 10-testing-ci/backend-tests/coverage.xml
 
   test-all-python-versions:
     name: Test on Python ${{ matrix.python-version }}
@@ -1318,7 +1353,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12']
 
     steps:
       - name: Checkout code
@@ -1337,19 +1372,24 @@ jobs:
       - name: Run tests
         run: |
           cd 10-testing-ci/backend-tests
-          pytest -v
+          pytest test_unit.py test_api.py -v
 
   prevent-merge-if-failing:
+    if: always()
     name: All Tests Must Pass
     runs-on: ubuntu-latest
     needs: [test-coverage, test-all-python-versions]
 
     steps:
       - name: Check all tests passed
-        run: echo "All tests passed!"
+        run: |
+          test "${{ needs.test-coverage.result }}" = "success"
+          test "${{ needs.test-all-python-versions.result }}" = "success"
 ```
 
-### Deployment Workflow (runs after tests pass)
+### Deployment Workflow Skeleton (runs after tests pass)
+
+The push and deploy steps below are placeholders. Supply your registry login, image publication, and deployment commands before enabling this workflow. Calling `ci.yml` as a reusable workflow requires its `workflow_call` trigger above. For GitOps, update the image tag in Git after CI passes; Argo CD does not automatically check GitHub test results.
 
 **`.github/workflows/deploy.yml`:**
 ```yaml
@@ -1384,7 +1424,7 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           echo "kubectl apply -f k8s/"
-          echo "Deployment successful!"
+          echo "Replace this placeholder with a verified deployment step"
 ```
 
 ---
@@ -1424,7 +1464,7 @@ Add to your README.md:
 
 ```bash
 # Generate HTML coverage report
-pytest --cov=examples --cov-report=html
+pytest test_unit.py test_api.py --cov=../examples --cov-report=html
 
 # Open in browser
 open htmlcov/index.html
@@ -1470,7 +1510,7 @@ def test_example():
     assert result is not None
 ```
 
-### 3. One Assertion Per Test (usually)
+### 3. One Behavior Per Test
 
 ```python
 # ✅ Good: Focused test
@@ -1482,7 +1522,7 @@ def test_create_todo_id_is_positive():
     todo_id = create_todo("Test", "Desc", 1)
     assert todo_id > 0
 
-# ❌ Bad: Testing multiple things
+# ❌ Bad: Adding an unrelated arbitrary limit
 def test_create_todo():
     todo_id = create_todo("Test", "Desc", 1)
     assert isinstance(todo_id, int)
@@ -1574,7 +1614,7 @@ jobs:
 
 ```yaml
 - name: Cache dependencies
-  uses: actions/cache@v3
+  uses: actions/cache@v4
   with:
     path: ~/.cache/pip
     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -1598,7 +1638,7 @@ In GitHub repository settings:
 1. Go to Settings → Branches
 2. Add branch protection rule for `main`
 3. Enable "Require status checks to pass before merging"
-4. Select required checks: `backend-tests`, `frontend-tests`, `lint`
+4. Select the check names reported by your workflow: `Backend Tests`, `Frontend Tests`, and `Code Linting`
 
 ### 5. Automatic Dependency Updates
 
@@ -1641,6 +1681,8 @@ graph TB
 ```
 
 ### Contract Testing (for microservices)
+
+This workflow is an extension exercise. Create the consumer/provider tests first and install a Pact Broker CLI (separate from `pact-python`) before publishing. Configure the broker URL and credentials for your environment.
 
 **`.github/workflows/contract-tests.yml`:**
 ```yaml
@@ -1699,7 +1741,7 @@ pytest -v
 # Run with print statements
 pytest -s
 
-# Frontend Testing
+# Frontend Testing (from the repository root in a new terminal)
 cd 10-testing-ci/frontend-tests
 
 # Run all tests
@@ -1712,7 +1754,7 @@ npm test -- --coverage
 npm test -- --watch
 
 # Run specific file
-npm test TodoList.test.jsx
+npm test -- TodoList.test.jsx
 
 # Update snapshots
 npm test -- -u
@@ -1771,4 +1813,4 @@ Now that you have comprehensive testing and CI/CD:
 
 1. **Tutorial 11 (ArgoCD GitOps)**: Automate deployment when tests pass
 2. **Tutorial 12 (Keycloak)**: Add authentication (with tests!)
-3. **Tutorial 14 (Monitoring)**: Monitor test execution times
+3. **Tutorial 15 (Monitoring)**: Monitor test execution times

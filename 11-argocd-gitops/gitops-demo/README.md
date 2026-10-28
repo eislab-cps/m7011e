@@ -30,7 +30,7 @@ This demo needs to be in a Git repository for Argo CD to access it.
 
 ```bash
 # Create a new Git repository
-git init
+git init -b main
 git add .
 git commit -m "Initial GitOps demo"
 
@@ -72,7 +72,9 @@ See the main tutorial README for complete Argo CD deployment instructions.
 argocd app create hello-world-dev \
   --repo https://github.com/YOUR_USERNAME/m7011e-gitops.git \
   --path hello-world-app \
+  --dest-server https://kubernetes.default.svc \
   --dest-namespace hello-world-dev \
+  --sync-option CreateNamespace=true \
   --values ../environments/dev/values.yaml
 
 # Sync the application
@@ -112,6 +114,8 @@ argocd app get hello-world-dev
 
 ### Promote Between Environments
 
+The application follows `HEAD`/`main` unless configured otherwise. To test the feature branch below before merging, set `argocd app set hello-world-dev --revision feature/new-message`; restore `--revision main` after merging. Staging also needs to track that branch if you test it before merge.
+
 Typical flow: dev → staging → production
 
 ```bash
@@ -140,7 +144,7 @@ Before pushing to Git, test your Helm chart locally:
 
 ```bash
 # Test dev environment
-helm template hello-world-app -f environments/dev/values.yaml .
+helm template hello-world-dev hello-world-app -f environments/dev/values.yaml
 
 # Install locally to test namespace
 helm install test-dev hello-world-app -f environments/dev/values.yaml -n test-dev --create-namespace
@@ -161,7 +165,7 @@ helm lint hello-world-app
 ### Check Generated Manifests
 
 ```bash
-helm template hello-world-app -f environments/dev/values.yaml .
+helm template hello-world-dev hello-world-app -f environments/dev/values.yaml
 ```
 
 ### Validate Values

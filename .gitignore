@@ -23,3 +23,15 @@ instance/
 # OS
 .DS_Store
 Thumbs.db
+
+# Test and frontend build output
+node_modules/
+coverage/
+htmlcov/
+.pytest_cache/
+.coverage
+build/
+dist/
+
+# Downloaded Istio distribution
+.istio/

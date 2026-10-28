@@ -24,12 +24,15 @@ spec:
           envFrom:
             - configMapRef:
                 name: mongodb-config
+            - secretRef:
+                name: mongodb-credentials
           volumeMounts:
             - mountPath: /data/db
               name: mongodb-data
           {{ if .Values.DBResourceLimit }}
           resources:
             limits:
+              cpu: {{ .Values.DBCPU | quote }}
               memory: {{ .Values.DBMemory | quote }}
             requests:
               cpu: {{ .Values.DBCPU | quote }}

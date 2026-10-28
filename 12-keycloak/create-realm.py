@@ -37,7 +37,7 @@ def get_admin_token():
     }
 
     try:
-        response = requests.post(url, data=data, verify=not INSECURE)
+        response = requests.post(url, data=data, verify=not INSECURE, timeout=10)
         response.raise_for_status()
         print("✅ Admin token obtained\n")
         return response.json()["access_token"]
@@ -70,7 +70,7 @@ def create_realm(token, realm_name):
     url = f"{KEYCLOAK_URL}/admin/realms"
 
     try:
-        response = requests.post(url, json=realm_data, headers=headers, verify=not INSECURE)
+        response = requests.post(url, json=realm_data, headers=headers, verify=not INSECURE, timeout=10)
 
         if response.status_code == 201:
             print(f"✅ Realm '{realm_name}' created successfully\n")

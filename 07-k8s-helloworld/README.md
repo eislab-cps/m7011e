@@ -2,6 +2,8 @@
 
 This tutorial will guide you through deploying a simple application using Helm to verify your Kubernetes setup is working correctly.
 
+Run the following commands from `07-k8s-helloworld/`. The cluster needs the `traefik` ingress class, cert-manager, a `letsencrypt-staging` ClusterIssuer, and DNS for your chosen hostname pointing to the ingress controller. Check these with course staff if you use another cluster.
+
 ## Understanding Helm
 Helm is a package manager for Kubernetes that simplifies application deployment and management. Think of it like `apt` for Ubuntu or `brew` for macOS, but specifically designed for Kubernetes applications.
 
@@ -10,7 +12,7 @@ Helm uses a templating system to generate Kubernetes YAML manifests. Here's how 
 
 **Project Structure:**
 ```
-hello-world-app/
+07-k8s-helloworld/
 ├── Chart.yaml              # Chart metadata and version info
 ├── values.yaml             # Configuration values
 └── templates/              # Template directory
@@ -58,7 +60,7 @@ metadata:
 The `cert-manager.io/cluster-issuer` annotation tells cert-manager which certificate issuer to use:
 
 - **letsencrypt-staging**: Used for testing and development. Issues certificates from Let's Encrypt's staging environment, which has higher rate limits but produces certificates that browsers will show as "untrusted" (perfect for testing)
-- **letsencrypt-prod**: Used for production environments. Issues trusted certificates from Let's Encrypt's production environment, but has stricter rate limits (5 certificates per domain per week)
+- **letsencrypt-prod**: Used for production environments. Issues trusted certificates from Let's Encrypt's production environment, and has stricter [rate limits](https://letsencrypt.org/docs/rate-limits/), including separate limits for registered domains and repeated identifier sets
 
 **The Process**:
 1. When you deploy the application, cert-manager detects the `cert-manager.io/cluster-issuer: letsencrypt-staging` annotation
@@ -69,11 +71,11 @@ The `cert-manager.io/cluster-issuer` annotation tells cert-manager which certifi
 
 **Benefits**:
 - Free SSL certificates from a trusted Certificate Authority
-- Automatic renewal before expiration (every 90 days)
+- Automatic renewal before certificate expiration
 - No manual certificate management required
 - Industry-standard security for your web application
 
-This means your application will be accessible over HTTPS immediately after deployment, with no additional configuration needed.
+HTTPS becomes available after DNS, ingress routing, and certificate issuance succeed. The default staging certificate is untrusted by browsers. Switch the annotation to an existing `letsencrypt-prod` issuer when you are ready for a trusted certificate.
 
 ## Configure Your Application
 ### 1. Edit the Values File
@@ -86,12 +88,11 @@ app:
   replicas: 1
 
 domain: helloworld.ltu-m7011e-johan.se  # Change this to your domain
-email: johan.kristiansson@ltu.se        # Change this to your email
 
 message: "Hello from Kubernetes with SSL!"
 ```
 
-**Important**: Replace `ltu-m7011e-johan.se` with your actual assigned domain name.
+**Important**: Replace `ltu-m7011e-johan.se` with your actual assigned domain name. The chart does not create the ClusterIssuer; its ACME email is configured by the cluster administrator, not by this chart's unused `email` value.
 
 ## Understanding Kubernetes Namespaces
 A **namespace** in Kubernetes is like a virtual cluster within your physical cluster. It provides:
@@ -111,7 +112,7 @@ Create a dedicated namespace for your hello world application:
 kubectl create namespace helloworld
 ```
 
-This creates an isolated environment where your application resources will live.
+This groups your application resources. Network isolation requires separate NetworkPolicies; namespaces alone do not block traffic.
 
 ### 2. Install with Helm
 Deploy your application using Helm:
@@ -126,15 +127,6 @@ helm install helloworld -f values.yaml -n helloworld .
 - `-f values.yaml` - Use your custom values file
 - `-n helloworld` - Deploy into the "helloworld" namespace
 - `.` - Use the current directory as the chart source
-
-### 3. Cleanup (when finished)
-To completely remove the application and free up resources:
-
-```bash
-kubectl delete namespace helloworld
-```
-
-**Note**: Deleting a namespace removes everything inside it, including the Helm release, pods, services, and any other resources.
 
 ## Verify Deployment
 Check that your application is running:
@@ -219,4 +211,18 @@ helm template helloworld -f values.yaml .
 If an update causes issues:
 ```bash
 helm rollback helloworld -n helloworld
+```
+
+## Cleanup (when finished)
+
+After verifying and experimenting with the app, remove the release:
+
+```bash
+helm uninstall helloworld -n helloworld
+```
+
+If the namespace is dedicated to this exercise and you no longer need any of its resources:
+
+```bash
+kubectl delete namespace helloworld
 ```

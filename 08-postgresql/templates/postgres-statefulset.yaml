@@ -24,12 +24,15 @@ spec:
              envFrom:
                - configMapRef:
                    name: postgres-config
+               - secretRef:
+                   name: postgres-credentials
              volumeMounts:
                - mountPath: /var/lib/postgresql/data
                  name: postgresdb
              {{ if .Values.DBResourceLimit }}
              resources:
                 limits:
+                  cpu: {{ (.Values.DBCPU | quote) }}
                   memory: {{ (.Values.DBMemory | quote) }}
                 requests:
                   cpu: {{ (.Values.DBCPU | quote) }}

@@ -27,6 +27,10 @@ Learn how to add professional authentication and authorization to your applicati
 - Completed Tutorial 6 (Kubernetes Getting Started)
 - kubectl configured and connected to your cluster
 - Basic understanding of web applications
+- Helm, a storage class, Traefik, cert-manager, the named ClusterIssuer, and domain DNS configured
+- Python dependencies installed in a virtual environment for the automation scripts (`python3 -m pip install requests`)
+
+The chart pins Keycloak 23 and uses `start-dev` for the course exercise. Its proxy flags and health endpoints are version-specific. This is a learning deployment, not a hardened production Keycloak setup.
 
 ---
 
@@ -49,7 +53,7 @@ keycloak:
 
 # Your Domain
 domain: keycloak.ltu-m7011e-YOUR-NAME.se  # Replace YOUR-NAME
-email: your.email@ltu.se                   # Your email for Let's Encrypt
+certIssuer: letsencrypt-staging          # Existing cluster issuer
 ```
 
 ### Step 2: Deploy Everything
@@ -378,7 +382,7 @@ A **client** is an application that uses Keycloak for authentication (like your 
 5. **Capability config:**
    - Client authentication: **OFF** (public client - can't keep secrets)
    - Standard flow: **ON** (enables redirect-based login)
-   - Direct access grants: **ON** (enables username/password login)
+   - Direct access grants: **OFF** (the React app uses Authorization Code with PKCE)
 6. Click **"Next"**
 7. **Login settings:**
    - Root URL: `http://localhost:3000` (your frontend dev server)
@@ -386,6 +390,8 @@ A **client** is an application that uses Keycloak for authentication (like your 
    - Valid post logout redirect URIs: `http://localhost:3000/*`
    - Web origins: `http://localhost:3000` (enables CORS)
 8. Click **"Save"**
+9. In the client's advanced settings, set the PKCE code challenge method to **S256**.
+10. Under **Client scopes**, open the client's dedicated scope and add an **Audience** mapper. Set **Included Custom Audience** to `todo-api`, **Add to access token** ON, and **Add to ID token** OFF. The Flask API validates this audience. See [Keycloak audience configuration](https://www.keycloak.org/docs/latest/server_admin/index.html#_audience).
 
 **What did we just do?** We told Keycloak that an application running on `localhost:3000` is allowed to:
 - Redirect users to Keycloak for login
@@ -441,16 +447,18 @@ python3 create-client.py
 
 The script will:
 - Create the client with proper redirect URIs
-- Configure CORS settings
+- Configure CORS settings, PKCE, logout redirects, and the `todo-api` audience mapper
 - For confidential clients: retrieve and display the client secret
 
-**Note**: Save the client secret immediately - it won't be shown again!
+**Note**: Keep client secrets out of browser code and Git. Administrators can retrieve or rotate confidential-client secrets in Keycloak.
 
 ---
 
 ## Part 4: Integrate with a React Application
 
 Now let's connect a React app to use Keycloak for login.
+
+This section illustrates the adapter in a React app. For the Vite project from Tutorial 9 use `src/App.jsx`, `npm run dev`, and its actual port (usually 5173) in Keycloak redirect URIs and Web Origins. The included complete example uses Create React App on port 3000.
 
 ### Install Keycloak JavaScript Library
 
@@ -471,6 +479,15 @@ const keycloak = new Keycloak({
   clientId: 'my-frontend-app'                        // The client you created
 });
 
+export const initializeKeycloak = (() => {
+  let promise;
+  return () => promise ||= keycloak.init({
+    onLoad: 'login-required',
+    checkLoginIframe: false,
+    pkceMethod: 'S256'
+  });
+})();
+
 export default keycloak;
 ```
 
@@ -480,7 +497,7 @@ Update `src/App.js`:
 
 ```javascript
 import React, { useState, useEffect } from 'react';
-import keycloak from './keycloak';
+import keycloak, { initializeKeycloak } from './keycloak';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -488,10 +505,8 @@ function App() {
 
   useEffect(() => {
     // Initialize Keycloak
-    keycloak.init({
-      onLoad: 'login-required',  // Redirect to login if not authenticated
-      checkLoginIframe: false
-    }).then(authenticated => {
+    // Share initialization across React StrictMode effect runs.
+    initializeKeycloak().then(authenticated => {
       setAuthenticated(authenticated);
 
       if (authenticated) {
@@ -547,7 +562,7 @@ Now let's protect your backend API by validating JWT tokens from Keycloak.
 ### Install Dependencies
 
 ```bash
-pip install flask pyjwt cryptography requests
+pip install flask flask-cors pyjwt cryptography requests
 ```
 
 ### Create Flask App with JWT Validation
@@ -556,16 +571,21 @@ Create `app.py`:
 
 ```python
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import jwt
 import requests
 from functools import wraps
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:5173"]}})
 
 # Keycloak configuration
 KEYCLOAK_URL = "https://keycloak.ltu-m7011e-YOUR-NAME.se"
 REALM = "myapp"
-CERTS_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs"
+ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
+API_AUDIENCE = "todo-api"
+INSECURE = True  # Staging certificates only; use False with trusted TLS
+CERTS_URL = f"{ISSUER}/protocol/openid-connect/certs"
 
 # Cache for public keys
 public_keys = None
@@ -574,7 +594,8 @@ def get_public_keys():
     """Fetch public keys from Keycloak for token verification"""
     global public_keys
     if not public_keys:
-        response = requests.get(CERTS_URL)
+        response = requests.get(CERTS_URL, timeout=10, verify=not INSECURE)
+        response.raise_for_status()
         public_keys = response.json()
     return public_keys
 
@@ -613,8 +634,9 @@ def require_auth(f):
                 token,
                 rsa_key,
                 algorithms=['RS256'],
-                audience='account',
-                options={'verify_exp': True}
+                audience=API_AUDIENCE,
+                issuer=ISSUER,
+                options={'verify_exp': True, 'require': ['exp', 'iss', 'sub', 'aud']}
             )
 
             # Add user info to request context
@@ -791,7 +813,7 @@ Add extra security with Time-based One-Time Passwords (TOTP).
 3. Click **"Set up"** under **"Mobile Authenticator"**
 4. Scan the QR code with Google Authenticator or Authy app
 5. Enter the 6-digit code to verify
-6. **Save your recovery codes** in a safe place!
+6. If recovery codes are enabled for your realm, generate and store them separately; TOTP setup alone does not always provide recovery codes.
 
 ### Step 2: Test MFA
 
@@ -825,9 +847,11 @@ cd todo-app-example
 ./start-frontend.sh
 ```
 
-See `todo-app-example/README.md` for detailed documentation.
+Before starting, update `backend/app.py` (or set `KEYCLOAK_URL`, `KEYCLOAK_REALM`, and `KEYCLOAK_AUDIENCE`) and `frontend/src/keycloak-config.js` to match your deployment. Create the client with the `todo-api` audience mapper above. Backend: `http://localhost:5001`; frontend: `http://localhost:3000`. The frontend refreshes its access token before API requests and periodically while open. The sample stores todos in memory, so use one backend replica until you add shared storage.
 
 ---
+
+To run the backend authentication regression tests without Keycloak, install `pytest` in the backend virtual environment and run `python -m pytest test_app.py` from `todo-app-example/backend/`.
 
 ## Part 10: Troubleshooting
 
@@ -902,7 +926,7 @@ INSECURE=false  # Was: INSECURE=true
 INSECURE = False  # Was: INSECURE = True
 ```
 
-**Why?** Staging certificates are self-signed (untrusted), so scripts use `INSECURE=true` to bypass verification. Production certificates are properly trusted, so you should set `INSECURE=false` for better security.
+**Why?** Staging certificates are signed by a test CA that browsers and normal trust stores do not trust, so scripts use `INSECURE=true` to bypass verification. Production certificates are properly trusted, so you should set `INSECURE=false` for better security.
 
 The flag automatically controls:
 - Bash: `-k` curl option (insecure mode)
@@ -962,9 +986,9 @@ This is fundamentally different from traditional username/password authenticatio
 
 OAuth 2.0 defines multiple "flows" for obtaining access tokens, each suited for different scenarios:
 
-1. **Authorization Code** - Most secure, used for web applications with a backend
-   - Best for: Traditional web apps, mobile apps with backend
-   - Security: Code exchanged server-side, never exposed to browser
+1. **Authorization Code with PKCE** - Used by the public React client
+   - Best for: Browser, native, and server applications with the appropriate client settings
+   - Security: This SPA exchanges the code in the browser using a PKCE verifier; a confidential server client can exchange it on its backend
    - **This is what we use in our tutorial**
 
 2. **Implicit** - Deprecated and insecure
@@ -979,14 +1003,14 @@ OAuth 2.0 defines multiple "flows" for obtaining access tokens, each suited for 
 
 4. **Resource Owner Password** - Direct username/password exchange
    - Highly discouraged: User gives credentials directly to application
-   - Only use: Legacy systems migration, highly trusted first-party apps
+   - Do not enable this grant for the frontend; the admin automation scripts use a separate admin-cli client
    - Problem: Defeats OAuth's purpose of not sharing credentials
    - Todo app: We don't use this - users never give passwords to our React app
 
 5. **Refresh Token** - Exchange refresh token for new access token
    - Purpose: Obtain new access tokens without re-authentication
    - Security: Can be revoked, enables long-lived sessions
-   - Todo app example: Access token expires after 5 minutes, but refresh token lets you stay logged in for 30 days
+   - Todo app example: Refresh tokens keep an active session usable within configured idle and maximum session limits
 
 #### OAuth 2.0 Architecture
 
@@ -1025,11 +1049,11 @@ graph TB
 
 #### OAuth 2.0 Authorization Code Flow
 
-The Authorization Code flow is the most secure OAuth 2.0 flow, designed for applications that can keep secrets. It uses a two-step process: first obtaining an authorization code, then exchanging it for tokens. This prevents tokens from ever appearing in the browser's address bar where they could be intercepted.
+Authorization Code with PKCE supports public clients such as this SPA as well as confidential server clients. It uses a two-step process: first obtaining an authorization code, then exchanging it for tokens. This prevents tokens from ever appearing in the browser's address bar where they could be intercepted.
 
 **Key characteristics:**
 - **Two-phase exchange**: Code → Tokens
-- **Server-side token exchange**: Tokens never exposed to browser
+- **PKCE-bound token exchange**: This SPA receives tokens in browser memory, while tokens stay out of the redirect URL
 - **State parameter**: Prevents CSRF attacks
 - **Single-use codes**: Each code can only be used once
 - **Short code lifetime**: Typically 60 seconds
@@ -1101,11 +1125,11 @@ After successful authentication, Keycloak:
 4. Sets a short expiration (typically 60 seconds)
 
 **Step 6 (Authorization Response):**
-Keycloak redirects back to your app with the code in the URL. The code is meaningless without your client credentials and can only be used once.
+Keycloak redirects back to your app with the code in the URL. The code is single-use and bound to the client, redirect URI, and PKCE challenge. The public SPA has no client secret.
 
 **Steps 7-9 (Token Exchange):**
-Your app exchanges the code for tokens via a server-side request. This is critical:
-- The request includes your client_id
+The JavaScript adapter exchanges the code for tokens from the browser over HTTPS:
+- The request includes your client_id and the PKCE code_verifier
 - For confidential clients, you'd also send client_secret
 - Keycloak verifies the code is valid, not expired, and not already used
 - Only then does Keycloak issue the actual tokens
@@ -1139,7 +1163,7 @@ OIDC adds an **ID Token** that contains user information: name, email, username,
 2. **UserInfo Endpoint** - Standardized endpoint to get complete user profile
    - URL: `https://keycloak.../realms/myapp/protocol/openid-connect/userinfo`
    - Returns: Full user profile (photo, address, phone, etc.)
-   - In our todo app: We call `keycloak.loadUserProfile()` to get this
+   - The adapter exposes `loadUserInfo()` for this endpoint. The included app uses `loadUserProfile()`, which calls the Keycloak account API instead.
 
 3. **Standard Claims** - Predefined user attributes everyone understands
    - `sub`: Unique user ID (never changes, even if username changes)
@@ -1212,7 +1236,8 @@ graph LR
 ```
 
 **In our todo app:**
-- **ID Token**: Used by React to display username and check if user is admin
+- **ID Token**: Establishes user identity for the frontend
+- **Access Token roles**: `keycloak.hasRealmRole()` reads the access token, while `loadUserProfile()` loads display information
 - **Access Token**: Sent to Flask API to prove we can access/modify todos
 - **Both together**: Enable secure, personalized user experience
 
@@ -1265,9 +1290,9 @@ In our todo app, Keycloak creates a header like this:
 
 ```json
 {
-  "alg": "RS256",    // Algorithm: RSA with SHA-256 (asymmetric)
-  "typ": "JWT",      // Type: JSON Web Token
-  "kid": "FJ86GcF3j" // Key ID: Which of Keycloak's keys signed this
+  "alg": "RS256",
+  "typ": "JWT",
+  "kid": "FJ86GcF3j"
 }
 ```
 
@@ -1294,16 +1319,16 @@ In our todo app, Keycloak creates a header like this:
 **2. Payload (Claims)**
 ```json
 {
-  // Registered claims (RFC 7519)
-  "iss": "https://keycloak.ltu-m7011e-johan.se/realms/myapp",  // Issuer
-  "sub": "f4c8a9e6-1234-5678-90ab-cdef12345678",               // Subject (user ID)
-  "aud": "account",                                             // Audience
-  "exp": 1735689600,                                            // Expiration (Unix timestamp)
-  "nbf": 1735689300,                                            // Not Before
-  "iat": 1735689300,                                            // Issued At
-  "jti": "abc-123-def-456",                                     // JWT ID (unique)
 
-  // Public claims (OIDC standard)
+  "iss": "https://keycloak.ltu-m7011e-johan.se/realms/myapp",
+  "sub": "f4c8a9e6-1234-5678-90ab-cdef12345678",
+  "aud": "todo-api",
+  "exp": 1735689600,
+  "nbf": 1735689300,
+  "iat": 1735689300,
+  "jti": "abc-123-def-456",
+
+
   "name": "Test User",
   "given_name": "Test",
   "family_name": "User",
@@ -1311,7 +1336,7 @@ In our todo app, Keycloak creates a header like this:
   "email": "test@example.com",
   "email_verified": true,
 
-  // Private claims (Keycloak-specific)
+
   "realm_access": {
     "roles": ["user", "admin"]
   },
@@ -1322,8 +1347,8 @@ In our todo app, Keycloak creates a header like this:
   },
   "scope": "openid profile email",
   "session_state": "xyz-789",
-  "acr": "1",                    // Authentication Context Class Reference
-  "azp": "my-frontend-app",      // Authorized Party
+  "acr": "1",
+  "azp": "my-frontend-app",
   "typ": "Bearer"
 }
 ```
@@ -1368,7 +1393,7 @@ def verify_token(token):
         token,
         public_key,
         algorithms=['RS256'],
-        audience='account',
+        audience='todo-api',
         issuer='https://keycloak.../realms/myapp',
         options={
             'verify_signature': True,   # Cryptographic verification
@@ -1492,11 +1517,11 @@ sequenceDiagram
 
 **Key points:**
 
-1. **Transparent to user**: In our todo app, the keycloak-js library handles refresh automatically. The user never knows it happened.
+1. **Application-triggered refresh**: The adapter refreshes when the application calls `updateToken()`. The included app runs a periodic refresh; call and await `updateToken(30)` immediately before requests as well when adapting it.
 
 2. **Refresh token rotation**: Keycloak can issue a new refresh token with each refresh. This limits the damage if a refresh token is stolen - it becomes invalid after first use.
 
-3. **Revocation**: Unlike access tokens (which can't be revoked until they expire), refresh tokens can be revoked server-side. If you detect suspicious activity, revoke the refresh token and force re-login.
+3. **Revocation**: Refresh tokens and sessions can be revoked server-side. This API validates access tokens locally, so it does not detect session revocation until the access token expires; immediate revocation checks require introspection or another server-side mechanism. If you detect suspicious activity, revoke the refresh token and force re-login.
 
 4. **Security trade-off**:
    - Short access token lifetime (5 min): Limits exposure if stolen
@@ -1505,7 +1530,7 @@ sequenceDiagram
 
 **Configuration in our todo app:**
 
-The React app is configured to automatically refresh tokens:
+The React app explicitly calls the adapter to refresh tokens:
 
 ```javascript
 // In App.js, keycloak checks token every 60 seconds
@@ -1630,7 +1655,7 @@ You enter your credentials. Keycloak verifies them against its user database, cr
 The React app extracts the code from the URL and immediately exchanges it for real tokens. This happens in the background—the keycloak-js library handles it automatically. Keycloak returns:
 
 - **Access Token**: Proves you're authorized to access the todo API
-- **ID Token**: Contains your identity information (username, email, roles)
+- **ID Token**: Contains identity claims; this app checks realm roles from the access token
 - **Refresh Token**: Allows getting new tokens when access token expires
 
 **Phase 4: User Session Established (Step 13-14)**
@@ -1663,7 +1688,7 @@ After successful verification, Flask extracts the user ID from the token and cre
 #### Key Security Features in This Flow
 
 1. **Authorization Code Flow** (steps 6-12): Most secure OAuth 2.0 flow, keeps tokens out of browser history
-2. **PKCE Protection**: The keycloak-js library adds PKCE automatically to prevent authorization code interception
+2. **PKCE Protection**: The app explicitly selects `pkceMethod: 'S256'`, and the client enforces it
 3. **Short-Lived Access Tokens**: Expire after 5 minutes, limiting damage if stolen
 4. **Stateless API**: Flask doesn't need sessions or databases to verify authentication
 5. **Asymmetric Cryptography**: Private key stays in Keycloak, public key verifies signatures
@@ -1671,7 +1696,7 @@ After successful verification, Flask extracts the user ID from the token and cre
 
 #### What Makes This Secure?
 
-Notice that the Flask API **never contacts Keycloak** during normal operation (except to fetch public keys once). It doesn't ask "Is this token valid?"—it cryptographically *proves* validity by verifying the signature. This is why JWTs scale so well: millions of API requests can be validated without database lookups or network calls to the auth server.
+Notice that the Flask API **never contacts Keycloak** during normal operation (except to fetch or refresh cached public keys). It doesn't ask "Is this token valid?"—it cryptographically *proves* validity by verifying the signature. This is why JWTs scale so well: millions of API requests can be validated without database lookups or network calls to the auth server.
 
 ### Security Considerations
 
@@ -1793,11 +1818,11 @@ for key in keys['keys']:
 
 ### Token Lifetimes
 
-Recommended settings (in Realm Settings → Tokens):
+Example settings (adjust to your application):
 - Access Token: 5 minutes (short-lived, frequently refreshed)
 - SSO Session Idle: 30 minutes (logout if inactive)
 - SSO Session Max: 10 hours (max session length)
-- Refresh Token: 30 days (long-lived for mobile apps)
+- Normal refresh-token validity follows SSO/client session idle and maximum settings; offline tokens have separate settings. There is no independent 30-day normal refresh lifetime overriding those sessions.
 
 ---
 
@@ -1841,7 +1866,7 @@ USER appuser
 
 EXPOSE 5001
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--workers", "1", "app:app"]
 ```
 
 **1.2 Create requirements.txt**
@@ -1853,6 +1878,7 @@ flask-cors==4.0.0
 PyJWT==2.8.0
 cryptography==41.0.7
 requests==2.31.0
+gunicorn==23.0.0
 ```
 
 **1.3 Update Configuration for Production**
@@ -1865,6 +1891,7 @@ import os
 KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'https://keycloak.ltu-m7011e-yourname.se')
 REALM = os.getenv('KEYCLOAK_REALM', 'myapp')
 CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID', 'my-frontend-app')
+API_AUDIENCE = os.getenv('KEYCLOAK_AUDIENCE', 'todo-api')
 INSECURE = os.getenv('INSECURE', 'False').lower() == 'true'
 
 # CORS - allow your frontend domain
@@ -1881,6 +1908,7 @@ CORS(app, resources={
 **1.4 Build and Push Docker Image**
 
 ```bash
+# From 12-keycloak/
 cd todo-app-example/backend
 
 # Build image
@@ -1905,7 +1933,7 @@ metadata:
   name: todo-backend
   namespace: yournamespace
 spec:
-  replicas: 2
+  replicas: 1  # In-memory todos are local to one process
   selector:
     matchLabels:
       app: todo-backend
@@ -1971,9 +1999,8 @@ metadata:
   namespace: yournamespace
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
   - hosts:
     - todo-api.ltu-m7011e-yourname.se
@@ -1993,6 +2020,8 @@ spec:
 
 **2.2 Deploy Backend**
 
+Run the following commands from `12-keycloak/`. Create `todo-app-example/k8s/` and your chosen namespace first. Replace `yournamespace` consistently in both manifests.
+
 ```bash
 kubectl apply -f todo-app-example/k8s/backend-deployment.yaml
 
@@ -2011,7 +2040,7 @@ curl https://todo-api.ltu-m7011e-yourname.se/
 Create `todo-app-example/frontend/Dockerfile`:
 ```dockerfile
 # Build stage
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -2091,6 +2120,7 @@ const API_BASE_URL = 'https://todo-api.ltu-m7011e-yourname.se/api';
 **3.4 Build and Push Docker Image**
 
 ```bash
+# From 12-keycloak/ in a new terminal
 cd todo-app-example/frontend
 
 # Build image
@@ -2168,9 +2198,8 @@ metadata:
   namespace: yournamespace
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
   - hosts:
     - todo.ltu-m7011e-yourname.se
@@ -2254,7 +2283,7 @@ Check browser developer tools:
 
 ### Step 7: Bonus Challenges
 
-1. **Add Horizontal Pod Autoscaling (HPA)**
+1. **Add Horizontal Pod Autoscaling (HPA)** after replacing in-memory storage with a shared database
    ```yaml
    apiVersion: autoscaling/v2
    kind: HorizontalPodAutoscaler
@@ -2297,8 +2326,8 @@ Check browser developer tools:
 
 6. **Add NetworkPolicies**
    - Restrict traffic between pods
-   - Allow only frontend → backend communication
-   - Allow only backend → Keycloak communication
+   - Allow ingress-controller → backend traffic; frontend JavaScript calls from the user's browser, not the frontend Pod
+   - Allow DNS egress and backend → Keycloak key retrieval, plus browser access to Keycloak
 
 ### Deliverables
 

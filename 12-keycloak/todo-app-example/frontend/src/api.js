@@ -1,7 +1,7 @@
 // API helper functions for communicating with the backend
 
 // Use the same hostname as the frontend, but port 5001
-const API_BASE_URL = `http://${window.location.hostname}:5001/api`;
+const API_BASE_URL = process.env.REACT_APP_API_URL || `http://${window.location.hostname}:5001/api`;
 
 // Helper function to make authenticated requests
 const authFetch = async (url, token, options = {}) => {

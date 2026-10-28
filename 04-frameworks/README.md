@@ -11,7 +11,7 @@ By the end of this tutorial, you will understand:
 - When to use React, Vue, Svelte, Angular, and Rust/WebAssembly for frontend development
 - When to use Flask, FastAPI, Express.js, NestJS, Go, Rust, and Java frameworks for microservices
 - How to choose different frameworks for different services (polyglot architecture)
-- Why monolithic frameworks (Django, Rails) don't fit microservices well
+- How framework features and service boundaries affect microservice design
 
 ## Introduction
 
@@ -30,7 +30,9 @@ Choosing the right framework is critical for building modern microservices. Unli
 
 ### Microservices vs Monolithic Frameworks
 
-⚠️ **Important**: This tutorial focuses on **microservices-friendly** frameworks. We intentionally omit monolithic frameworks like Django and Ruby on Rails, as they're designed for single-application deployments and don't align with modern microservices architectures.
+This tutorial focuses on a selection of frameworks often used for services. Django and Ruby on Rails can also implement independently deployed APIs and microservices. A framework does not determine whether an application is a monolith; service boundaries, data ownership, and deployment practices do.
+
+The snippets illustrate framework syntax and are not complete projects. Add the dependencies, imports, components, and startup configuration required by the framework version you choose. Relative `/api` URLs assume a same-origin backend or a development proxy. In-memory stores are temporary and need concurrency controls when shared between request handlers.
 
 ## Understanding Frontend and Backend
 
@@ -133,12 +135,7 @@ html
             └── li ("Todo 2")
 ```
 
-**The Problem:** Updating the DOM is slow. Every change triggers:
-1. Recalculating styles
-2. Re-laying out elements (reflow)
-3. Repainting pixels on screen
-
-Updating many elements can cause performance issues and janky UI.
+**The Cost:** DOM updates can trigger style calculation, layout, and painting, depending on what changed. Browsers can batch this work. Excessive updates or alternating layout reads and writes can cause performance issues; every DOM change does not necessarily trigger all three stages.
 
 ### Virtual DOM
 
@@ -155,11 +152,11 @@ The **Virtual DOM** is an optimization technique used by frameworks like React a
 // You update state
 setTodos([...todos, newTodo]);
 
-// React's Virtual DOM process:
-1. Creates new virtual DOM tree with the new todo
-2. Compares (diffs) new tree with old tree
-3. Finds: "Only 1 new <li> element needed"
-4. Updates real DOM: Adds just that one <li> element
+// Simplified reconciliation process:
+// 1. Render a new virtual tree with the new todo.
+// 2. Compare it with the previous tree.
+// 3. Identify the changed list item using stable keys.
+// 4. Commit the required DOM updates.
 ```
 
 **Traditional Approach (Vanilla JS):**
@@ -195,7 +192,7 @@ function TodoList({ todos }) {
 | Aspect | Direct DOM | Virtual DOM |
 |--------|-----------|-------------|
 | **Updates** | Manual `document.getElementById()`, `innerHTML`, etc. | Automatic diffing and patching |
-| **Performance** | Slow for frequent updates | Optimized batch updates |
+| **Performance** | Efficient when updates are targeted and batched | Adds diffing overhead; helps organize and batch updates |
 | **Developer Experience** | Tedious, error-prone | Declarative, easier to maintain |
 | **Used By** | Vanilla JavaScript | React, Vue (optional), Preact |
 
@@ -209,7 +206,7 @@ function TodoList({ todos }) {
 
 **Solid.js (Fine-grained Reactivity):**
 - No Virtual DOM
-- Tracks dependencies at compile time
+- Tracks reactive dependencies at runtime
 - Updates only specific DOM nodes that changed
 - Result: Very fast updates
 
@@ -217,8 +214,8 @@ function TodoList({ todos }) {
 
 - **React/Vue (Virtual DOM)**: Good balance of performance and developer experience
 - **Svelte (No Virtual DOM)**: Better performance, smaller bundles, but smaller ecosystem
-- **Angular (Incremental DOM)**: Different approach, updates DOM incrementally
-- **Rust/WASM (Direct DOM)**: Can manipulate DOM from compiled WebAssembly for maximum performance
+- **Angular (Change Detection)**: Checks component bindings and updates affected DOM nodes; see [Angular runtime performance](https://angular.dev/best-practices/runtime-performance)
+- **Rust/WASM**: Calls browser DOM APIs through bindings; CPU-heavy calculations may benefit from WebAssembly, while DOM performance still depends on the framework and browser
 
 ---
 
@@ -695,7 +692,7 @@ export default {
       <li>{todo.text}</li>
     {/each}
   </ul>
-  <input bind:value={newTodo} on:keyup.enter={addTodo}>
+  <input bind:value={newTodo} on:keyup={(event) => { if (event.key === "Enter") addTodo(); }}>
 </div>
 ```
 
@@ -782,7 +779,7 @@ export class TodoComponent implements OnInit {
   - **Website:** https://dioxuslabs.com/
 
 **Key Features:**
-- Near-native performance (WebAssembly runs at ~95% native speed)
+- WebAssembly can speed up CPU-heavy work; results depend on the workload and browser
 - Strong type safety with Rust's type system
 - Zero-cost abstractions
 - Small bundle sizes (after wasm-opt)
@@ -1286,6 +1283,7 @@ package main
 import (
     "net/http"
     "github.com/gin-gonic/gin"
+    "github.com/gin-contrib/cors"
 )
 
 type Todo struct {
@@ -1299,12 +1297,8 @@ var todos = []Todo{}
 func main() {
     router := gin.Default()
 
-    // Enable CORS
-    router.Use(func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-        c.Next()
-    })
+    // Development CORS, including JSON preflight requests
+    router.Use(cors.Default())
 
     // Get all todos
     router.GET("/api/todos", func(c *gin.Context) {
@@ -1314,7 +1308,7 @@ func main() {
     // Create todo
     router.POST("/api/todos", func(c *gin.Context) {
         var todo Todo
-        if err := c.BindJSON(&todo); err != nil {
+        if err := c.ShouldBindJSON(&todo); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
         }
@@ -1497,10 +1491,10 @@ func main() {
 **Official Website:** https://actix.rs/
 **GitHub:** https://github.com/actix/actix-web (23.8k stars)
 
-**What it is:** A powerful, pragmatic, and extremely fast web framework for Rust, built on the Actix actor system.
+**What it is:** An asynchronous web framework for Rust. Current Actix-web does not require the Actix actor framework.
 
 **Key Features:**
-- **Fastest** web framework (benchmarks consistently show top performance)
+- High-performance asynchronous request handling; benchmark your own workload
 - Type-safe request/response handling
 - Built-in WebSocket support
 - Middleware support
@@ -1831,6 +1825,7 @@ package com.example.todoapi.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import com.example.todoapi.model.Todo;
 import java.util.*;
 
 @RestController
@@ -1885,7 +1880,7 @@ public class Todo {
     public void setCompleted(boolean completed) { this.completed = completed; }
 }
 
-// Application.java
+// TodoApiApplication.java
 package com.example.todoapi;
 
 import org.springframework.boot.SpringApplication;
@@ -1936,6 +1931,7 @@ package com.example.controller;
 
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpStatus;
+import com.example.model.Todo;
 import java.util.*;
 
 @Controller("/api/todos")
@@ -1982,7 +1978,12 @@ public class Todo {
         this.completed = completed;
     }
 
-    // Getters and setters...
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+    public boolean isCompleted() { return completed; }
+    public void setCompleted(boolean completed) { this.completed = completed; }
 }
 
 // Application.java
@@ -2032,11 +2033,14 @@ public class Application {
 // TodoResource.java
 package com.example.resource;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import com.example.model.Todo;
 import java.util.*;
 
+@ApplicationScoped
 @Path("/api/todos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -2096,7 +2100,7 @@ public class Todo {
 | **GitHub Stars** | 78.8k | 6.3k | 15.1k |
 | **DI/IoC** | Runtime (reflection) | Compile-time | Compile-time |
 | **Reactive Support** | Spring WebFlux | Built-in | Built-in |
-| **Native Image** | Limited support | GraalVM | GraalVM (optimized) |
+| **Native Image** | GraalVM support | GraalVM | GraalVM (optimized) |
 | **Ecosystem** | Massive (Spring ecosystem) | Growing | Growing |
 | **Maturity** | Very Mature (15+ years) | Mature | Mature |
 | **Primary Focus** | Enterprise apps | Cloud microservices | Cloud-native + serverless |
@@ -2160,7 +2164,7 @@ graph TD
     style Modern fill:#4695EB,stroke:#333,color:#fff
 ```
 
-**Note:** This diagram focuses on microservice-friendly frameworks. Monolithic frameworks like Django and Rails have been omitted as they're not recommended for modern microservices architectures.
+**Note:** This is a selection of frameworks, not an exhaustive compatibility list. Django and Rails can also be used to build microservices.
 
 
 ## Decision Framework
@@ -2189,15 +2193,15 @@ graph TD
 
 ## AI-Assisted Development Friendliness
 
-This section evaluates how well AI coding assistants (like Claude) can help you work with each framework, based on code generation reliability, error handling, and learning curve support.
+The ratings below are qualitative teaching opinions, not measured benchmarks or evidence about an assistant's training data. Results depend on the model, framework version, task, and available project context. Verify generated code against current documentation, compiler checks, and tests.
 
 ### Frontend Frameworks
 
 | Framework | AI Friendliness | Rating | Why |
 |-----------|-----------------|--------|-----|
-| **React** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Massive training data, clear functional patterns, hooks are straightforward, consistent conventions. AI excels at React code generation. |
-| **Vue** | ⭐⭐⭐⭐ Very Good | 4/5 | Good documentation coverage, clear template syntax, options/composition API well understood. Slightly less training data than React. |
-| **Svelte** | ⭐⭐⭐ Good | 3/5 | Simpler syntax helps, but less training data. Special reactive syntax (`$:`) can be tricky. AI handles basic patterns well. |
+| **React** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Widely documented examples, clear functional patterns, hooks are straightforward, consistent conventions. AI excels at React code generation. |
+| **Vue** | ⭐⭐⭐⭐ Very Good | 4/5 | Good documentation coverage, clear template syntax, options/composition API well understood. Check generated code against your Vue version. |
+| **Svelte** | ⭐⭐⭐ Good | 3/5 | Simpler syntax helps, but version-specific syntax. Special reactive syntax (`$:`) can be tricky. AI handles basic patterns well. |
 | **Angular** | ⭐⭐ Fair | 2/5 | Complex architecture, heavy decorators, RxJS patterns challenging for AI. More boilerplate means more room for errors. Better for experienced teams. |
 | **Rust/WASM** | ⭐⭐ Fair | 2/5 | Ownership/borrowing/lifetimes are difficult for AI to reason about correctly. Type system complexity. Better with human Rust expertise. |
 
@@ -2207,9 +2211,9 @@ This section evaluates how well AI coding assistants (like Claude) can help you 
 
 | Framework | AI Friendliness | Rating | Why |
 |-----------|-----------------|--------|-----|
-| **Flask** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Simple, minimal, explicit patterns. AI generates clean Flask code easily. Huge training data. Perfect for rapid prototyping with AI. |
+| **Flask** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Simple, minimal, explicit patterns. AI generates clean Flask code easily. Extensive public documentation. Perfect for rapid prototyping with AI. |
 | **FastAPI** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Type hints provide clear intent, modern Python syntax. AI leverages types for accurate code generation. Automatic validation helps catch errors. |
-| **Express** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Minimal, widely used, massive training data. Simple middleware patterns. AI handles Express naturally. |
+| **Express** | ⭐⭐⭐⭐⭐ Excellent | 5/5 | Minimal, widely used, widely documented examples. Simple middleware patterns. AI handles Express naturally. |
 | **NestJS** | ⭐⭐⭐ Good | 3/5 | TypeScript helps AI understand intent. Decorators and DI add complexity. Works well once patterns established. |
 | **Go (Gin/Echo/Fiber)** | ⭐⭐⭐⭐ Very Good | 4/5 | Explicit, typed, simple syntax. Go's simplicity helps AI generate correct code. Error handling can be verbose but clear. |
 | **Rust (Actix/Rocket/Axum)** | ⭐⭐ Fair | 2/5 | Ownership/borrowing/lifetimes challenge AI. Complex type inference. AI can help with patterns but needs human review for correctness. |
@@ -2232,7 +2236,7 @@ This section evaluates how well AI coding assistants (like Claude) can help you 
    - ⚠️ Okay: FastAPI (Pydantic magic is well-defined)
    - ❌ Challenging: Spring Boot (heavy dependency injection, annotations)
 
-3. **Training Data Coverage**: Popular frameworks = better AI results
+3. **Training Data Coverage**: Available documentation and examples can help an assistant follow established patterns
    - ✅ Best: React, Express, Flask (massive representation)
    - ⚠️ Okay: Vue, FastAPI, NestJS (good coverage)
    - ❌ Less: Svelte, Rust/WASM (smaller communities)
@@ -2488,7 +2492,7 @@ graph LR
 
 **Why Rust for Critical Services:**
 - **Sub-millisecond latency**: Rust's zero-cost abstractions and lack of garbage collection enable predictable low latency
-- **Memory safety**: No crashes in production (financial industry requirement)
+- **Memory safety**: Prevents many memory errors in safe Rust; panics, resource exhaustion, and logic bugs can still cause failures
 - **Predictable performance**: No garbage collection pauses that could delay critical operations
 - **Resource efficiency**: Compiled native code with minimal runtime overhead
 - **Zero-downtime**: Reliability for 24/7 trading operations
@@ -2535,7 +2539,7 @@ graph LR
 - **High tick rate**: Maintain 60+ game updates/second
 - **Concurrent connections**: Handle thousands of players per server
 - **Memory efficiency**: Run more game instances per machine
-- **Safety**: Prevent crashes during live games
+- **Safety**: Reduce memory errors; error handling and testing remain necessary
 
 ---
 
@@ -2599,22 +2603,27 @@ export async function POST({ request }) {
 ```
 
 ```svelte
-<!-- src/routes/+page.svelte - Page component with SSR -->
+<!-- src/routes/+page.svelte - Page component (legacy Svelte syntax) -->
 <script>
-  export let data; // From load function
+  export let data;
 </script>
 
 <h1>Todos</h1>
-<TodoList todos={data.todos} />
+<ul>
+  {#each data.todos as todo (todo.id)}
+    <li>{todo.text}</li>
+  {/each}
+</ul>
+```
 
-<!-- src/routes/+page.js - Load function for SSR -->
-<script context="module">
-  export async function load({ fetch }) {
-    const res = await fetch('/api/todos');
-    const todos = await res.json();
-    return { props: { todos } };
-  }
-</script>
+Create a separate `src/routes/+page.js` file for the [SvelteKit load function](https://svelte.dev/docs/kit/load):
+
+```javascript
+export async function load({ fetch }) {
+  const res = await fetch('/api/todos');
+  const todos = await res.json();
+  return { todos };
+}
 ```
 
 ### Nuxt.js (Vue)
@@ -2639,13 +2648,15 @@ export async function POST({ request }) {
 const { data: todos } = await useFetch('/api/todos')
 </script>
 
-<!-- server/api/todos.js - API endpoint -->
-<script>
+```
+
+Create the API endpoint in a separate `server/api/todos.js` file:
+
+```javascript
 export default defineEventHandler(async (event) => {
-  const todos = getTodos(); // Your logic
+  const todos = getTodos(); // Implement your storage logic
   return todos;
-})
-</script>
+});
 ```
 
 ## Common Mistakes
@@ -2722,8 +2733,9 @@ In this tutorial series, we use:
 1. **Tutorial 1**: Build with vanilla JavaScript and Flask (fundamentals)
 2. **Tutorial 2**: Containerize with Docker
 3. **Tutorial 3**: Understand databases
-4. **Tutorial 5**: Deploy to Kubernetes
-5. **Tutorial 9**: Rebuild with React (see framework benefits)
+4. **Tutorial 5**: Understand microservices and Kubernetes
+5. **Tutorials 6-7**: Set up cluster access and deploy an application
+6. **Tutorial 9**: Rebuild with React (see framework benefits)
 
 ## Further Reading
 

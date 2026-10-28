@@ -35,6 +35,8 @@ By the end of this tutorial, you will understand:
 - Basic understanding of containers
 - Familiarity with Docker concepts
 
+This is a conceptual guide. Images such as `user-service:v2` are placeholders for services you must build and publish; the repository does not contain those applications. YAML fragments illustrate individual fields. Follow Tutorials 6-7 for a complete deployment. Ingress examples require a compatible controller, and TLS examples also require cert-manager and the named issuer.
+
 ## What are Microservices?
 
 **Microservices** is an architectural style that structures an application as a collection of small, autonomous services. Instead of building one large, monolithic application where all functionality is tightly coupled, you decompose the system into independent services that each handle a specific business capability.
@@ -412,7 +414,13 @@ metadata:
   name: user-service
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: user-service
   template:
+    metadata:
+      labels:
+        app: user-service
     spec:
       containers:
       - name: user-service
@@ -424,7 +432,7 @@ Apply this file:
 kubectl apply -f user-service-deployment.yaml
 ```
 
-**Kubernetes automatically:**
+**With a Deployment, a matching Service, and appropriate probes, Kubernetes:**
 - ✅ Schedules 3 Pods across available nodes (servers)
 - ✅ Monitors Pods and restarts failed ones
 - ✅ Load balances traffic across all 3 Pods
@@ -519,7 +527,7 @@ kubectl autoscale deployment user-service --min=3 --max=10 --cpu-percent=70
 ```
 Container crashes → Kubernetes detects within seconds
                   → Starts new container automatically
-                  → Total downtime: < 5 seconds
+                  → Recovery time depends on probes, backoff, and startup time
                   → No human intervention needed
 ```
 
@@ -537,7 +545,9 @@ Node-2 goes down → All Pods on Node-2 marked as failed
 # Deploy new version
 # Must stop all containers, then start new ones = downtime
 docker stop user-service-1 user-service-2 user-service-3
-docker run -d user-service:v3 user-service:v3 user-service:v3
+docker run -d --name user-service-1 user-service:v3
+docker run -d --name user-service-2 user-service:v3
+docker run -d --name user-service-3 user-service:v3
 # 2-5 minutes of downtime
 ```
 
@@ -576,7 +586,8 @@ metadata:
 data:
   DATABASE_URL: "postgres-service:5432"
 
-# Secret: sensitive data (base64 encoded, can integrate with Vault)
+---
+# Secret: sensitive data (base64 is encoding, not encryption)
 apiVersion: v1
 kind: Secret
 metadata:
@@ -585,7 +596,7 @@ data:
   password: cGFzc3dvcmQxMjM=
 ```
 
-All Pods automatically get the latest config. Update once, applies everywhere.
+Pods must reference the ConfigMap or Secret explicitly. Environment variables are read when a container starts, so replace Pods to pick up changes. Mounted files are updated eventually (except subPath mounts), and the application must reload them. See [updating ConfigMaps](https://kubernetes.io/docs/tutorials/configuration/updating-configuration-via-a-configmap/). Base64 does not encrypt a Secret; configure RBAC and encryption at rest.
 
 ### Kubernetes Makes Microservices Manageable
 
@@ -735,10 +746,10 @@ All communication flows through the API Server!
 **Self-Healing Example:**
 
 ```
-Step 1: Pod crashes
-  - Kubelet detects container died
-  - Kubelet reports to API Server: "Pod failed"
-  - API Server updates etcd
+Step 1: A managed Pod is deleted or becomes terminal
+  - API Server records the deletion or terminal status
+  - A container crash alone normally causes the kubelet to restart the container
+    in the same Pod, according to restartPolicy
 
 Step 2: ReplicaSet Controller watches API Server
   - Notices Pod deletion event
@@ -794,7 +805,8 @@ graph TB
 Pods are designed to be disposable. Kubernetes can delete and recreate them at any time:
 - Node fails → Pods rescheduled to another node
 - Deployment updated → Old Pods replaced with new Pods
-- Pod crashes → Kubernetes creates replacement Pod
+- Container crashes → Kubelet normally restarts it in the same Pod
+- Managed Pod is deleted or becomes terminal → Controller creates a replacement
 
 **Implication**: Never store important data inside a Pod. Use external databases or persistent volumes.
 
@@ -847,13 +859,15 @@ kind: Pod
 metadata:
   name: multi-container-pod
 spec:
-  containers:
+  restartPolicy: Never
+  initContainers:
   - name: writer
     image: alpine
     command: ["/bin/sh", "-c", "echo 'Hello' > /shared/data.txt"]
     volumeMounts:
     - name: shared-volume
       mountPath: /shared
+  containers:
   - name: reader
     image: alpine
     command: ["/bin/sh", "-c", "cat /shared/data.txt"]
@@ -865,7 +879,7 @@ spec:
     emptyDir: {}
 ```
 
-Both containers see the same files in `/shared`.
+Both containers see the same files in `/shared`. The writer is an init container, so it completes before the reader starts; two ordinary containers would race to create and read the file.
 
 #### 5. Scheduled on a Single Node
 
@@ -1104,9 +1118,9 @@ Deployment: user-service (updating v1 → v2)
 ```
 
 **At each step:**
-- **Max Surge**: Can temporarily have 4 Pods (25% extra)
-- **Max Unavailable**: Always keep at least 2 Pods running (25% down)
-- **Zero Downtime**: Old Pods kept until new Pods are ready
+- **Max Surge**: With `maxSurge: 1` below, up to 4 non-terminating Pods are allowed during the update
+- **Max Unavailable**: With `maxUnavailable: 1` below, at least 2 Pods remain available. The default 25% rounds down to 0 for 3 replicas; `maxSurge` percentages round up.
+- **Availability**: Configure readiness probes, graceful shutdown, and enough capacity. A rolling update alone does not guarantee zero downtime.
 
 #### Deployment Features
 
@@ -1223,7 +1237,7 @@ spec:
 
 **Problems:**
 1. **Random names**: Pods named `postgres-abc123`, `postgres-def456`, `postgres-ghi789`. How do you configure which is the primary?
-2. **No persistent storage**: When `postgres-abc123` restarts, it gets a new empty disk. All data is lost!
+2. **Storage coordination**: A Deployment can use persistent volumes, but independent database replicas need distinct storage and replication configuration.
 3. **Parallel creation**: All 3 Pods start simultaneously. Databases need ordered initialization (primary first, then replicas).
 4. **Changing IPs**: Replicas connect to primary via IP. When primary restarts, IP changes, breaking replication.
 
@@ -1266,7 +1280,7 @@ graph TB
 | Feature | Deployment | StatefulSet |
 |---------|-----------|-------------|
 | **Pod Identity** | Random names (user-service-abc123) | Ordered names (postgres-0, postgres-1) |
-| **Storage** | Ephemeral (lost on restart) | Persistent (survives restarts) |
+| **Storage** | Can mount PVCs; no per-replica claim identity | Per-Pod PVC identity with volumeClaimTemplates |
 | **Creation Order** | Parallel (all at once) | Sequential (0, then 1, then 2) |
 | **Network Identity** | Random IP, changes on restart | Stable hostname (postgres-0.postgres) |
 | **Use Case** | Stateless apps (APIs, web servers) | Stateful apps (databases, queues) |
@@ -1288,7 +1302,7 @@ metadata:
   name: postgres
 spec:
   serviceName: postgres  # Stable network identity
-  replicas: 3
+  replicas: 1  # Standalone database; replication is not automatic
   selector:
     matchLabels:
       app: postgres
@@ -1299,7 +1313,15 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15
+        image: postgres:16
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials  # Create the Secret shown earlier first
+              key: password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         ports:
         - containerPort: 5432
         volumeMounts:
@@ -1313,7 +1335,21 @@ spec:
       resources:
         requests:
           storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
 ```
+
+Scaling this example creates separate databases. StatefulSets do not configure PostgreSQL replication or failover; use explicit replication configuration or an operator for that. The identity examples below describe a separately configured replicated setup.
 
 **StatefulSet Guarantees:**
 1. **Ordered Creation**: postgres-0 created first, then postgres-1, then postgres-2
@@ -1338,10 +1374,10 @@ response = requests.get("http://10.0.0.5:5000/api/users/123")
 # Problem: Pod IP 10.0.0.5 changes when Pod restarts!
 ```
 
-Every time a Pod restarts (deployment, node failure, crash), it gets a new IP. Your code would break.
+A replacement Pod generally gets a new IP. Restarting a container inside the same Pod does not normally change the Pod IP. Your code would break.
 
 **Services provide:**
-1. **Stable IP**: ClusterIP never changes
+1. **Stable IP**: ClusterIP stays stable for the lifetime of the Service
 2. **Stable DNS name**: `user-service` or `user-service.default.svc.cluster.local`
 3. **Load balancing**: Automatically distributes traffic across healthy Pods
 4. **Health checking**: Only routes to Pods that are ready
@@ -1400,6 +1436,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
+  name: user-service-example
   labels:
     app: user-service  # This Pod is selected by the Service
 spec:
@@ -1447,7 +1484,7 @@ requests.get("http://user-service.default:5000")  # Full namespace needed
 
 **4. Load Balancing**
 
-Services automatically load balance using round-robin (by default):
+Services distribute new connections among endpoints. The algorithm depends on the proxy implementation; iptables mode selects a backend at random. HTTP keep-alive can send several requests over one connection to the same Pod. The sequence below is illustrative, not a guaranteed order. See [Service proxies](https://kubernetes.io/docs/reference/networking/virtual-ips/).
 
 ```
 Request 1 → Service → Pod 1
@@ -1666,7 +1703,7 @@ def create_order():
 
 #### Session Affinity (Sticky Sessions)
 
-By default, Services use round-robin. For session affinity:
+For client-IP session affinity:
 
 ```yaml
 apiVersion: v1
@@ -1741,7 +1778,7 @@ data:
   LOG_LEVEL: "info"
 ```
 
-**Secrets**: Store sensitive data (base64 encoded)
+**Secrets**: Store sensitive data (base64 encoded, not encrypted by the encoding)
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -1793,7 +1830,7 @@ graph LR
 
 **Challenge:** How to get data from multiple services?
 - API calls between services (synchronous)
-- Event-driven architecture (asynchronous) - covered in Tutorial 13
+- Event-driven architecture (asynchronous) - covered in Tutorial 14
 
 ### 3. API Gateway Pattern
 
@@ -1821,7 +1858,7 @@ graph TB
 **Gateway Responsibilities:**
 - **Routing**: Direct requests to correct service
 - **Load Balancing**: Distribute traffic across replicas
-- **Authentication**: Verify tokens once, not in every service
+- **Authentication**: Validate external credentials at the gateway; backend services still enforce authorization and protect direct access
 - **Rate Limiting**: Protect backend from overload
 - **SSL Termination**: Handle HTTPS
 
@@ -2023,7 +2060,6 @@ kind: Ingress
 metadata:
   name: api-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - host: api.mycompany.com
@@ -2058,7 +2094,7 @@ User → http://api.mycompany.com/users/123
   ↓
 Ingress Controller (nginx)
   ↓
-user-service:5000/123
+user-service:5000/users/123
 ```
 
 The Ingress Controller:
@@ -2078,7 +2114,6 @@ metadata:
   name: api-ingress
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
   - hosts:
@@ -2115,11 +2150,11 @@ spec:
 1. cert-manager automatically requests SSL certificate from Let's Encrypt
 2. Certificate stored in `api-tls-cert` Secret
 3. Ingress Controller serves HTTPS on port 443
-4. All HTTP traffic redirected to HTTPS (secure!)
+4. Configure HTTP-to-HTTPS redirection separately on your ingress controller if required
 
 ### Ingress as API Gateway
 
-Ingress can implement API Gateway patterns:
+Standard Ingress supports path and host routing. Authentication, rate limits, and CORS below use controller-specific ingress-nginx annotations and do not apply to the course Traefik controller. The community ingress-nginx project was [retired in March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/); these annotations are reference examples for existing installations, not installation instructions. Use your maintained controller's configuration for these features.
 
 #### 1. Path-Based Routing
 ```yaml
@@ -2221,8 +2256,6 @@ metadata:
   name: microservices-ingress
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/limit-rps: "100"
 spec:
   tls:
   - hosts:
@@ -2269,10 +2302,9 @@ https://api.example.com/api/products → product-service:5001
 
 ### Ingress Controllers: Popular Options
 
-**1. Nginx Ingress Controller** (Most popular)
-- Battle-tested, feature-rich
-- Used by majority of Kubernetes deployments
-- Supports most annotations and features
+**1. Community ingress-nginx** (retired March 2026)
+- Existing examples use its controller-specific annotations
+- Use a maintained controller for new deployments
 
 **2. Traefik** (Modern alternative)
 - Automatic service discovery
@@ -2349,8 +2381,8 @@ kubectl scale deployment user-service --replicas=2
 kubectl autoscale deployment user-service --min=2 --max=10 --cpu-percent=70
 ```
 
-**When a service is under heavy load:**
-1. Kubernetes detects high CPU/memory
+**With metrics-server, CPU requests, and the CPU-based HorizontalPodAutoscaler above configured:**
+1. The HPA observes CPU utilization relative to the requested CPU
 2. Creates additional Pods
 3. Service load balances across all Pods
 4. When load decreases, scales down
@@ -2428,7 +2460,7 @@ If Product Service crashes:
 ### 4. Monitoring & Logging
 - Logs scattered across services
 - Need centralized logging (ELK, Loki)
-- Distributed tracing (Jaeger) - covered in Tutorial 15
+- Distributed tracing (Jaeger) - covered in Tutorial 16
 
 ### 5. Deployment Orchestration
 - Managing many services manually is impossible
@@ -2583,9 +2615,10 @@ In the following tutorials, you will:
 - **Tutorial 10**: Testing and CI pipelines
 - **Tutorial 11**: Implement GitOps with ArgoCD
 - **Tutorial 12**: Add authentication with Keycloak (OAuth 2.0, JWT)
-- **Tutorial 13**: Implement asynchronous communication with RabbitMQ
-- **Tutorial 14**: Monitor microservices with Prometheus and Grafana
-- **Tutorial 15**: Advanced traffic management with Istio service mesh
+- **Tutorial 13**: Deploy MongoDB with persistent storage
+- **Tutorial 14**: Implement asynchronous communication with RabbitMQ
+- **Tutorial 15**: Monitor microservices with Prometheus and Grafana
+- **Tutorial 16**: Advanced traffic management with Istio service mesh
 
 ---
 

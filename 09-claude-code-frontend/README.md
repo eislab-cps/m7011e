@@ -8,7 +8,7 @@ Example of a generated React Todo List app below:
 ## Prerequisites
 
 - Completed Tutorial 1 (basic web app with Flask backend)
-- Node.js and npm installed
+- Node.js 22.12 or newer and npm installed (see [Vite requirements](https://vite.dev/guide/))
 - Claude Code CLI installed
 - Basic React knowledge helpful but not required
 
@@ -21,16 +21,22 @@ Example of a generated React Todo List app below:
 Before starting, understand where to run Claude Code:
 
 ```
-m7011e/                           ← START CLAUDE CODE HERE (main directory)
-├── 1-basic-webapp/
-├── 2-docker/
-├── 3-databases/
-├── 4-frameworks/
-├── 5-k8s-getting-started/
-├── 6-k8s-helloworld/
-├── 7-postgresql/
-├── 8-claude-code-frontend/
-└── todo-react/                   ← Claude Code will create this
+m7011e/                           ← START CLAUDE CODE HERE (repository root)
+├── 01-basic-webapp/
+├── 02-docker/
+├── 03-databases/
+├── 04-frameworks/
+├── 05-microservices-and-k8s/
+├── 06-k8s-getting-started/
+├── 07-k8s-helloworld/
+├── 08-postgresql/
+├── 09-claude-code-frontend/
+├── 10-testing-ci/
+├── 11-argocd-gitops/
+├── 12-keycloak/
+├── 13-mongodb/
+├── advanced/
+└── todo-react/                   ← You will create this during the tutorial
 ```
 
 ### Starting Claude Code
@@ -50,7 +56,7 @@ ls
 
 You should see output like:
 ```
-1-basic-webapp  2-docker  3-databases  4-frameworks  5-k8s-getting-started  6-k8s-helloworld  7-postgresql  8-claude-code-frontend  ...
+01-basic-webapp  02-docker  03-databases  04-frameworks  05-microservices-and-k8s  06-k8s-getting-started  07-k8s-helloworld  08-postgresql  09-claude-code-frontend  ...
 ```
 
 **Step 3: Start Claude Code**
@@ -75,7 +81,8 @@ Install Tailwind CSS for styling.
 Create this folder structure:
 - src/components (for React components)
 - src/api (for API calls)
-Set up Tailwind with a basic configuration.
+Use Tailwind CSS 4 with @tailwindcss/vite in vite.config.js and
+@import "tailwindcss"; in src/index.css. Keep the React Vite plugin enabled.
 Create the app in the new directory `todo-react/` 
 ```
 
@@ -136,7 +143,8 @@ Open a **separate terminal** and run:
 
 ```bash
 # Navigate to Tutorial 1 backend
-cd 1-basic-webapp/backend
+cd 01-basic-webapp/backend
+source .venv/bin/activate  # Use the environment created in Tutorial 1
 
 # Start the Flask server
 python3 app.py
@@ -145,7 +153,7 @@ python3 app.py
 Keep this running! You should see:
 ```
 Starting Flask server...
-API will be available at: http://127.0.0.1:8000
+API will be available at: http://localhost:8000
 ```
 
 **2. Start Claude Code (in another terminal)**
@@ -162,7 +170,8 @@ Install Tailwind CSS for styling.
 Create this folder structure:
 - src/components (for React components)
 - src/api (for API calls)
-Set up Tailwind with a basic configuration.
+Use Tailwind CSS 4 with @tailwindcss/vite in vite.config.js and
+@import "tailwindcss"; in src/index.css. Keep the React Vite plugin enabled.
 Create the app in the new directory `todo-react/` 
 ```
 
@@ -176,6 +185,8 @@ Create the app in the new directory `todo-react/`
 **Wait for:** Claude Code to finish before moving to the next step. You'll see a message indicating completion.
 
 ---
+
+If you already ran the first setup prompt above, reuse that project and skip recreating it. Check the generated setup against the [Tailwind Vite guide](https://tailwindcss.com/docs/installation/using-vite).
 
 ### Step 2: Create Basic Todo List UI
 
@@ -408,7 +419,7 @@ Can you check the Tailwind classes?
 
 ## Next Steps
 
-After building the React todo list, try these enhancements:
+After building the React todo list, try these enhancements. Completion and editing require new backend fields and PUT/PATCH routes: the Tutorial 1 API currently supports only listing, creating, and deleting todos. Ask the assistant to implement and test both sides of the API before adding those controls.
 
 **Prompt for Additional Features:**
 ```
@@ -435,7 +446,8 @@ Help me deploy this React app:
 1. Build for production
 2. Create a Dockerfile
 3. Configure nginx to serve the app
-4. Set up environment variables for the API URL
+4. Configure the API URL using import.meta.env.VITE_API_URL at build time,
+   or use a same-origin /api reverse proxy for runtime routing
 ```
 
 ---
@@ -468,7 +480,8 @@ Install Tailwind CSS for styling.
 Create this folder structure:
 - src/components (for React components)
 - src/api (for API calls)
-Set up Tailwind with a basic configuration.
+Use Tailwind CSS 4 with @tailwindcss/vite in vite.config.js and
+@import "tailwindcss"; in src/index.css. Keep the React Vite plugin enabled.
 ```
 
 ### 2. Create UI

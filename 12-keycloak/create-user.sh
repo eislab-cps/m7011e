@@ -31,8 +31,8 @@ echo ""
 echo "Step 1: Authenticating as admin..."
 TOKEN=$(curl $CURL_OPTS -s -X POST "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=$ADMIN_USER" \
-  -d "password=$ADMIN_PASSWORD" \
+  --data-urlencode "username=$ADMIN_USER" \
+  --data-urlencode "password=$ADMIN_PASSWORD" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
   | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)

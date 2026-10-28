@@ -7,6 +7,8 @@ This backend validates JWT tokens from Keycloak and implements role-based access
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import jwt
+import os
+import time
 import requests
 import urllib3
 from functools import wraps
@@ -20,7 +22,7 @@ CORS(app, resources={
         "origins": [
             "http://localhost:3000",
             "http://127.0.0.1:3000"
-        ],
+        ] if not os.getenv("FRONTEND_URL") else [os.environ["FRONTEND_URL"]],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
@@ -29,16 +31,17 @@ CORS(app, resources={
 # SSL/TLS Configuration
 # Use INSECURE=True for staging/self-signed certificates
 # Use INSECURE=False for production Let's Encrypt certificates
-INSECURE = True
+INSECURE = os.getenv("INSECURE", "true").lower() == "true"
 
 if INSECURE:
     # Disable SSL warnings when using self-signed certificates
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Keycloak configuration - UPDATE THESE VALUES
-KEYCLOAK_URL = "https://keycloak.ltu-m7011e-johan.se"  # Change to your Keycloak URL
-REALM = "myapp"  # Change this to match your realm
-CLIENT_ID = "my-frontend-app"  # Change this to match your client
+KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "https://keycloak.ltu-m7011e-johan.se").rstrip("/")  # Change to your Keycloak URL
+REALM = os.getenv("KEYCLOAK_REALM", "myapp")  # Change this to match your realm
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "my-frontend-app")
+API_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "todo-api")  # Change this to match your client
 
 # Keycloak endpoints
 KEYCLOAK_ISSUER = f"{KEYCLOAK_URL}/realms/{REALM}"
@@ -46,6 +49,7 @@ KEYCLOAK_CERTS_URL = f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs"
 
 # Cache for public keys (in production, implement proper caching with expiration)
 public_keys_cache = None
+public_keys_fetched_at = 0.0
 
 # In-memory storage for todos
 # In production, use a proper database (PostgreSQL, etc.)
@@ -53,18 +57,19 @@ todos = []
 todo_id_counter = 1
 
 
-def get_public_keys():
+def get_public_keys(force_refresh=False):
     """
     Fetch public keys from Keycloak for JWT verification
     Keycloak uses these keys to sign JWTs - we use them to verify signatures
     """
-    global public_keys_cache
+    global public_keys_cache, public_keys_fetched_at
 
-    if public_keys_cache is None:
+    if force_refresh or public_keys_cache is None or time.monotonic() - public_keys_fetched_at > 300:
         try:
             response = requests.get(KEYCLOAK_CERTS_URL, timeout=10, verify=not INSECURE)
             response.raise_for_status()
             public_keys_cache = response.json()
+            public_keys_fetched_at = time.monotonic()
             print(f"✓ Fetched public keys from Keycloak")
         except Exception as e:
             print(f"✗ Error fetching public keys: {e}")
@@ -94,16 +99,14 @@ def verify_token(token):
         if not key_id:
             raise Exception("Token missing key ID (kid)")
 
-        # Find the matching public key
-        public_key = None
-        for key in keys['keys']:
-            if key['kid'] == key_id:
-                # Convert JWK to PEM format for PyJWT
-                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-                break
-
-        if not public_key:
-            raise Exception(f"Public key not found for kid: {key_id}")
+        # Refresh JWKS once for an unknown kid so key rotation is supported.
+        key = next((key for key in keys['keys'] if key['kid'] == key_id), None)
+        if key is None:
+            keys = get_public_keys(force_refresh=True)
+            key = next((key for key in keys['keys'] if key['kid'] == key_id), None)
+        if key is None:
+            raise jwt.InvalidTokenError("Unknown signing key")
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
 
         # Verify and decode the token
         # This validates:
@@ -116,9 +119,10 @@ def verify_token(token):
             token,
             public_key,
             algorithms=['RS256'],
-            audience='account',  # Keycloak sets this as default audience
+            audience=API_AUDIENCE,  # Audience mapper configured on the frontend client
             issuer=KEYCLOAK_ISSUER,
             options={
+                'require': ['exp', 'iss', 'sub', 'aud'],
                 'verify_signature': True,
                 'verify_exp': True,
                 'verify_nbf': True,
@@ -165,12 +169,11 @@ def require_auth(f):
             # Add user information to request context
             request.user = decoded_token
 
-            # Continue to the actual endpoint
-            return f(*args, **kwargs)
-
         except Exception as e:
             print(f"Authentication failed: {e}")
             return jsonify({'error': str(e)}), 401
+
+        return f(*args, **kwargs)
 
     return decorated_function
 
@@ -240,11 +243,13 @@ def create_todo():
     """Create a new todo for the authenticated user"""
     global todo_id_counter
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
-    if not data or 'text' not in data:
+    if not isinstance(data, dict) or 'text' not in data:
         return jsonify({'error': 'Missing required field: text'}), 400
 
+    if not isinstance(data['text'], str):
+        return jsonify({'error': 'Todo text must be a string'}), 400
     text = data['text'].strip()
     if not text:
         return jsonify({'error': 'Todo text cannot be empty'}), 400

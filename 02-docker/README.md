@@ -207,7 +207,7 @@ docker run hello-world
 We'll containerize the todo app from Tutorial 1:
 
 ```
-2-docker/
+02-docker/
 ├── README.md              # This file
 ├── backend/
 │   ├── app.py            # Flask API (from Tutorial 1)
@@ -230,7 +230,7 @@ Let's create a Docker image for the Flask backend.
 First, let's copy the backend from Tutorial 1:
 
 ```bash
-# From the 2-docker directory
+# From the 02-docker directory
 cp -r ../01-basic-webapp/backend .
 ```
 
@@ -390,7 +390,7 @@ The frontend is static HTML/CSS/JS, so we'll use Python's built-in HTTP server t
 ### Step 1: Copy Frontend Files
 
 ```bash
-# From the 2-docker directory
+# From the 02-docker directory
 cp -r ../01-basic-webapp/frontend .
 ```
 
@@ -456,7 +456,7 @@ open http://localhost:8080
 curl http://localhost:8080
 ```
 
-**Note**: The frontend and backend are in separate containers now, but they can't communicate yet. We'll fix this with Docker Compose!
+**Note**: The JavaScript runs in your browser and calls `http://localhost:8000`. If both containers are running with the published ports above, the app already works. Compose makes starting and managing them together easier. Stop the individual containers before starting Compose so the ports are available.
 
 **To stop:** Press `Ctrl+C` in the terminal running the container.
 
@@ -468,11 +468,9 @@ Docker Compose allows you to define and run multi-container applications.
 
 ### Step 1: Create docker-compose.yml
 
-Create `docker-compose.yml` in the `2-docker` directory:
+Create `docker-compose.yml` in the `02-docker` directory:
 
 ```yaml
-version: '3.8'
-
 services:
   # Backend service
   backend:
@@ -496,7 +494,7 @@ services:
       dockerfile: Dockerfile
     container_name: todo-frontend
     ports:
-      - "8080:80"
+      - "8080:8080"
     depends_on:
       - backend
     networks:
@@ -511,19 +509,18 @@ networks:
 
 **docker-compose.yml Explained:**
 
-- `version`: Compose file format version
 - `services`: Define containers
 - `build`: Build image from Dockerfile
 - `ports`: Map host port to container port
 - `environment`: Set environment variables
-- `depends_on`: Start order (frontend waits for backend)
+- `depends_on`: Starts the backend container first; readiness requires a health check and `condition: service_healthy`. See [Compose startup order](https://docs.docker.com/compose/how-tos/startup-order/).
 - `networks`: Connect containers on same network
 - `restart`: Restart policy
 
 ### Step 2: Run with Docker Compose
 
 ```bash
-# From 2-docker directory
+# From 02-docker directory
 # Start all services
 docker compose up
 
@@ -578,8 +575,9 @@ docker compose exec backend bash
 # View logs
 docker compose logs -f
 
-# Scale services (run multiple instances)
-docker compose up -d --scale backend=3
+# The supplied backend uses a fixed container_name and host port.
+# To scale it, first remove container_name, use a load balancer instead of
+# publishing the same host port per replica, and move todos to shared storage.
 ```
 
 ---
@@ -591,11 +589,13 @@ docker compose up -d --scale backend=3
 When using Docker Compose, containers can communicate using service names:
 
 ```javascript
-// Frontend can reach backend using service name
-fetch('http://backend:8000/api/todos')
+// Browser JavaScript uses the host's published port
+fetch('http://localhost:8000/api/todos')
 ```
 
-**Docker creates DNS resolution:**
+**Docker creates DNS resolution for containers on the Compose network.** A server running in another container can use `http://backend:8000`; your host browser cannot resolve that service name. See [Compose networking](https://docs.docker.com/compose/how-tos/networking/).
+
+**Inside that network:**
 - Service name `backend` → IP address of backend container
 - Service name `frontend` → IP address of frontend container
 
@@ -622,16 +622,16 @@ fetch('http://backend:8000/api/todos')
 docker network ls
 
 # Inspect network
-docker network inspect todo-network
+docker network inspect 02-docker_todo-network
 
 # Create network
 docker network create my-network
 
 # Connect container to network
-docker network connect my-network backend
+docker network connect my-network todo-backend
 
 # Disconnect container from network
-docker network disconnect my-network backend
+docker network disconnect my-network todo-backend
 ```
 
 ---
@@ -640,7 +640,7 @@ docker network disconnect my-network backend
 
 ### The Problem
 
-**Important**: When a container stops or is removed, all data inside it is lost!
+**Important**: Stopping a container loses process memory, but its writable filesystem survives until the container is removed. Volumes persist independently of the container. A volume alone cannot persist this app's in-memory Python list.
 
 In our todo app:
 - Todos are stored in memory (in the Python list)
@@ -686,7 +686,7 @@ flowchart LR
 
 ### Adding Persistence (Next Steps)
 
-To make our todo app production-ready, you would:
+To add persistent storage to our todo app, you would:
 
 1. **Add a database** (PostgreSQL, MySQL, MongoDB)
 2. **Use a named volume** to persist database data
@@ -703,6 +703,10 @@ services:
 
   database:
     image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass  # Development example; choose your own password
+      POSTGRES_DB: todos
     volumes:
       - postgres-data:/var/lib/postgresql/data  # Persistent volume
 
@@ -801,7 +805,7 @@ Reduce image size by using multiple stages:
 
 ```dockerfile
 # Stage 1: Build
-FROM node:18 AS builder
+FROM node:22 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -817,7 +821,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/todos', timeout=2)" || exit 1
 ```
 
 Or in docker-compose.yml:
@@ -827,7 +831,7 @@ services:
   backend:
     # ...
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/todos', timeout=2)"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -869,6 +873,8 @@ docker inspect <container-id> --format='{{.State.ExitCode}}'
 docker run -it todo-backend sh
 ```
 
+The slim Python image does not include tools such as `ping`, `netstat`, or `curl`; the checks below use Python and Docker instead.
+
 **With Docker Compose:**
 ```bash
 # View logs for specific service
@@ -885,13 +891,13 @@ docker compose logs -f backend
 docker compose ps
 
 # Check network
-docker network inspect todo-network
+docker network inspect 02-docker_todo-network
 
 # Verify DNS resolution (backend to frontend)
-docker compose exec backend ping frontend
+docker compose exec backend python -c "import socket; print(socket.gethostbyname('frontend'))"
 
 # Check ports
-docker compose exec backend netstat -tlnp
+docker compose port backend 8000
 ```
 
 #### 3. Port Already in Use
@@ -1050,7 +1056,7 @@ You've learned:
 
 Tutorial 3 will cover **Databases**, where you'll learn about different types of databases and when to use each one!
 
-Tutorial 4 will introduce **Kubernetes**, where you'll learn to orchestrate Docker containers at scale across multiple machines!
+Tutorial 4 covers **frameworks**. Tutorials 6-7 set up Kubernetes access and deploy an application.
 
 ---
 

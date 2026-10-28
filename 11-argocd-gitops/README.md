@@ -89,7 +89,9 @@ flowchart TB
 
 ## Part 1: Install Argo CD
 
-We provide a simplified Helm chart for installing Argo CD on the LTU cluster.
+Run the initial commands from `11-argocd-gitops/`. The provided bootstrap chart applies the pinned official manifests and requires cluster-admin permissions to create CRDs and cluster RBAC. It is intended for a dedicated course cluster. The `traefik` ingress class, cert-manager, named ClusterIssuer, and domain DNS must already be configured.
+
+Argo CD syncs desired state from Git; it does not automatically wait for GitHub Actions. Have CI update deployment manifests or protect the tracked branch so failed builds are not promoted.
 
 ### 1. Review the Configuration
 
@@ -103,14 +105,13 @@ Customize if needed:
 # argocd-install/values.yaml
 argocd:
   domain: argocd.ltu-m7011e-johan.se  # Change to your domain
-  email: your.email@ltu.se            # Change to your email
 ```
 
 ### 2. Install Argo CD
 
 ```bash
 cd argocd-install
-helm install argocd -f values.yaml -n argocd --create-namespace .
+helm install argocd -f values.yaml -n argocd --create-namespace --timeout 10m .
 ```
 
 ### 3. Wait for Installation to Complete
@@ -149,12 +150,12 @@ Access ArgoCD at your configured domain: `https://argocd.ltu-m7011e-johan.se`
 If ingress isn't working or for local testing:
 
 ```bash
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+kubectl port-forward svc/argocd-server -n argocd 8080:80
 ```
 
-Open browser to: `https://localhost:8080`
+Open browser to: `http://localhost:8080` (the bootstrap configures the server for HTTP behind Traefik).
 
-**Note**: Accept the self-signed certificate warning in your browser.
+TLS is provided by the ingress; the local port-forward uses HTTP.
 
 ![Argo](./argo.png)
 
@@ -169,8 +170,9 @@ brew install argocd
 
 **Linux:**
 ```bash
-# Download the latest ArgoCD CLI
-curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+# Match the CLI to image.tag in argocd-install/values.yaml
+ARGOCD_VERSION=v2.13.2
+curl -fsSL -o argocd "https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64"
 
 # Make it executable
 chmod +x argocd
@@ -205,15 +207,15 @@ Option 2 - Manual Download:
 
 If using ingress:
 ```bash
-argocd login argocd.ltu-m7011e-johan.se --username admin --password <your-password> --insecure
+argocd login argocd.ltu-m7011e-johan.se --username admin --grpc-web --insecure
 ```
 
 If using port-forward (localhost):
 ```bash
-argocd login localhost:8080 --username admin --password <your-password> --insecure
+argocd login localhost:8080 --username admin --plaintext
 ```
 
-**Note**: The `--insecure` flag is needed because we're using Let's Encrypt staging certificates.
+**Note**: Enter the password when prompted. For ingress, use `--grpc-web` on subsequent CLI commands if your Traefik setup requires it, and `--insecure` while testing with staging certificates. For the local HTTP port-forward, use `--plaintext`.
 
 ## Part 2: Deploy Your First Application
 
@@ -256,19 +258,19 @@ cd m7011e-gitops
 
 ```bash
 # Copy the gitops-demo folder
-cp -r /path/to/6-argocd-gitops/gitops-demo/* .
+cp -r /path/to/m7011e/11-argocd-gitops/gitops-demo/* .
 
 # Edit dev environment values
 nano environments/dev/values.yaml
-# Change domain and email to your assigned domain and your email 
+# Change domain to your assigned hostname; the ACME email is set on the cluster issuer
 
 # Edit staging environment values
 nano environments/staging/values.yaml
-# Change domain and email to your assigned domain and your email 
+# Change domain to your assigned hostname; the ACME email is set on the cluster issuer
 
 # Edit production environment values
 nano environments/production/values.yaml
-# Change domain and email to your assigned domain and your email 
+# Change domain to your assigned hostname; the ACME email is set on the cluster issuer
 ```
 
 #### Push to Git
@@ -281,7 +283,7 @@ git push origin main
 
 ### Step 2: Create Argo CD Application (UI Method)
 
-1. **Open Argo CD UI** (https://localhost:8080 or your domain)
+1. **Open Argo CD UI** (http://localhost:8080 or your HTTPS domain)
 2. **Login** with admin credentials
 3. **Click "+ New App"**
 4. **Fill in the form:**
@@ -355,7 +357,7 @@ EOF
 
 The application is created but not yet deployed. Let's sync it!
 
-Disclaimer! ArgoCD does not create new namespaces so we must create them if we haven't already. The needed namespaces for this tutorial can be created by running:
+The declarative example uses `CreateNamespace=true`, which lets Argo CD create the destination namespace. For the UI and CLI examples, either enable that sync option or create the namespaces yourself:
 ```bash
 # dev environment
 kubectl create namespace hello-world-dev
@@ -578,6 +580,8 @@ Pods will fail with `ImagePullBackOff` error.
 
 #### 4. Rollback using Argo CD
 
+Argo CD [does not allow rollback while automated sync is enabled](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/). Disable it before a UI/CLI rollback with `argocd app set hello-world-dev --sync-policy none`. Prefer reverting the bad commit in Git; otherwise re-enabling auto-sync will apply the bad desired state again.
+
 **Via UI:**
 1. Click on application
 2. Go to "History and Rollback"
@@ -607,7 +611,7 @@ Control deployment order with annotations:
 ```yaml
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Deploys first
+    argocd.argoproj.io/sync-wave: "1"  # Runs after the default wave 0
 ```
 
 Lower numbers deploy first. Useful for:
@@ -717,7 +721,7 @@ kubectl describe pod <pod-name> -n hello-world-dev
 **Solution:**
 ```bash
 # Increase timeout
-argocd app set hello-world-dev --sync-timeout 600
+argocd app sync hello-world-dev --timeout 600
 
 # Check resource health
 kubectl get all -n hello-world-dev
@@ -755,7 +759,7 @@ argocd app logs <app-name>
 argocd app list
 
 # Delete application (keeps resources)
-argocd app delete <app-name>
+argocd app delete <app-name> --cascade=false
 
 # Delete application and all resources
 argocd app delete <app-name> --cascade
@@ -767,9 +771,9 @@ argocd app delete <app-name> --cascade
 
 ```bash
 # Delete application (keeps cluster resources)
-argocd app delete hello-world-dev
-argocd app delete hello-world-staging
-argocd app delete hello-world-prod
+argocd app delete hello-world-dev --cascade=false
+argocd app delete hello-world-staging --cascade=false
+argocd app delete hello-world-prod --cascade=false
 
 # Or delete application and resources
 argocd app delete hello-world-dev --cascade
@@ -781,6 +785,8 @@ kubectl delete namespace hello-world-prod
 ```
 
 ### Uninstall Argo CD
+
+The bootstrap chart owns the installer and configuration, not the resources applied by its Job. Deleting the dedicated `argocd` namespace removes namespaced Argo CD components. Cluster-scoped RBAC and CRDs from the official manifest remain; remove them only if no other installation or applications depend on them. Helm uninstall alone does not fully remove the bootstrapped installation.
 
 ```bash
 # If installed via our Helm chart
@@ -837,7 +843,7 @@ Deploy your Tutorial 9 React application (or Tutorial 1 Flask app) using Argo CD
 | **Self-Healing** | Built-in | Manual implementation |
 | **Rollback** | Built-in UI/CLI | Manual or scripted |
 | **Multi-Cluster** | Easy | Complex |
-| **Security** | No cluster credentials needed | Requires cluster access |
+| **Security** | Controller requires cluster RBAC; CI need not hold cluster credentials | Direct deployments require cluster access |
 | **Best For** | Kubernetes deployments | CI builds and tests |
 
 **Recommendation**: Use GitHub Actions for CI (build, test, create container images) and Argo CD for CD (deploy to Kubernetes). This provides the best of both worlds!
@@ -855,7 +861,7 @@ You've learned:
 - Advanced patterns (sync waves, hooks, app of apps)
 - Troubleshooting common issues
 
-**Key Takeaway**: With GitOps and Argo CD, Git becomes your single source of truth. Every change is versioned, auditable, and automatically deployed. 
+**Key Takeaway**: With GitOps and Argo CD, Git becomes your single source of truth. Every change is versioned, auditable, and automatically deployed.
 
 ## What's Next?
 

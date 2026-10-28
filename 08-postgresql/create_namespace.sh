@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 namespace="db"
-kubectl create namespace ${namespace}
+kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -

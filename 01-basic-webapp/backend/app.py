@@ -144,15 +144,15 @@ def create_todo():
     global next_id
 
     # Get JSON data from request body
-    data = request.json
+    data = request.get_json(silent=True)
 
     # Validate that 'text' field exists
-    if not data or 'text' not in data:
+    if not isinstance(data, dict) or 'text' not in data:
         return jsonify({'error': 'Missing text field'}), 400
 
     # Validate that text is not empty
-    if not data['text'].strip():
-        return jsonify({'error': 'Text cannot be empty'}), 400
+    if not isinstance(data['text'], str) or not data['text'].strip():
+        return jsonify({'error': 'Text must be a non-empty string'}), 400
 
     # Create new todo with unique ID
     new_todo = {

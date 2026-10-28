@@ -29,6 +29,9 @@ kind: Job
 metadata:
   name: argocd-install
   namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
 spec:
   template:
     spec:
@@ -40,8 +43,13 @@ spec:
         - /bin/sh
         - -c
         - |
+          set -eu
           echo "Installing Argo CD..."
-          kubectl apply -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ .Values.image.tag }}/manifests/install.yaml
+          kubectl apply --server-side --force-conflicts -n {{ .Release.Namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ .Values.image.tag }}/manifests/install.yaml
+
+          kubectl set resources deployment/argocd-server -n {{ .Release.Namespace }} --requests=cpu={{ .Values.resources.server.requests.cpu }},memory={{ .Values.resources.server.requests.memory }} --limits=cpu={{ .Values.resources.server.limits.cpu }},memory={{ .Values.resources.server.limits.memory }}
+          kubectl set resources deployment/argocd-repo-server -n {{ .Release.Namespace }} --requests=cpu={{ .Values.resources.repoServer.requests.cpu }},memory={{ .Values.resources.repoServer.requests.memory }} --limits=cpu={{ .Values.resources.repoServer.limits.cpu }},memory={{ .Values.resources.repoServer.limits.memory }}
+          kubectl set resources statefulset/argocd-application-controller -n {{ .Release.Namespace }} --requests=cpu={{ .Values.resources.applicationController.requests.cpu }},memory={{ .Values.resources.applicationController.requests.memory }} --limits=cpu={{ .Values.resources.applicationController.limits.cpu }},memory={{ .Values.resources.applicationController.limits.memory }}
 
           echo "Waiting for Argo CD to be ready..."
           kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n {{ .Release.Namespace }}

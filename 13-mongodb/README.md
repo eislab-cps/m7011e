@@ -1,15 +1,15 @@
-# Tutorial 19 - Deploying MongoDB on Kubernetes
+# Tutorial 13 - Deploying MongoDB on Kubernetes
 
 ## What is MongoDB?
 
-MongoDB is a popular open-source NoSQL document database. Unlike traditional relational databases (like PostgreSQL or MySQL) that store data in tables with rows and columns, MongoDB stores data as flexible JSON-like documents called BSON (Binary JSON).
+MongoDB is a NoSQL document database. Unlike traditional relational databases (like PostgreSQL or MySQL) that store data in tables with rows and columns, MongoDB stores data as flexible JSON-like documents called BSON (Binary JSON).
 
 **Key characteristics:**
 
 - **Document-oriented**: Data is stored in flexible, JSON-like documents where fields can vary from document to document
 - **Schema-less**: No need to define a rigid schema upfront; documents in the same collection can have different structures
 - **Scalable**: Built-in support for horizontal scaling through sharding
-- **High performance**: Supports indexing, aggregation pipelines, and in-memory storage
+- **High performance**: Supports indexing, aggregation pipelines, and an in-memory cache for the storage engine
 - **Rich query language**: Powerful queries, aggregations, and full-text search
 
 **When to use MongoDB:**
@@ -21,10 +21,10 @@ MongoDB is a popular open-source NoSQL document database. Unlike traditional rel
 - Mobile app backends
 - Storing semi-structured or unstructured data
 
-**Document example:**
+**Document example** (Extended JSON represents the BSON ObjectId with `$oid`):
 ```json
 {
-  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "_id": {"$oid": "507f1f77bcf86cd799439011"},
   "name": "John Doe",
   "email": "john@example.com",
   "age": 25,
@@ -38,12 +38,12 @@ MongoDB is a popular open-source NoSQL document database. Unlike traditional rel
 
 ## Installation Guide
 
-This guide contains instructions for deploying MongoDB on Kubernetes.
+Run commands from `13-mongodb/`. This chart deploys one standalone MongoDB instance, not a replica set or sharded cluster.
 The provided Helm chart deploys a MongoDB database using a StatefulSet with persistent storage. The chart includes:
 
 - MongoDB deployment via StatefulSet
 - Persistent Volume Claims for data storage
-- ConfigMap for database configuration
+- ConfigMap for non-sensitive settings and a Secret for root credentials
 - Service for database access
 
 ## Prerequisites
@@ -63,7 +63,7 @@ The following table lists the configurable parameters in `values.yaml`:
 | `Timezone` | Database timezone | `Europe/Stockholm` |
 | `DBUser` | MongoDB root username | `admin` |
 | `DBPassword` | MongoDB root password | `TODO` |
-| `DBName` | Initial database name | `appdb` |
+| `DBName` | Database used by initialization scripts (created on first write) | `appdb` |
 | `DBImage` | Docker image for MongoDB | `mongo:7` |
 | `DBResourceLimit` | Enable resource limits | `false` |
 | `DBCPU` | CPU limit | `500m` |
@@ -138,26 +138,9 @@ mongodb-service   ClusterIP   10.43.xxx.xxx   <none>        27017/TCP   1m
 
 To connect to the database from your local machine, you'll need MongoDB client tools installed.
 
-### Linux (Debian/Ubuntu)
+### Linux
 
-```bash
-wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-sudo apt update
-sudo apt install mongodb-mongosh
-```
-
-### Linux (Fedora/RHEL/CentOS)
-
-```bash
-sudo dnf install mongodb-mongosh
-```
-
-### Linux (Arch)
-
-```bash
-yay -S mongosh-bin
-```
+Install mongosh using the [official MongoDB Shell installation guide](https://www.mongodb.com/docs/mongodb-shell/install/) for your distribution and architecture. Configure the matching MongoDB package repository before using apt or dnf; an Ubuntu Jammy repository is not suitable for every Debian/Ubuntu release. Alternatively use the database Pod directly below.
 
 ### macOS (Homebrew)
 
@@ -171,12 +154,12 @@ brew install mongosh
 choco install mongodb-shell
 ```
 
-### Docker Alternative (Any Platform)
+### Docker Alternative (Linux)
 
-If you prefer not to install locally, use Docker:
+With port forwarding active, Docker Engine on Linux can use host networking. Docker Desktop requires host networking to be enabled explicitly. Otherwise use a local client or the direct Pod command below:
 
 ```bash
-docker run -it --rm --network host mongo:7 mongosh mongodb://localhost:27017
+docker run -it --rm --network host mongo:7 mongosh "mongodb://localhost:27017/appdb" -u admin --authenticationDatabase admin
 ```
 
 ### Verify Installation
@@ -197,7 +180,7 @@ kubectl port-forward -n db svc/mongodb-service 27017:27017
 
 This command forwards local port 27017 to the MongoDB service running in Kubernetes. Keep this terminal window open while you need database access.
 
-Now you can connect using mongosh:
+Now you can connect using mongosh. Replace the example credentials; URL-encode reserved characters when putting a password in a URI. `MONGO_INITDB_DATABASE` does not create a separate application user or populate the database; MongoDB creates the database on its first write:
 
 ```bash
 mongosh "mongodb://admin:your-password@localhost:27017/appdb?authSource=admin"
@@ -228,7 +211,7 @@ Or simply `mongodb-service` if they're in the same namespace.
 To access the database directly from the pod:
 
 ```bash
-kubectl exec -it -n db mongodb-0 -- mongosh -u admin -p your-password --authenticationDatabase admin
+kubectl exec -it -n db mongodb-0 -- mongosh -u admin --authenticationDatabase admin
 ```
 
 ## Example Usage for Students
@@ -360,6 +343,8 @@ npm install mongodb
 
 ### Express.js API Example
 
+Install `express@5` and `mongodb` with npm. Express 5 forwards rejected async route promises to its error handler. Add application-specific validation before accepting arbitrary request bodies.
+
 ```javascript
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
@@ -377,6 +362,12 @@ async function connectDB() {
   db = client.db("appdb");
   console.log("Connected to MongoDB");
 }
+
+// Validate ObjectId before any route that uses :id.
+app.param('id', (req, res, next, id) => {
+  if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Invalid student ID' });
+  next();
+});
 
 // Get all students
 app.get('/students', async (req, res) => {
@@ -400,7 +391,7 @@ app.post('/students', async (req, res) => {
 });
 
 // Update student
-app.put('/students/:id', async (req, res) => {
+app.patch('/students/:id', async (req, res) => {
   await db.collection("students").updateOne(
     { _id: new ObjectId(req.params.id) },
     { $set: req.body }
@@ -418,7 +409,7 @@ app.delete('/students/:id', async (req, res) => {
 
 connectDB().then(() => {
   app.listen(3000, () => console.log("Server running on port 3000"));
-});
+}).catch(console.error);
 ```
 
 ## Updating the Deployment
@@ -449,7 +440,7 @@ Or manually:
 helm uninstall mongodb -n db
 ```
 
-**Note**: This will not delete the PersistentVolumeClaim by default. To completely remove all data:
+**Note**: The PVC is annotated `helm.sh/resource-policy: keep`, so Helm retains it on uninstall. To completely remove all data:
 
 ```bash
 kubectl delete pvc -n db mongodb-pvc
@@ -490,15 +481,12 @@ kubectl get svc -n db mongodb-service
 
 Test connectivity from within the cluster:
 ```bash
-kubectl run -it --rm debug --image=mongo:7 --restart=Never -n db -- mongosh mongodb://mongodb-service:27017
+kubectl run -it --rm debug --image=mongo:7 --restart=Never -n db -- mongosh "mongodb://mongodb-service:27017/appdb" -u admin --authenticationDatabase admin
 ```
 
 ### Authentication Issues
 
-Check if the credentials in the ConfigMap match your values.yaml:
-```bash
-kubectl get configmap -n db mongodb-config -o yaml
-```
+Confirm that `mongodb-credentials` was created from your configured values. Root credentials are initialized only when the data directory is empty; changing the Helm values or Secret does not change an existing MongoDB user's password. Update that user through an authenticated mongosh session and then update the Secret to match.
 
 ## Data Persistence
 

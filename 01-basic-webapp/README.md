@@ -1,6 +1,6 @@
 # Tutorial 1: Basic Web Application
 
-This tutorial guide you how to build a simple todo list application demonstrating fundamental web application concepts including REST APIs, client-server architecture, and frontend-backend communication.
+This tutorial guides you through building a simple todo list application demonstrating fundamental web application concepts including REST APIs, client-server architecture, and frontend-backend communication.
 
 > **Note**: This application comes with CORS (Cross-Origin Resource Sharing) pre-configured, so the frontend can communicate with the backend out of the box. Just install dependencies and run!
 
@@ -56,9 +56,9 @@ There are different ways for clients and servers to communicate:
 ```json
 {
   "jsonrpc": "2.0",
-  "method": "createTodo",            // Method to invoke
-  "params": {"text": "Learn Flask"}, // Method parameters
-  "id": 1                            // Request ID for response correlation
+  "method": "createTodo",
+  "params": {"text": "Learn Flask"},
+  "id": 1
 }
 ```
 
@@ -66,13 +66,13 @@ There are different ways for clients and servers to communicate:
 ```json
 {
   "jsonrpc": "2.0",
-  "result": {"id": 1, "text": "Learn Flask"},   // Method return value
-  "id": 1                                       // Matches request ID
+  "result": {"id": 1, "text": "Learn Flask"},
+  "id": 1
 }
 ```
 
 **Key Characteristics:**
-- All operations use POST to a single endpoint
+- When used over HTTP, calls commonly use POST to a single endpoint
 - Method name and parameters are in the request body, not the URL
 - Supports request batching (multiple method calls in one HTTP request)
 - Stateless protocol with no URL-based resource hierarchy
@@ -167,7 +167,7 @@ Web APIs typically exchange data in JSON (JavaScript Object Notation):
 - `http://localhost:8000` (backend)
 - `https://example.com`
 
-**Same-Origin Policy (SOP)**: By default, browsers block JavaScript from reading responses from different origins. This prevents malicious sites (e.g., `evil.com`) from making AJAX requests to other sites and stealing data or performing unauthorized actions (CSRF attacks).
+**Same-Origin Policy (SOP)**: By default, browsers block JavaScript from reading responses from different origins. This limits data theft by malicious sites (e.g., `evil.com`), but does not by itself prevent requests that change state (CSRF attacks).
 
 **CSRF (Cross-Site Request Forgery)**: A malicious site tricks the browser into sending authenticated requests to another site. Example: `evil.com` contains `<form action="https://mybank.com/transfer">` which auto-submits, causing unauthorized transfers using your session cookies.
 
@@ -180,7 +180,7 @@ Web APIs typically exchange data in JSON (JavaScript Object Notation):
 
 **SOP vs CORS**: SOP blocks cross-origin access by default. CORS allows servers to selectively permit specific origins.
 
-**Why this our needs CORS:**
+**Why our app needs CORS:**
 - Frontend: `http://localhost:8080`, Backend: `http://localhost:8000` → Different origins
 - Without CORS: Browser blocks JavaScript from reading API responses
 
@@ -270,9 +270,8 @@ flowchart TB
 ## Project Structure
 
 ```
-1-basic-webapp/
+01-basic-webapp/
 ├── README.md              # This file
-├── start.sh              # Quick startup script
 ├── backend/
 │   ├── app.py            # Flask server (REST API)
 │   └── requirements.txt  # Python dependencies
@@ -284,7 +283,7 @@ flowchart TB
 
 ## Prerequisites
 
-- Python 3.7 or higher
+- Python 3.10 or higher
 - pip (Python package manager)
 - A web browser
 - A text editor
@@ -296,8 +295,12 @@ flowchart TB
 #### Step 1: Set Up and Run the Backend
 
 ```bash
-# Navigate to backend directory
-cd backend
+# From the repository root, navigate to the backend directory
+cd 01-basic-webapp/backend
+
+# Create and activate an isolated environment (Windows: .venv\Scripts\activate)
+python3 -m venv .venv
+source .venv/bin/activate
 
 # Install dependencies (first time only)
 python3 -m pip install -r requirements.txt
@@ -309,7 +312,7 @@ python3 app.py
 You should see:
 ```
 Starting Flask server...
-API will be available at: http://127.0.0.1:5000
+API will be available at: http://localhost:8000
 ```
 
 The backend is now running! Keep this terminal open.
@@ -319,8 +322,8 @@ The backend is now running! Keep this terminal open.
 **Recommended method** - Use a local HTTP server:
 
 ```bash
-# Open new terminal
-cd frontend
+# Open a new terminal at the repository root
+cd 01-basic-webapp/frontend
 
 # Python 3 - starts HTTP server on port 8080
 python3 -m http.server 8080
@@ -328,7 +331,7 @@ python3 -m http.server 8080
 # Then visit http://localhost:8080 in your browser
 ```
 
-This runs a simple HTTP server that serves your frontend files. Your browser will load `index.html` from `http://localhost:8080`, which then makes requests to the backend API at `http://localhost:5000`.
+This runs a simple HTTP server that serves your frontend files. Your browser will load `index.html` from `http://localhost:8080`, which then makes requests to the backend API at `http://localhost:8000`.
 
 **Alternative** - Open the file directly (may have limitations):
 - You can also open `frontend/index.html` directly in your browser (using `file://` protocol)
@@ -340,11 +343,11 @@ This runs a simple HTTP server that serves your frontend files. Your browser wil
 
 ## Swagger API Documentation
 
-This tutorial includes **Swagger UI** (also known as OpenAPI) - an interactive API documentation tool that lets you explore and test your API directly from your browser.
+This tutorial includes **Swagger UI**, an interactive tool that renders the API specification and lets you test the API from your browser.
 
 ### What is Swagger/OpenAPI?
 
-**Swagger** (now called OpenAPI Specification) is a standard way to document REST APIs. It provides:
+**OpenAPI** is an API description standard that originated from the Swagger specification. Flasgger uses a Swagger 2.0 specification in this example, and Swagger UI renders it. These tools provide:
 - **Interactive documentation**: See all available endpoints, their parameters, and response formats
 - **Try it out**: Test API endpoints directly from the browser without writing code
 - **Schema validation**: Understand the expected request/response structure
@@ -431,12 +434,18 @@ def get_todos():
 ```python
 @app.route('/api/todos', methods=['POST'])
 def create_todo():
-    data = request.json
+    global next_id
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or 'text' not in data:
+        return jsonify({'error': 'Missing text field'}), 400
+    if not isinstance(data['text'], str) or not data['text'].strip():
+        return jsonify({'error': 'Text must be a non-empty string'}), 400
     new_todo = {
-        'id': len(todos) + 1,
-        'text': data['text']
+        'id': next_id,
+        'text': data['text'].strip()
     }
     todos.append(new_todo)
+    next_id += 1
     return jsonify(new_todo), 201
 ```
 - Receives JSON data from the client
@@ -449,11 +458,13 @@ def create_todo():
 @app.route('/api/todos/<int:todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
     global todos
+    if not any(t['id'] == todo_id for t in todos):
+        return jsonify({'error': 'Todo not found'}), 404
     todos = [t for t in todos if t['id'] != todo_id]
     return '', 204
 ```
 - Filters out the todo with the specified ID
-- Returns empty response with status code 204 (No Content)
+- Returns status code 404 if the todo does not exist, otherwise an empty response with status code 204 (No Content)
 
 ### Frontend (JavaScript) - `frontend/index.html`
 
@@ -461,7 +472,7 @@ The JavaScript code uses the **Fetch API** to communicate with the backend:
 
 **Fetching todos:**
 ```javascript
-fetch('http://localhost:5000/api/todos')
+fetch('http://localhost:8000/api/todos')
     .then(response => response.json())
     .then(data => {
         // Update the UI with the todos
@@ -470,7 +481,7 @@ fetch('http://localhost:5000/api/todos')
 
 **Creating a todo:**
 ```javascript
-fetch('http://localhost:5000/api/todos', {
+fetch('http://localhost:8000/api/todos', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -481,7 +492,7 @@ fetch('http://localhost:5000/api/todos', {
 
 **Deleting a todo:**
 ```javascript
-fetch(`http://localhost:5000/api/todos/${todoId}`, {
+fetch(`http://localhost:8000/api/todos/${todoId}`, {
     method: 'DELETE'
 })
 ```
@@ -618,7 +629,7 @@ After completing this tutorial:
 1. **Add a database**: Replace in-memory list with PostgreSQL (see Tutorial 8)
 2. **Containerize with Docker**: Package your app in containers (Tutorial 2)
 3. **Learn about databases**: Understand different database types (Tutorial 3)
-4. **Deploy to Kubernetes**: Learn orchestration (Tutorials 4-5)
+4. **Deploy to Kubernetes**: Set up the cluster and deploy an application (Tutorials 6-7)
 5. **Add authentication**: Protect your API with user login
 6. **Build a more complex app**: User accounts, multiple resources, relationships
 

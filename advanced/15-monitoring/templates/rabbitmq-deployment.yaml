@@ -1,0 +1,98 @@
+{{- if .Values.rabbitmq.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: {{ .Values.images.rabbitmq.repository }}:{{ .Values.images.rabbitmq.tag }}
+        imagePullPolicy: {{ .Values.images.rabbitmq.pullPolicy }}
+        ports:
+        - containerPort: 5672
+          name: amqp
+        - containerPort: 15672
+          name: management
+        - containerPort: 15692
+          name: prometheus
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          valueFrom:
+            secretKeyRef:
+              name: monitoring-credentials
+              key: rabbitmq-user
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              name: monitoring-credentials
+              key: rabbitmq-password
+        volumeMounts:
+        - name: rabbitmq-config
+          mountPath: /etc/rabbitmq/enabled_plugins
+          subPath: enabled_plugins
+        - name: rabbitmq-config
+          mountPath: /etc/rabbitmq/rabbitmq.conf
+          subPath: rabbitmq.conf
+        readinessProbe:
+          tcpSocket:
+            port: amqp
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: rabbitmq-config
+        configMap:
+          name: rabbitmq-monitoring-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rabbitmq
+spec:
+  type: ClusterIP
+  selector:
+    app: rabbitmq
+  ports:
+  - name: amqp
+    port: 5672
+    targetPort: 5672
+  - name: management
+    port: 15672
+    targetPort: 15672
+  - name: prometheus
+    port: 15692
+    targetPort: 15692
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-monitoring-config
+  namespace: {{ .Release.Namespace }}
+data:
+  enabled_plugins: |
+    [rabbitmq_management,rabbitmq_prometheus].
+  rabbitmq.conf: |
+    prometheus.return_per_object_metrics = true
+{{- end }}

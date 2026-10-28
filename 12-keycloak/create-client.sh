@@ -18,6 +18,7 @@ ADMIN_PASSWORD="admin-change-this-password"
 # Client configuration
 CLIENT_ID="my-frontend-app"
 CLIENT_NAME="My Frontend Application"
+API_AUDIENCE="todo-api"
 CLIENT_TYPE="public"  # "public" for frontend apps, "confidential" for backend APIs
 ROOT_URL="http://localhost:3000"
 
@@ -30,8 +31,8 @@ echo ""
 echo "Step 1: Authenticating as admin..."
 TOKEN=$(curl $CURL_OPTS -s -X POST "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=$ADMIN_USER" \
-  -d "password=$ADMIN_PASSWORD" \
+  --data-urlencode "username=$ADMIN_USER" \
+  --data-urlencode "password=$ADMIN_PASSWORD" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
   | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
@@ -68,9 +69,20 @@ RESPONSE=$(curl $CURL_OPTS -s -w "\n%{http_code}" -X POST "$KEYCLOAK_URL/admin/r
     \"redirectUris\": [\"$ROOT_URL/*\"],
     \"webOrigins\": [\"$ROOT_URL\"],
     \"standardFlowEnabled\": true,
-    \"directAccessGrantsEnabled\": true,
+    \"directAccessGrantsEnabled\": false,
     \"serviceAccountsEnabled\": $([ "$CLIENT_TYPE" = "confidential" ] && echo "true" || echo "false"),
-    \"authorizationServicesEnabled\": false
+    \"authorizationServicesEnabled\": false,
+    \"attributes\": {\"pkce.code.challenge.method\": \"S256\", \"post.logout.redirect.uris\": \"+\"},
+    \"protocolMappers\": [{
+      \"name\": \"todo-api-audience\",
+      \"protocol\": \"openid-connect\",
+      \"protocolMapper\": \"oidc-audience-mapper\",
+      \"config\": {
+        \"included.custom.audience\": \"$API_AUDIENCE\",
+        \"id.token.claim\": \"false\",
+        \"access.token.claim\": \"true\"
+      }
+    }]
   }")
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)

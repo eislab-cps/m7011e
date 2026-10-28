@@ -1,17 +1,17 @@
 # Tutorial 8 - Deploying a PostgreSQL database on Kubernetes
 
-This guide contains instructions how to deploying PostgreSQL on Kubernetes.
+This guide explains how to deploy PostgreSQL on Kubernetes. Run its commands from `08-postgresql/`.
 The provided Helm chart deploys a PostgreSQL database using a StatefulSet with persistent storage. The chart includes:
 
 - PostgreSQL deployment via StatefulSet
 - Persistent Volume Claims for data storage
-- ConfigMap for database configuration
+- ConfigMap for non-sensitive configuration and a Secret for the password
 - Service for database access
 
 ## Prerequisites
 
 - Kubernetes cluster (v1.19+)
-- Helm 3.x
+- Helm 3 or newer
 - kubectl configured to communicate with your cluster
 - A StorageClass available in your cluster (default: `local-path`)
 
@@ -35,7 +35,7 @@ The following table lists the configurable parameters in `values.yaml`:
 
 ### Step 1: Configure Values
 
-Before installing, edit `values.yaml` to customize your deployment. **Important**: Change the `DBPassword` from `TODO` to a secure password.
+Before installing, edit `values.yaml` to customize your deployment. **Important**: Change the `DBPassword` from `TODO` to a secure password. Keep your credentials in a private values file and do not commit them to Git.
 
 ```yaml
 DBPassword: "your-secure-password-here"
@@ -80,7 +80,7 @@ kubectl get pods -n db
 Expected output:
 ```
 NAME           READY   STATUS    RESTARTS   AGE
-postgres-0     1/1     Running   0          1m
+postgres-statefulset-0     1/1     Running   0          1m
 ```
 
 Check the service:
@@ -130,9 +130,9 @@ brew install postgresql
 choco install postgresql
 ```
 
-### Docker Alternative (Any Platform)
+### Docker Alternative (Linux)
 
-If you prefer not to install locally, use Docker:
+With the port-forward below running, Docker Engine on Linux can use host networking. Docker Desktop requires host networking to be enabled explicitly; otherwise use a local client or the direct Pod option below:
 
 ```bash
 docker run -it --rm --network host postgres:16 psql -h localhost -U postgres
@@ -144,7 +144,7 @@ docker run -it --rm --network host postgres:16 psql -h localhost -U postgres
 psql --version
 ```
 
-Expected output: `psql (PostgreSQL) 16.x`
+The client version depends on your package manager. Use a client compatible with PostgreSQL 16; for `pg_dump`, use version 16 or newer.
 
 ## Accessing the Database
 
@@ -194,7 +194,7 @@ Or simply `postgres-service` if they're in the same namespace.
 To access the database directly from the pod:
 
 ```bash
-kubectl exec -it -n db postgres-0 -- psql -U postgres
+kubectl exec -it -n db postgres-statefulset-0 -- psql -U postgres
 ```
 
 ## Connecting with Different Clients
@@ -233,7 +233,12 @@ const client = new Client({
   database: 'postgres'
 });
 
-await client.connect();
+async function main() {
+  await client.connect();
+  console.log((await client.query('SELECT version()')).rows);
+  await client.end();
+}
+main().catch(console.error);
 ```
 
 ### DBeaver / pgAdmin
@@ -272,10 +277,10 @@ Or manually:
 helm uninstall postgresql -n db
 ```
 
-**Note**: This will not delete the PersistentVolumeClaim by default. To completely remove all data:
+**Note**: The PVC has a `helm.sh/resource-policy: keep` annotation, so Helm leaves it behind on uninstall. Reinstalling the release can reuse that claim. To remove this database's data after uninstalling:
 
 ```bash
-kubectl delete pvc -n db --all
+kubectl delete pvc postgresql-pvc -n db
 ```
 
 ## Troubleshooting
@@ -284,12 +289,12 @@ kubectl delete pvc -n db --all
 
 Check pod logs:
 ```bash
-kubectl logs -n db postgres-0
+kubectl logs -n db postgres-statefulset-0
 ```
 
 Describe the pod for events:
 ```bash
-kubectl describe pod -n db postgres-0
+kubectl describe pod -n db postgres-statefulset-0
 ```
 
 ### Storage Issues
@@ -318,10 +323,7 @@ kubectl run -it --rm debug --image=postgres:16 --restart=Never -n db -- psql -h 
 
 ### Password Not Working
 
-Check if the password in the ConfigMap matches your values.yaml:
-```bash
-kubectl get configmap -n db postgres-config -o yaml
-```
+Confirm that the `postgres-credentials` Secret was created from your configured `DBPassword`. Credentials in the official PostgreSQL image initialize a new data directory only. Changing the Helm value or Secret does not change the password in an existing database; use `ALTER ROLE` through an authenticated session, then update the Secret to match. Deleting the PVC resets the database and removes its data.
 
 ## Data Persistence
 
@@ -329,8 +331,8 @@ Data is persisted using a PersistentVolumeClaim. The data will survive pod resta
 
 ```bash
 # Dump the database
-kubectl exec -n db postgres-0 -- pg_dump -U postgres postgres > backup.sql
+kubectl exec -n db postgres-statefulset-0 -- pg_dump -U postgres postgres > backup.sql
 
 # Restore from backup
-cat backup.sql | kubectl exec -i -n db postgres-0 -- psql -U postgres
+cat backup.sql | kubectl exec -i -n db postgres-statefulset-0 -- psql -U postgres
 ```

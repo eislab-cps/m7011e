@@ -11,24 +11,27 @@ This Helm chart simplifies the installation of Argo CD on the LTU Kubernetes clu
 ## Prerequisites
 
 - kubectl configured and connected to LTU cluster
-- Helm 3 installed
+- Helm 3 or newer installed
+- Cluster-admin permissions on a dedicated course cluster
+- Traefik, cert-manager, the named ClusterIssuer, and DNS configured
 - Access to a domain for Argo CD UI (e.g., argocd.ltu-m7011e-yourname.se)
 
 ## Configuration
+
+The chart uses the pinned `image.tag` to fetch official manifests; it does not replace the image repository in those manifests. The `argocd.email` value is unused because ACME registration belongs to the existing ClusterIssuer.
 
 Edit `values.yaml` before installation:
 
 ```yaml
 argocd:
   domain: argocd.ltu-m7011e-johan.se  # Change to your domain
-  email: your.email@ltu.se            # Change to your email
 ```
 
 ## Installation
 
 ```bash
 # Install Argo CD (namespace will be created automatically)
-helm install argocd -f values.yaml -n argocd --create-namespace .
+helm install argocd -f values.yaml -n argocd --create-namespace --timeout 10m .
 
 # Wait for installation to complete (this may take 2-3 minutes)
 kubectl get pods -n argocd -w
@@ -53,10 +56,10 @@ kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.pas
 ### Port Forward (Local Access)
 
 ```bash
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+kubectl port-forward svc/argocd-server -n argocd 8080:80
 ```
 
-Then open: https://localhost:8080
+Then open: http://localhost:8080 (the server runs HTTP behind Traefik).
 
 ### Ingress (Domain Access)
 
@@ -81,6 +84,8 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='
 ```
 
 ## Uninstall
+
+Helm removes the bootstrap chart resources. The Job-applied Argo CD resources are not managed by Helm. Deleting the namespace removes namespaced components; cluster-scoped RBAC and CRDs remain and must only be removed when no other applications depend on them.
 
 ```bash
 helm uninstall argocd -n argocd

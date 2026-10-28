@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 # Script to start the React frontend
 

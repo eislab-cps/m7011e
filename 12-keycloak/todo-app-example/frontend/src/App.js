@@ -6,11 +6,18 @@ import './App.css';
 
 // Initialize Keycloak outside component to prevent multiple instances
 let keycloakInstance = null;
+let keycloakInitPromise = null;
 const getKeycloak = () => {
   if (!keycloakInstance) {
     keycloakInstance = new Keycloak(keycloakConfig);
   }
   return keycloakInstance;
+};
+
+const getAccessToken = async () => {
+  const keycloak = getKeycloak();
+  await keycloak.updateToken(30);
+  return keycloak.token;
 };
 
 function App() {
@@ -25,17 +32,17 @@ function App() {
   useEffect(() => {
     const keycloak = getKeycloak();
 
-    // Check if already initialized
-    if (keycloak.authenticated !== undefined) {
-      setAuthenticated(keycloak.authenticated);
-      setLoading(false);
-      return;
+    let active = true;
+    // StrictMode may run the effect twice; initialize the adapter only once.
+    if (!keycloakInitPromise) {
+      keycloakInitPromise = keycloak.init({
+        onLoad: 'login-required',
+        checkLoginIframe: false,
+        pkceMethod: 'S256'
+      });
     }
-
-    keycloak.init({
-      onLoad: 'login-required',
-      checkLoginIframe: false
-    }).then(authenticated => {
+    keycloakInitPromise.then(authenticated => {
+      if (!active) return;
       setAuthenticated(authenticated);
       setLoading(false);
 
@@ -70,12 +77,15 @@ function App() {
       });
     }, 60000);
 
-    return () => clearInterval(refreshInterval);
+    return () => {
+      active = false;
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   const loadTodos = async () => {
     try {
-      const data = await getTodos(getKeycloak().token);
+      const data = await getTodos(await getAccessToken());
       setTodos(data);
       setError(null);
     } catch (err) {
@@ -89,7 +99,7 @@ function App() {
     if (!newTodoText.trim()) return;
 
     try {
-      await createTodo(getKeycloak().token, newTodoText);
+      await createTodo(await getAccessToken(), newTodoText);
       setNewTodoText('');
       await loadTodos();
       setError(null);
@@ -101,7 +111,7 @@ function App() {
 
   const handleDeleteTodo = async (todoId) => {
     try {
-      await deleteTodo(getKeycloak().token, todoId);
+      await deleteTodo(await getAccessToken(), todoId);
       await loadTodos();
       setError(null);
     } catch (err) {
@@ -112,7 +122,7 @@ function App() {
 
   const handleToggleTodo = async (todoId) => {
     try {
-      await toggleTodo(getKeycloak().token, todoId);
+      await toggleTodo(await getAccessToken(), todoId);
       await loadTodos();
       setError(null);
     } catch (err) {
@@ -276,7 +286,7 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Secured with Keycloak | Tutorial 10 - M7011E
+          Secured with Keycloak | Tutorial 12 - M7011E
         </p>
       </footer>
     </div>

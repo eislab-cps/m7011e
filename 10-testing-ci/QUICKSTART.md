@@ -1,11 +1,11 @@
 # Quick Start - Testing and CI
 
-Get tests running and CI pipeline set up in 10 minutes.
+Run the included examples and set up a CI pipeline. Start commands from the repository root unless stated otherwise.
 
 ## Prerequisites
 
-- Python 3.9+
-- Node.js 18+
+- Python 3.10+
+- Node.js 22.12+
 - PostgreSQL (local or from Tutorial 8)
 - GitHub account
 
@@ -17,7 +17,9 @@ Get tests running and CI pipeline set up in 10 minutes.
 
 ```bash
 cd 10-testing-ci/backend-tests
-pip install pytest pytest-cov pytest-mock psycopg2-binary flask
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
 ### Step 2: Run Unit Tests (No Database Needed)
@@ -27,17 +29,7 @@ pip install pytest pytest-cov pytest-mock psycopg2-binary flask
 pytest test_unit.py -v
 ```
 
-**Expected output:**
-```
-======================== test session starts ========================
-test_unit.py::TestCreateTodo::test_create_todo_success PASSED    [ 20%]
-test_unit.py::TestCreateTodo::test_create_todo_empty_title_fails PASSED [ 40%]
-test_unit.py::TestCreateTodo::test_create_todo_long_title_fails PASSED  [ 60%]
-test_unit.py::TestGetTodosByUser::test_get_todos_returns_list PASSED    [ 80%]
-test_unit.py::TestGetTodosByUser::test_get_todos_empty_list PASSED      [100%]
-
-==================== 5 passed in 0.12s ====================
-```
+**Expected result:** All 7 unit tests pass. They cover creating todos, retrieving them, and marking them complete, including validation and not-found cases.
 
 ### Step 3: Run with Coverage
 
@@ -57,8 +49,9 @@ TOTAL                      85      5    94%
 ### Step 4: Run Integration Tests (Requires PostgreSQL)
 
 ```bash
-# Create test database
-psql -U postgres -c "CREATE DATABASE test_tododb;"
+# Use a disposable PostgreSQL instance. The fixture creates and drops
+# test_tododb automatically; it must not contain data you want to keep.
+# Export DB_HOST, DB_PORT, DB_USER, DB_PASSWORD if using non-default values.
 
 # Run integration tests
 pytest test_integration.py -v
@@ -74,7 +67,7 @@ pytest test_integration.py -v
 
 ```bash
 cd 10-testing-ci/frontend-tests
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event
+npm ci
 ```
 
 ### Step 2: Run Tests
@@ -83,24 +76,7 @@ npm install --save-dev jest @testing-library/react @testing-library/jest-dom @te
 npm test -- --watchAll=false
 ```
 
-**Expected output:**
-```
-PASS  TodoList.test.jsx
-  TodoList Component
-    Loading and Error States
-      ✓ shows loading state initially (45ms)
-      ✓ shows error when fetch fails (32ms)
-    Fetching Todos
-      ✓ fetches and displays todos on mount (28ms)
-      ✓ shows empty message when no todos (21ms)
-    Creating Todos
-      ✓ creates new todo when form submitted (54ms)
-      ✓ does not create todo with empty title (18ms)
-
-Test Suites: 1 passed, 1 total
-Tests:       6 passed, 6 total
-Time:        2.456s
-```
+**Expected result:** The TodoList suite passes all 10 tests, covering loading, errors, retrieval, creation, completion, and form controls.
 
 ### Step 3: Run with Coverage
 
@@ -150,7 +126,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd 10-testing-ci/backend-tests
-          pip install pytest pytest-cov
+          pip install -r requirements.txt
 
       - name: Run tests
         run: |
@@ -175,7 +151,7 @@ git push
 **Result:**
 - ✅ Every push triggers tests automatically
 - ✅ Pull requests show test status
-- ✅ Can't merge if tests fail
+- ✅ Tests can block merging after required status checks are enabled in branch protection
 
 **Done!** Automated CI is set up!
 
@@ -238,7 +214,8 @@ def delete_todo(todo_id, user_id):
 
 ```bash
 pytest test_unit.py::test_delete_todo_success -v
-# ✅ PASSED
+# Passes after you add a database mock (unit test), or a test DB fixture
+# (integration test). The abbreviated TDD example above omits that setup.
 ```
 
 This is **Test-Driven Development (TDD)**!
@@ -279,13 +256,13 @@ pytest -s
 npm test -- --watchAll=false
 
 # Run in watch mode (re-runs on file changes)
-npm test
+npm test -- --watch
 
 # Run with coverage
 npm test -- --coverage --watchAll=false
 
 # Run specific file
-npm test TodoList.test.jsx
+npm test -- TodoList.test.jsx
 
 # Update snapshots
 npm test -- -u
@@ -307,11 +284,12 @@ pip install pytest pytest-cov pytest-mock
 # Check PostgreSQL is running
 psql -U postgres -c "SELECT 1"
 
-# Create test database
-psql -U postgres -c "CREATE DATABASE test_tododb;"
+# Use a disposable PostgreSQL instance. The fixture creates and drops
+# test_tododb automatically; it must not contain data you want to keep.
+# Export DB_HOST, DB_PORT, DB_USER, DB_PASSWORD if using non-default values.
 
 # Or use port-forwarding from Kubernetes (Tutorial 8)
-kubectl port-forward svc/postgresql 5432:5432
+kubectl port-forward -n db svc/postgres-service 5432:5432
 ```
 
 ### "Tests pass locally but fail in CI"
@@ -333,7 +311,7 @@ pytest --cov=../examples --cov-report=term-missing
 # examples/todo_service.py   85      10    88%   142, 156, 201-205
 ```
 
-Add tests for those lines!
+Review uncovered behavior and add meaningful tests for the cases that matter.
 
 ---
 
@@ -388,7 +366,9 @@ def test_example():
 # ✅ Good - mock database
 @patch('todo_service.get_db_connection')
 def test_create_todo(mock_db):
-    mock_db.return_value = Mock()
+    mock_conn = Mock()
+    mock_conn.cursor.return_value.fetchone.return_value = [123]
+    mock_db.return_value = mock_conn
     result = create_todo('Test', 'Desc', 1)
 
 # ❌ Bad - actually hits database in unit test
