@@ -13,6 +13,8 @@ Clone this repository and start with the [Introduction](./00-introduction/README
 
 These are teaching examples. Some store data in memory or use development servers; deployment on Kubernetes alone does not make an application ready for production.
 
+**Course activities (2026):** form your project group in Canvas now (deadline 4 November), and sign up separately for the design seminar on 16, 17 or 19 November. Prepare for Casper's **13 November environment demonstration** using [Tutorial 5B's demonstration brief](./05b-k3s-setup/DEMONSTRATION.md). Teams aiming for Grade 5 should read [scientific experiments and test harnesses](./10-testing-ci/SCIENTIFIC-EVALUATION.md) while planning their proposal.
+
 ## How to Work Through a Tutorial
 
 First explain **which problem the technology solves**, **what an alternative would do**, and **which tradeoff you accept**. For each command, identify **where it runs**, **what it changes**, and **what result would show that it worked**. Read [Understanding the commands](./COMMANDS.md) if shell syntax, ports, environment variables, or Kubernetes options are unfamiliar.

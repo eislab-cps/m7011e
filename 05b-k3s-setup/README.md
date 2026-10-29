@@ -4,6 +4,8 @@ Your group receives an Ubuntu virtual machine (VM), its public IP address, and a
 
 Read [Tutorial 5](../05-microservices-and-k8s/README.md) first. This tutorial builds the cluster that later tutorials use; it does not assume someone has already installed an ingress controller or certificate manager for you. Follow the steps on your group's assigned VM only.
 
+**Course checkpoint — Friday 13 November 2026:** prepare the environment in sections 1–15 and use the [mandatory environment demonstration brief](./DEMONSTRATION.md) to prepare for Casper's session. Keep the sample application available until you have demonstrated it; the cleanup in section 16 can wait. If you have already replaced it with a later tutorial's application, demonstrate that equivalent working setup using its actual resource names.
+
 ## Learning Objectives
 
 - Explain SSH, K3s, kubectl, an ingress controller, and cert-manager as separate parts of the system.
@@ -582,7 +584,7 @@ Read the ACME error and retry time; repeated deletion and re-creation can consum
 
 ## 16. Clean Up the Demo and Continue
 
-After recording successful production verification, remove this test application before another tutorial uses the same domain:
+After recording successful production verification **and completing the scheduled environment demonstration**, remove this test application before another tutorial uses the same domain. If you need to continue earlier, retain the evidence and prepare to demonstrate the replacement application's equivalent routing and trusted HTTPS:
 
 ```bash
 kubectl delete namespace tls-demo

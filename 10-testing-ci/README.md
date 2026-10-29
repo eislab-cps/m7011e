@@ -2,6 +2,8 @@
 
 Implement comprehensive testing strategies and automated CI pipelines with GitHub Actions for your microservices.
 
+For the course's Grade 5 evaluation, continue with [Scientific Experiments and an Advanced Test Harness](./SCIENTIFIC-EVALUATION.md). It explains controlled load and resilience experiments, reproducible measurements, and the difference between a test harness and the application it evaluates.
+
 ## Why Testing Matters
 
 In microservices architecture, testing is critical because:
