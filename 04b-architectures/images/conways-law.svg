@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="725" viewBox="0 0 1200 725" role="img" aria-labelledby="title description">
+<title id="title">Systems tend to mirror the teams that build them</title>
+<desc id="description">Conway&#x27;s law observes that a system&#x27;s structure tends to copy the communication structure of the organization that builds it. Three teams that coordinate through a shared backlog tend to produce three components with interfaces at the team boundaries. Changing the architecture without changing team responsibilities often fails, and the reverse also holds.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="725" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Systems tend to mirror the teams that build them</text>
+<text id="text-2" x="40" y="83" class="muted">Left: who talks to whom. Right: the boundaries that usually appear in the code.</text>
+<rect x="40" y="130" width="300" height="120" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Web team</text>
+<text id="text-4" x="62" y="198" class="body">Owns pages and UI flows.</text>
+<rect x="40" y="290" width="300" height="120" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-5" x="62" y="324" class="heading" font-size="22px" style="font-size:22px">Todo team</text>
+<text id="text-6" x="62" y="358" class="body">Owns lists, items, due</text>
+<text id="text-7" x="62" y="383" class="body">dates.</text>
+<rect x="40" y="450" width="300" height="120" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-8" x="62" y="484" class="heading" font-size="22px" style="font-size:22px">Accounts team</text>
+<text id="text-9" x="62" y="518" class="body">Owns sign-in and users.</text>
+<rect x="560" y="130" width="600" height="120" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="582" y="164" class="heading" font-size="22px" style="font-size:22px">Frontend</text>
+<text id="text-11" x="582" y="198" class="body">Released by the web team; calls two APIs.</text>
+<rect x="560" y="290" width="600" height="120" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="582" y="324" class="heading" font-size="22px" style="font-size:22px">Todo API</text>
+<text id="text-13" x="582" y="358" class="body">Todo data and rules, changed by the todo team.</text>
+<rect x="560" y="450" width="600" height="120" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="582" y="484" class="heading" font-size="22px" style="font-size:22px">Account API</text>
+<text id="text-15" x="582" y="518" class="body">Users and tokens, changed by the accounts team.</text>
+<path d="M340.0 190.0 L560.0 190.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="450" y="178.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">becomes</text>
+<path d="M340.0 350.0 L560.0 350.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="450" y="338.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">becomes</text>
+<path d="M340.0 510.0 L560.0 510.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-18" x="450" y="498.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">becomes</text>
+<rect x="40" y="610" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="60" y="640" class="body">Team ownership influences coupling. Several services can share one team, but their independence needs deliberate</text>
+<text id="text-20" x="60" y="665" class="body">contracts and release practices.</text>
+</svg>

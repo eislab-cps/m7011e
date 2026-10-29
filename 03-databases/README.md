@@ -18,6 +18,8 @@ By completing this tutorial, you will understand:
 
 An in-memory list is easy to understand but disappears with its process. Writing a JSON file can preserve data across restarts, but a shared application also has to coordinate updates, recover from partial writes, find records efficiently, and enforce rules. For example, two requests can read the same old file, make different edits, and overwrite one another's changes.
 
+![Two writers sharing a file can lose an update. Time runs left to right; both requests start from the same file contents.](./images/lost-update-shared-file.svg)
+
 A database packages mechanisms for such storage and coordination problems. You still have to choose transactions, constraints, indexes, and access rules appropriate to the application. A file can remain sufficient for small, controlled uses; an embedded SQL engine can add transaction and query facilities without a separate server. A client-server database addresses shared access and administration from multiple programs.
 
 Different database technologies emphasize different data shapes, operations, and deployment needs. A document model, relational tables, and a graph are ways to represent and access data, not a ladder from obsolete to modern. Ask what must be read, changed, and kept correct before choosing one.
@@ -70,6 +72,8 @@ BEGIN TRANSACTION
 COMMIT
 ```
 If any step fails, the entire transaction rolls back.
+
+![A transaction commits every change or none of them. The left card is one transaction; the branches show its two possible outcomes.](./images/transaction-commit-or-rollback.svg)
 
 ### BASE Properties (Eventually Consistent Systems)
 
@@ -380,6 +384,8 @@ TTL session:abc123
 - **Rate Limiting**: API throttling (X requests per minute)
 - **Message Queue**: Background job processing
 - **Real-time Chat**: Pub/Sub for messaging
+
+![The API asks Redis for a cached value and, on a miss, reads PostgreSQL itself before populating the cache. Redis does not perform the SQL lookup.](./images/redis-cache-aside.svg)
 
 ---
 
@@ -864,6 +870,8 @@ Application
 - Managed services (AWS RDS, MongoDB Atlas) reduce burden
 
 ### 5. Data Modeling Best Practices
+
+![Tables reference related data; documents can embed it. Left: two tables joined by a foreign key. Right: one document holding the same posts.](./images/tables-vs-embedded-document.svg)
 
 **Relational (PostgreSQL):**
 - Normalize to 3NF, denormalize for performance

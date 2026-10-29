@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="801" viewBox="0 0 1200 801" role="img" aria-labelledby="title description">
+<title id="title">One chart, three values files, three Applications</title>
+<desc id="description">The hello-world-app chart is shared. Each environment has its own values file under environments/. An Argo CD Application combines the chart path with one values file and one destination namespace, and sets its own sync policy: in this tutorial dev starts manual and is switched to automated sync, staging uses automated sync with prune and self-heal, while production stays manual so a person decides when to sync.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="801" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">One chart, three values files, three Applications</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows follow configuration from Git to a namespace; each Application has its own sync policy.</text>
+<rect x="40" y="125" width="1120" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Git repository</text>
+<text id="text-4" x="62" y="193" class="body">hello-world-app/ is the shared chart; environments/dev, staging, and production each hold one values.yaml</text>
+<text id="text-5" x="62" y="218" class="body">(domain, replicas, message).</text>
+<rect x="40" y="320" width="350" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-6" x="62" y="354" class="heading" font-size="22px" style="font-size:22px">Application: dev</text>
+<text id="text-7" x="62" y="388" class="body">Chart: hello-world-app/</text>
+<text id="text-8" x="62" y="413" class="body">Values: dev/values.yaml</text>
+<text id="text-9" x="62" y="438" class="body">Sync: manual, then automated in</text>
+<text id="text-10" x="62" y="463" class="body">Scenario 3.</text>
+<rect x="40" y="560" width="350" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="62" y="594" class="heading" font-size="22px" style="font-size:22px">Namespace</text>
+<text id="text-12" x="62" y="628" class="code">hello-world-dev</text>
+<path d="M215.0 261.0 L215.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M215.0 510.0 L215.0 560.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="425" y="320" width="350" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-13" x="447" y="354" class="heading" font-size="22px" style="font-size:22px">Application: staging</text>
+<text id="text-14" x="447" y="388" class="body">Chart: hello-world-app/</text>
+<text id="text-15" x="447" y="413" class="body">Values: staging/values.yaml</text>
+<text id="text-16" x="447" y="438" class="body">Sync: automated, prune,</text>
+<text id="text-17" x="447" y="463" class="body">self-heal.</text>
+<rect x="425" y="560" width="350" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-18" x="447" y="594" class="heading" font-size="22px" style="font-size:22px">Namespace</text>
+<text id="text-19" x="447" y="628" class="code">hello-world-staging</text>
+<path d="M600.0 261.0 L600.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M600.0 510.0 L600.0 560.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="810" y="320" width="350" height="190" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-20" x="832" y="354" class="heading" font-size="22px" style="font-size:22px">Application: production</text>
+<text id="text-21" x="832" y="388" class="body">Chart: hello-world-app/</text>
+<text id="text-22" x="832" y="413" class="body">Values: production/values.yaml</text>
+<text id="text-23" x="832" y="438" class="body">Sync: manual; a person syncs.</text>
+<rect x="810" y="560" width="350" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-24" x="832" y="594" class="heading" font-size="22px" style="font-size:22px">Namespace</text>
+<text id="text-25" x="832" y="628" class="code">hello-world-prod</text>
+<path d="M985.0 261.0 L985.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M985.0 510.0 L985.0 560.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="711" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="741" class="body">Promotion is a Git change to the next environment&#x27;s values file; for production a person also triggers the sync.</text>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="670" viewBox="0 0 1200 670" role="img" aria-labelledby="title description">
+<title id="title">From one request to a point on a rate graph</title>
+<desc id="description">Handling a request increments the counter http_requests_total inside the service process. The service exposes the current counter values as text on /metrics. Every 30 seconds in this chart, Prometheus scrapes that endpoint and stores a timestamped sample per time series. A PromQL query such as rate(http_requests_total[5m]) turns the increasing counter into per-second rates, and Grafana sends that query and draws the result.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="670" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">From one request to a point on a rate graph</text>
+<text id="text-2" x="40" y="83" class="muted">Follow the numbers left to right, then down; each step is done by a different program.</text>
+<rect x="40" y="125" width="340" height="165" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">1 Service handles a</text>
+<text id="text-4" x="62" y="189" class="heading" font-size="22px" style="font-size:22px">request</text>
+<text id="text-5" x="62" y="223" class="body">request_count.labels(...).inc()</text>
+<text id="text-6" x="62" y="248" class="body">adds 1 in process memory.</text>
+<rect x="430" y="125" width="340" height="165" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="452" y="159" class="heading" font-size="22px" style="font-size:22px">2 /metrics endpoint</text>
+<text id="text-8" x="452" y="193" class="body">Plain text with current values:</text>
+<text id="text-9" x="452" y="218" class="body">http_requests_total{...} 42</text>
+<rect x="820" y="125" width="340" height="165" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">3 Prometheus scrapes</text>
+<text id="text-11" x="842" y="193" class="body">Every 30s (scrapeInterval) it</text>
+<text id="text-12" x="842" y="218" class="body">stores (time, value) samples.</text>
+<rect x="820" y="350" width="340" height="165" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-13" x="842" y="384" class="heading" font-size="22px" style="font-size:22px">4 PromQL</text>
+<text id="text-14" x="842" y="418" class="body">rate(http_requests_total[5m])</text>
+<text id="text-15" x="842" y="443" class="body">gives requests per second.</text>
+<rect x="430" y="350" width="340" height="165" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="452" y="384" class="heading" font-size="22px" style="font-size:22px">5 Grafana panel</text>
+<text id="text-17" x="452" y="418" class="body">Sends the query and draws one</text>
+<text id="text-18" x="452" y="443" class="body">point per step.</text>
+<rect x="40" y="350" width="340" height="165" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-19" x="62" y="384" class="heading" font-size="22px" style="font-size:22px">No traffic, no change</text>
+<text id="text-20" x="62" y="418" class="body">The counter stays flat, so the</text>
+<text id="text-21" x="62" y="443" class="body">rate is 0, not missing.</text>
+<path d="M380.0 207.5 L430.0 207.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M770.0 207.5 L820.0 207.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M990.0 290.0 L990.0 350.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M820.0 432.5 L770.0 432.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="555" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="60" y="585" class="body">A counter only goes up (it resets when the process restarts); rate() handles resets and turns it into something</text>
+<text id="text-23" x="60" y="610" class="body">you can graph.</text>
+</svg>

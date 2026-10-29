@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="495" viewBox="0 0 1200 495" role="img" aria-labelledby="title description">
+<title id="title">A virtual DOM turns a state change into a small patch</title>
+<desc id="description">When a todo is added, the framework renders a new virtual tree from state, compares it with the previous virtual tree, matches list items by their stable key, and applies only the difference to the real DOM: one new li element is inserted while the existing elements are left in place.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="495" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A virtual DOM turns a state change into a small patch</text>
+<text id="text-2" x="40" y="83" class="muted">Left to right: the old tree, the tree rendered from new state, and the DOM operation applied.</text>
+<rect x="40" y="140" width="320" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Old virtual tree</text>
+<text id="text-4" x="62" y="208" class="code">ul</text>
+<text id="text-5" x="62" y="233" class="code">├ li key=1 &quot;Buy milk&quot;</text>
+<text id="text-6" x="62" y="258" class="code">└ li key=2 &quot;Walk dog&quot;</text>
+<rect x="440" y="140" width="320" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="462" y="174" class="heading" font-size="22px" style="font-size:22px">New virtual tree</text>
+<text id="text-8" x="462" y="208" class="code">ul</text>
+<text id="text-9" x="462" y="233" class="code">├ li key=1 &quot;Buy milk&quot;</text>
+<text id="text-10" x="462" y="258" class="code">├ li key=2 &quot;Walk dog&quot;</text>
+<text id="text-11" x="462" y="283" class="code">└ li key=3 &quot;Read book&quot;</text>
+<rect x="840" y="140" width="320" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="862" y="174" class="heading" font-size="22px" style="font-size:22px">Patch to real DOM</text>
+<text id="text-13" x="862" y="208" class="body">Insert one li for key=3.</text>
+<text id="text-14" x="862" y="233" class="body">Keys 1 and 2 match, so those</text>
+<text id="text-15" x="862" y="258" class="body">elements are kept.</text>
+<path d="M360.0 240.0 L440.0 240.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="400" y="228.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">diff</text>
+<path d="M760.0 240.0 L840.0 240.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="800" y="228.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">commit</text>
+<rect x="40" y="380" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="60" y="410" class="body">Stable keys let the diff recognise moved or unchanged items; without them a list re-render can replace more DOM</text>
+<text id="text-19" x="60" y="435" class="body">nodes than necessary.</text>
+</svg>

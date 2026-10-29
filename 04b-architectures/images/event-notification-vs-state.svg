@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title description">
+<title id="title">Events can notify, or they can carry the new state</title>
+<desc id="description">With event notification the producer publishes a small event such as &#x27;todo 42 completed&#x27; and consumers that need details call the producer&#x27;s API. With event-carried state transfer the event includes the changed data, so consumers can keep a local copy and keep working when the producer is down, at the cost of larger events and data that may be briefly stale.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="660" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Events can notify, or they can carry the new state</text>
+<text id="text-2" x="40" y="83" class="muted">Top: consumers call back for details. Bottom: the event already contains what they need.</text>
+<rect x="40" y="130" width="260" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Todo service</text>
+<text id="text-4" x="62" y="198" class="body">Publishes</text>
+<text id="text-5" x="62" y="223" class="body">TodoCompleted {id: 42}</text>
+<rect x="400" y="130" width="260" height="160" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-6" x="422" y="164" class="heading" font-size="22px" style="font-size:22px">Broker</text>
+<text id="text-7" x="422" y="198" class="body">Delivers the event.</text>
+<rect x="760" y="130" width="400" height="160" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-8" x="782" y="164" class="heading" font-size="22px" style="font-size:22px">Stats service</text>
+<text id="text-9" x="782" y="198" class="body">Receives id 42, then calls GET</text>
+<text id="text-10" x="782" y="223" class="body">/todos/42 for details.</text>
+<path d="M300.0 210.0 L400.0 210.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M660.0 210.0 L760.0 210.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M960.0 290.0 L960.0 320.0 L170.0 320.0 L170.0 290.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-11" x="560" y="312" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">callback couples the consumer to the producer&#x27;s uptime</text>
+<rect x="40" y="370" width="260" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="62" y="404" class="heading" font-size="22px" style="font-size:22px">Todo service</text>
+<text id="text-13" x="62" y="438" class="body">Publishes</text>
+<text id="text-14" x="62" y="463" class="body">TodoCompleted with</text>
+<text id="text-15" x="62" y="488" class="body">title, owner, time.</text>
+<rect x="400" y="370" width="260" height="160" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-16" x="422" y="404" class="heading" font-size="22px" style="font-size:22px">Broker</text>
+<text id="text-17" x="422" y="438" class="body">Delivers the event.</text>
+<rect x="760" y="370" width="400" height="160" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="782" y="404" class="heading" font-size="22px" style="font-size:22px">Stats service</text>
+<text id="text-19" x="782" y="438" class="body">Updates its own copy. No callback</text>
+<text id="text-20" x="782" y="463" class="body">needed.</text>
+<path d="M300.0 450.0 L400.0 450.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M660.0 450.0 L760.0 450.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="570" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="600" class="body">Notification keeps events small and data in one place; state transfer decouples availability but duplicates data.</text>
+</svg>

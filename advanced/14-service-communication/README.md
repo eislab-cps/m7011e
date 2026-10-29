@@ -200,30 +200,9 @@ An **acknowledgment** is a signal from the consumer to RabbitMQ saying: **"I suc
 
 ### How Acknowledgments Work
 
-```
-Step 1: Consumer connects to queue
-        Consumer: "I'm ready to receive messages"
+![A delivered message waits for the consumer's answer. Boxes are message states in the queue; arrows are the events that move a message between them.](./images/ack-message-states.svg)
 
-Step 2: RabbitMQ delivers message #1 to consumer
-        RabbitMQ: "Here's message #1, process it"
-        RabbitMQ: [MARKS MESSAGE AS "UNACKED" - waiting for confirmation]
-
-Step 3a: SUCCESS PATH - Consumer processes successfully
-        Consumer: Receives message
-        Consumer: Sends email successfully
-        Consumer: Sends ACK to RabbitMQ
-        RabbitMQ: Receives ACK
-        RabbitMQ: [DELETES MESSAGE FROM QUEUE - it's been handled]
-
-Step 3b: FAILURE PATH - Consumer crashes
-        Consumer: Receives message
-        Consumer: Starts sending email
-        Consumer: **CRASHES** (out of memory, exception, pod terminated)
-        Consumer: [NEVER SENDS ACK]
-        RabbitMQ: Detects consumer disconnected
-        RabbitMQ: [MESSAGE STILL IN QUEUE, marked as "ready"]
-        RabbitMQ: Redelivers message to another consumer OR same consumer when it restarts
-```
+On the success path the consumer acknowledges and RabbitMQ deletes the message. If the consumer crashes first, RabbitMQ detects the closed channel and redelivers the message to another consumer, or to the same one when it restarts.
 
 ### Code Example: With vs Without Acknowledgments
 
@@ -486,6 +465,8 @@ Worker 2: Message 2 → Processing → ACK → Message 4 → Processing → ACK
 
 If Worker 1 is slower, Worker 2 will process more messages. Once RabbitMQ detects Worker 1 disconnected, it redelivers the unacked message to Worker 2.
 
+![A prefetch limit stops deliveries piling up at a slow worker. Each lane shows what one worker holds unacknowledged at the same moment.](./images/prefetch-fair-dispatch.svg)
+
 ### Complete Work Queue Example
 
 **Producer (publishes image processing tasks):**
@@ -688,6 +669,8 @@ def callback(ch, method, properties, body):
 4. After the initial failure plus 3 retries, the message is rejected (requeue=False)
 5. RabbitMQ moves message to dead letter queue
 6. Separate monitoring service processes DLQ messages (alert ops team, log to database, etc.)
+
+![Failed messages are retried a few times, then dead-lettered. Follow one message from the main queue; each branch is a consumer outcome.](./images/retry-and-dead-letter.svg)
 
 ---
 

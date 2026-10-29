@@ -37,9 +37,13 @@ This is a comparison guide, not an installation script. Use the [HTTP exchange f
 
 **Compare, then explain:** Take one todo-creation handler. Identify where input is parsed, where invalid input is rejected, where data is saved, and where the response is formed. Which parts are framework facilities, and which rules would still be your responsibility in another framework? Avoid choosing a framework only because its shortest sample has fewer lines.
 
+![One configured request path runs shared middleware, routing and route policies, application logic, then response handling. A middleware step may return an error before the handler runs.](./images/framework-request-pipeline.svg)
+
+Middleware order depends on the framework and configuration. For example, [Express middleware](https://expressjs.com/en/guide/using-middleware/) can continue to the next step or end a response early. Authentication identifies a caller; the operation still needs authorization, including checks on the particular todo. CORS controls browser access to responses and is not authentication.
+
 ## Introduction
 
-Choosing the right framework is critical for building modern microservices. Unlike monolithic applications where you pick one framework for everything, microservices let you choose the **best framework for each service's specific needs**.
+A framework provides implementation tools and conventions. A modular application can combine frontend and backend frameworks, and separate services can use either the same stack or different stacks. Different languages also create maintenance and operational work, so choose them for requirements you can explain.
 
 ### Key Considerations for Microservices
 
@@ -55,6 +59,10 @@ Choosing the right framework is critical for building modern microservices. Unli
 ### Microservices vs Monolithic Frameworks
 
 This tutorial focuses on a selection of frameworks often used for services. Django and Ruby on Rails can also implement independently deployed APIs and microservices. A framework does not determine whether an application is a monolith; service boundaries, data ownership, and deployment practices do.
+
+![The same Flask framework can run one modular application or separately deployed services. Network and release boundaries come from the design.](./images/framework-versus-architecture.svg)
+
+Continue with [Tutorial 4B: Software Architectures](../04b-architectures/README.md) to compare those boundaries.
 
 The snippets illustrate framework syntax and are not complete projects. Add the dependencies, imports, components, and startup configuration required by the framework version you choose. Relative `/api` URLs assume a same-origin backend or a development proxy. In-memory stores are temporary and need concurrency controls when shared between request handlers.
 
@@ -113,14 +121,14 @@ Frontend code is delivered to the user, so hiding a button cannot enforce a data
 
 ### The DOM (Document Object Model)
 
-The **DOM** is a tree-like representation of HTML that browsers create. Every HTML element becomes a node in this tree.
+The **DOM** is the browser's object model of a document. Elements, text, and other nodes form a tree that JavaScript can inspect and change. HTML is input used to build that tree; the DOM can change after the original HTML has arrived.
 
 ```html
 <html>
   <body>
     <div id="app">
       <h1>My Todos</h1>
-      <ul>
+      <ul id="todo-list">
         <li>Todo 1</li>
         <li>Todo 2</li>
       </ul>
@@ -129,57 +137,49 @@ The **DOM** is a tree-like representation of HTML that browsers create. Every HT
 </html>
 ```
 
-**DOM Tree:**
-```
-html
-└── body
-    └── div#app
-        ├── h1 ("My Todos")
-        └── ul
-            ├── li ("Todo 1")
-            └── li ("Todo 2")
-```
+![The selected DOM subtree contains element nodes and text nodes. Arrows mean parent-child relationships inside the browser, not network requests.](./images/dom-element-tree.svg)
 
-**The Cost:** DOM updates can trigger style calculation, layout, and painting, depending on what changed. Browsers can batch this work. Excessive updates or alternating layout reads and writes can cause performance issues; every DOM change does not necessarily trigger all three stages.
+The figure starts at `div#app` and omits the surrounding document nodes. `getElementById('todo-list')` finds the list element; appending a child changes this browser's page. It does not save a todo in the backend. Saving needs an explicit operation such as the `POST` request in Tutorial 1.
+
+DOM changes can lead to style calculation, layout, and painting, depending on what changed. Browsers batch some work. Repeatedly alternating layout reads and writes can be expensive, while a carefully targeted direct update can be efficient.
+
+**Explain:** If you append a list item with JavaScript and refresh the page, what would make that item reappear? Which part of the system must have kept its data?
 
 ### Virtual DOM
 
-The **Virtual DOM** is an optimization technique used by frameworks like React and Vue. Instead of directly manipulating the real DOM, they:
+Some UI libraries represent the desired UI using JavaScript objects and reconcile that representation with an earlier one before updating the real DOM. This is often called a **virtual DOM**. It helps express the page as a result of state, but it is not a second browser DOM and does not guarantee the fastest possible update.
 
-1. **Keep a Virtual Copy**: Maintain a lightweight JavaScript copy of the DOM
-2. **Calculate Changes**: When data changes, create a new virtual DOM and compare it to the old one
-3. **Batch Updates**: Figure out the minimal set of real DOM changes needed
-4. **Efficient Updates**: Apply only those specific changes to the real DOM
+In React, distinguish the steps described in [Render and Commit](https://react.dev/learn/render-and-commit):
 
-**Example:**
+1. **Trigger:** Initial loading or a state update schedules rendering.
+2. **Render:** React calls component functions to calculate the desired UI.
+3. **Commit:** React applies necessary DOM changes. Rendering can also produce no DOM change.
+4. **Browser work:** The browser displays the result through its own rendering pipeline.
+
+![A state update triggers component rendering; React then commits required DOM changes, and the browser handles display. No step automatically writes to an API.](./images/state-render-commit.svg)
 
 ```javascript
-// You update state
-setTodos([...todos, newTodo]);
-
-// Simplified reconciliation process:
-// 1. Render a new virtual tree with the new todo.
-// 2. Compare it with the previous tree.
-// 3. Identify the changed list item using stable keys.
-// 4. Commit the required DOM updates.
+// A state update changes this component's state, not the backend database.
+setTodos(current => [...current, newTodo]);
 ```
 
-**Traditional Approach (Vanilla JS):**
+Here is one simplified list update with stable keys. It illustrates matching items, not a performance guarantee for every component:
+
+![For this list update, keys match existing items and the new item is inserted. The drawing illustrates one reconciliation result.](./images/virtual-dom-diff-and-patch.svg)
+
+Direct DOM code does not have to rebuild an entire list either:
+
 ```javascript
-// Update requires manual DOM manipulation
+// Targeted direct DOM update: add one item without clearing the others.
 const ul = document.getElementById('todo-list');
-ul.innerHTML = ''; // Clear everything
-todos.forEach(todo => {
-  const li = document.createElement('li');
-  li.textContent = todo.text;
-  ul.appendChild(li); // Rebuild everything
-});
-// Inefficient: Destroys and recreates all elements
+const li = document.createElement('li');
+li.textContent = newTodo.text;
+ul.appendChild(li);
 ```
 
-**Virtual DOM Approach (React):**
-```javascript
-// React figures out only what changed
+The application must decide when that update is appropriate and keep its state consistent with the page. A declarative component instead describes the list for the current state:
+
+```jsx
 function TodoList({ todos }) {
   return (
     <ul>
@@ -189,270 +189,109 @@ function TodoList({ todos }) {
     </ul>
   );
 }
-// Efficient: Only adds/removes/updates what changed
 ```
+
+`key` identifies an item among siblings across updates; use a stable ID rather than a new random value on each render. The component still needs application code to load and save data.
 
 ### DOM vs Virtual DOM Comparison
 
-| Aspect | Direct DOM | Virtual DOM |
-|--------|-----------|-------------|
-| **Updates** | Manual `document.getElementById()`, `innerHTML`, etc. | Automatic diffing and patching |
-| **Performance** | Efficient when updates are targeted and batched | Adds diffing overhead; helps organize and batch updates |
-| **Developer Experience** | Tedious, error-prone | Declarative, easier to maintain |
-| **Used By** | Vanilla JavaScript | React, Vue (optional), Preact |
+| Concern | Direct DOM updates | UI reconciliation |
+| --- | --- | --- |
+| Description | Application code selects and changes nodes. | Components describe the desired UI from state. |
+| Coordination | Application code coordinates state and node updates. | The UI library coordinates rendering and commits. |
+| Work | Can make targeted updates; broad rebuilding can be costly. | Adds rendering and reconciliation work; can preserve matching nodes. |
+| Choosing | Useful for small interfaces or precise browser integration. | Useful when reusable stateful components simplify the application. |
 
 ### Alternatives to Virtual DOM
 
-**Svelte (Compile-time Optimization):**
-- No Virtual DOM at all
-- Compiles components to efficient imperative code at build time
-- Updates DOM surgically without diffing
-- Result: Smaller bundles, faster runtime
+[Svelte](https://svelte.dev/docs/svelte/overview) compiles components into code that updates the interface and works with its runtime; compilation does not mean that no JavaScript executes in the browser. [Solid's fine-grained reactivity](https://docs.solidjs.com/advanced-concepts/fine-grained-reactivity) tracks dependencies so updates can target affected computations and nodes. Angular checks bindings and updates affected DOM nodes; see its [runtime performance guide](https://angular.dev/best-practices/runtime-performance).
 
-**Solid.js (Fine-grained Reactivity):**
-- No Virtual DOM
-- Tracks reactive dependencies at runtime
-- Updates only specific DOM nodes that changed
-- Result: Very fast updates
-
-### Why This Matters for Framework Choice
-
-- **React/Vue (Virtual DOM)**: Good balance of performance and developer experience
-- **Svelte (No Virtual DOM)**: Better performance, smaller bundles, but smaller ecosystem
-- **Angular (Change Detection)**: Checks component bindings and updates affected DOM nodes; see [Angular runtime performance](https://angular.dev/best-practices/runtime-performance)
-- **Rust/WASM**: Calls browser DOM APIs through bindings; CPU-heavy calculations may benefit from WebAssembly, while DOM performance still depends on the framework and browser
+These are different ways to coordinate changes. Bundle size, update cost, accessibility, loading behavior, team knowledge, and ecosystem support all matter. Measure your actual page before claiming one mechanism is universally faster. WebAssembly can help some computation-heavy workloads; it does not remove browser DOM and layout costs.
 
 ---
 
 ## SPA vs SSR: Application Architecture Patterns
 
-Understanding the difference between Single Page Applications (SPA) and Server-Side Rendering (SSR) is crucial for choosing the right framework approach.
+Two questions often get mixed together: **where is the initial HTML content produced**, and **how does later navigation happen**? A **single-page application (SPA)** commonly handles navigation in the browser. **Client-side rendering (CSR)**, **server-side rendering (SSR)**, and **static site generation (SSG)** describe when and where content is rendered. A server-rendered initial page can later behave as an SPA. These choices also work with either a monolith or services, as [Tutorial 4B](../04b-architectures/README.md) explains.
 
 ### SPA (Single Page Application)
 
-**What it is:** A web application that loads a single HTML page and dynamically updates content without full page reloads.
+A common client-rendered SPA starts with an HTML shell. JavaScript loads, obtains application data, and constructs the interface. Afterward a client router can update the URL and view without replacing the whole document. Navigation can still request data or additional code from a server.
 
-**How it works:**
-1. Browser requests the application
-2. Server sends minimal HTML + JavaScript bundle
-3. JavaScript takes over and renders everything in the browser
-4. Navigation happens client-side (no page reloads)
-5. API calls fetch data as JSON
+![On a first uncached visit, the browser loads an HTML shell and application assets, runs JavaScript, fetches todo JSON, and builds the view. Arrows are separate HTTP exchanges.](./images/spa-first-request.svg)
 
-**Example Flow:**
-```
-User visits site → Server sends index.html + app.js (empty <div id="app">)
-↓
-Browser downloads JavaScript bundle
-↓
-React/Vue/Svelte renders entire UI in browser
-↓
-User clicks "Products" → JavaScript updates DOM (no server request for HTML)
-↓
-JavaScript fetches data from /api/products → Updates UI
-```
+Read the diagram from top to bottom. Receiving `index.html` is not the same as receiving the todo data. A script download, script error, or API failure can therefore produce different loading failures. Real applications can cache assets, prefetch resources, or overlap work; the figure shows one possible sequence.
 
-**Advantages:**
-- ✅ Fast, smooth navigation after initial load
-- ✅ Rich, interactive user experiences
-- ✅ Less server load (only serves API data)
-- ✅ Can work offline (with service workers)
-- ✅ Clear separation: Frontend + Backend API
+This suits interaction-heavy screens such as the course todo dashboard. The initial content may depend on JavaScript and an API round trip, so design loading, empty, and error states deliberately. Public content that only exists after client rendering asks crawlers and preview tools to run that code; do not assume every consumer does. Offline behavior needs explicit caching and synchronization work, often with a service worker.
 
-**Disadvantages:**
-- ❌ Slow initial load (large JavaScript bundle)
-- ❌ Poor SEO (search engines see empty HTML initially)
-- ❌ Blank screen while JavaScript loads
-- ❌ Requires JavaScript enabled
-- ❌ Larger bundle sizes
-
-**Best For:**
-- Web applications (dashboards, admin panels, tools)
-- Apps behind authentication
-- Rich interactive experiences
-- When SEO is not critical
-
-**Examples:**
-- Gmail, Google Docs
-- Figma, Notion
-- Admin dashboards
-- Internal tools
-
-**Frameworks/Tools:**
-- React (default)
-- Vue (default)
-- Svelte (default)
-- Angular (default)
-
----
+**Inspect:** In the browser's Network panel, distinguish the document, script, and `/api/todos` requests. Which successful responses would you still see if the API stopped working?
 
 ### SSR (Server-Side Rendering)
 
-**What it is:** The server generates complete HTML for each page and sends it to the browser, which displays content immediately.
+With request-time SSR, application code generates HTML for a request using the data available on the server. The browser can receive meaningful content without waiting for client JavaScript to construct it. Fetching data, rendering, transfer, parsing, and display still take time; SSR does not make content arrive instantly.
 
-**How it works:**
-1. Browser requests a page
-2. Server runs JavaScript/framework code
-3. Server generates full HTML with content
-4. Browser receives and displays complete HTML immediately
-5. JavaScript "hydrates" to make it interactive
+![The application server obtains data and generates HTML before sending it to the browser. A JavaScript UI can hydrate that HTML afterward, while plain server templates need no hydration step.](./images/ssr-and-hydration.svg)
 
-**Example Flow:**
-```
-User visits /products → Server runs React/Vue/Svelte code
-↓
-Server fetches data from database
-↓
-Server renders complete HTML with product list
-↓
-Browser receives full HTML and displays immediately (content visible!)
-↓
-JavaScript downloads and "hydrates" (adds interactivity)
-```
+SSR can use Python/Jinja, Java templates, JavaScript frameworks, or other server technologies. **Hydration** is the additional step some UI frameworks use to attach their client behavior to existing server-generated HTML. React's [`hydrateRoot`](https://react.dev/reference/react-dom/client/hydrateRoot) expects the initial client output to match that HTML. A plain HTML form rendered by Flask does not require React hydration.
 
-**Advantages:**
-- ✅ Fast initial page load (content visible immediately)
-- ✅ Excellent SEO (search engines see full HTML)
-- ✅ Works without JavaScript (basic functionality)
-- ✅ Better perceived performance
-- ✅ Social media previews work (Open Graph)
+SSR can help deliver public or request-specific content in the first document. It adds request-time rendering work and requires careful caching: a personalized response must not become a public cache entry. Later interactions can use ordinary form submissions, full-page navigation, or client-side requests. The rendering choice does not decide those interactions for you.
 
-**Disadvantages:**
-- ❌ More complex setup and deployment
-- ❌ Higher server load (server renders HTML)
-- ❌ Slower navigation (some frameworks optimize this)
-- ❌ Need Node.js server (or similar)
-- ❌ More complicated caching
-
-**Best For:**
-- Content websites (blogs, news, documentation)
-- E-commerce sites
-- Marketing pages
-- When SEO is critical
-- When initial load performance matters
-
-**Examples:**
-- Amazon, eBay (product pages)
-- News websites (New York Times)
-- Blogs, documentation sites
-- Marketing landing pages
-
-**Frameworks/Tools:**
-- Next.js (React)
-- Nuxt.js (Vue)
-- SvelteKit (Svelte)
-- Angular Universal (Angular)
-
----
+**Explain:** If the page displays a todo before its interactive controls work, which work might still be pending? How would this differ from a server-rendered form with no client framework?
 
 ### SSG (Static Site Generation) - Bonus
 
-**What it is:** Pre-renders all pages at build time. A variant of SSR that generates HTML during deployment, not per request.
+SSG renders content **before** a visitor requests it, commonly during a build. Deploy the generated files to a static server or CDN. The serving system still handles HTTP requests, but it does not need to run the application renderer for each page view.
 
-**How it works:**
-1. At build time, generate HTML for all pages
-2. Deploy static HTML files to CDN
-3. Browser requests page → CDN serves pre-built HTML instantly
-4. JavaScript hydrates for interactivity
+![The build reads content and produces HTML assets. Later the host serves those files to the browser without per-request page generation. Client code can still call an API.](./images/ssg-build-and-request.svg)
 
-**Advantages:**
-- Pre-generated HTML can be served without request-time page generation
-- Page HTML is available without waiting for browser JavaScript to build its content
-- ✅ Cheap hosting (just static files)
-- ✅ Excellent scalability (CDN)
-- Static delivery removes runtime server rendering, while browser code, dependencies, and any APIs still need security controls
+Documentation and public course pages are useful examples. The generated HTML reflects the inputs used for generation; publishing changed content needs another generation or a configured regeneration mechanism. Build duration and cache invalidation become design concerns as the site grows.
 
-**Disadvantages:**
-- ❌ Only works for content that doesn't change often
-- ❌ Rebuilding required for content updates
-- ❌ Not suitable for personalized/dynamic content
-- ❌ Build time increases with page count
-
-**Best For:**
-- Blogs, documentation
-- Marketing websites
-- Portfolios
-- Content that updates infrequently
-
-**Examples:**
-- Gatsby (React)
-- Next.js (React, hybrid)
-- VuePress (Vue)
-- SvelteKit (Svelte, hybrid)
-
----
+A static page can include interactive JavaScript, hydrate pre-rendered components, and fetch current or personalized data afterward. That does not make its prebuilt HTML personalized. Never generate a shared static file containing a particular user's private todos.
 
 ### Comparison Table
 
-| Feature | SPA | SSR | SSG |
-|---------|-----|-----|-----|
-| **Initial HTML** | Often an app shell; browser code loads data and renders content | Generated by the server for the request | Generated ahead of the request |
-| **Navigation** | Very fast (client-side) | Slower (may fetch HTML) | Very fast (static files) |
-| **SEO** | Poor (requires tricks) | Excellent | Excellent |
-| **Server Load** | Low (API only) | High (renders HTML) | None (static files) |
-| **Hosting Cost** | Low | Higher (Node.js server) | Lowest (CDN) |
-| **Dynamic Content** | Excellent | Excellent | Limited |
-| **JavaScript Required** | Yes | For interactivity | For interactivity |
-| **Real-time Updates** | Easy | Moderate | Difficult |
+![The timelines compare client-rendered initial content, request-time server rendering, and HTML generated before the request. Hydration applies only when the chosen UI needs it.](./images/spa-ssr-ssg-timelines.svg)
 
----
+| Concern | Client-rendered initial page | Request-time SSR | SSG |
+| --- | --- | --- | --- |
+| Initial content built | In the browser after the required code and data arrive. | By application code handling the page request. | Before the visitor's request. |
+| Page-serving work | Serve shell/assets; APIs still perform application work. | Run the renderer unless a suitable cached response is used. | Serve generated files; any APIs still run separately. |
+| Freshness | Depends on API responses and client caches. | Depends on the data read and response caching. | HTML reflects generation inputs until regenerated. |
+| JavaScript | Required to construct this client-rendered content. | Optional for plain HTML; hydration or richer UI requires it. | Optional for plain HTML; dynamic additions require client code. |
+| Personalization | Fetch authorized user data at runtime. | Generate an authorized response with appropriate cache policy. | Keep shared HTML public; load private data separately. |
+| Later navigation | Can use a client router. | Can use full-page or client navigation. | Can use full-page or client navigation. |
+
+None of these guarantees a particular price, load time, search ranking, or accessibility result. The size of assets, server work, cache behavior, network, and page implementation determine the result.
 
 ### Hybrid Approaches (Modern Frameworks)
 
-Modern frameworks like **Next.js**, **Nuxt.js**, and **SvelteKit** support **hybrid rendering**:
+An application can choose different rendering strategies for different routes or parts of a page. For example, build public help pages ahead of time, render a request-specific page on the server, and use client rendering for an interactive dashboard. This is a design example, not a framework's automatic route configuration:
 
-- **Per-page choice**: Some pages SSR, some SPA, some SSG
-- **Incremental Static Regeneration (ISR)**: Update static pages periodically
-- **Streaming SSR**: Send HTML as it's generated (faster perceived load)
+![One application routes public help to prebuilt HTML, a request-specific page to server rendering, and a dashboard to client rendering. Data access and cache policies still apply to each route.](./images/hybrid-rendering-routes.svg)
 
-**Example Next.js App:**
-```
-/                    → SSG (marketing page, pre-built)
-/blog/[slug]         → SSG (blog posts, pre-built)
-/products/[id]       → SSR (dynamic, SEO-critical)
-/dashboard           → SPA (authenticated, no SEO needed)
-/api/products        → API route (backend)
-```
-
----
+Frameworks can also stream HTML as portions become available or regenerate cached content. Those features have their own data-loading and caching rules. For example, Next.js distinguishes [server and client components](https://nextjs.org/docs/app/getting-started/server-and-client-components), and Angular documents [hybrid rendering](https://angular.dev/guide/ssr). Learn the selected framework's configuration rather than inferring it from a file name.
 
 ### Decision Guide
 
-**Choose SPA when:**
-- Building web applications (not websites)
-- SEO doesn't matter (behind login)
-- Rich interactivity is primary goal
-- Backend is separate API
+Start with the screen's requirements:
 
-**Choose SSR when:**
-- SEO is critical
-- Initial load performance matters
-- Content is dynamic and personalized
-- Need social media previews
+- **Interactive authenticated workspace:** A client-rendered UI can be useful. Specify startup, API-error, and expired-session behavior.
+- **Public page that needs request-specific content:** Consider SSR and decide which responses may be cached.
+- **Content publishable ahead of requests:** Consider SSG and decide how updates become visible.
+- **Different requirements across the site:** Combine strategies and record the choice for each route.
 
-**Choose SSG when:**
-- Content doesn't change often
-- Maximum performance needed
-- Want cheapest hosting
-- Don't need personalization
-
-**Choose Hybrid when:**
-- Different pages have different needs
-- Want flexibility
-- Building modern web apps
-
----
+An API must enforce authorization regardless of where the HTML was rendered. SSR, client routing, and a static host do not establish ownership of a todo.
 
 ### Framework Support Summary
 
-| Framework | Default | SSR Support | SSG Support | Hybrid |
-|-----------|---------|-------------|-------------|--------|
-| **React** | SPA | Via Next.js | Via Next.js | Next.js |
-| **Vue** | SPA | Via Nuxt.js | Via Nuxt.js | Nuxt.js |
-| **Svelte** | SPA | Via SvelteKit | Via SvelteKit | SvelteKit |
-| **Angular** | SPA | Angular Universal | Angular Universal | Limited |
+| UI ecosystem | Application tooling to explore | Important distinction |
+| --- | --- | --- |
+| React | Next.js and other React application frameworks | React is a UI library; project setup determines routing and rendering. |
+| Vue | Nuxt and Vue's server-rendering APIs | A Vue component does not prescribe a deployment architecture. |
+| Svelte | SvelteKit | Rendering and prerendering depend on application configuration. |
+| Angular | Angular's `@angular/ssr` integration | Supports client, server, and prerendered routes in hybrid applications. |
 
-**Recommendation for this course:** Start with **SPA** (Tutorial 9 uses React SPA) to understand fundamentals, then explore Next.js/Nuxt.js/SvelteKit for production projects.
+**For this course:** Tutorial 9 uses a client-rendered React application. Trace its document, assets, API calls, and state changes before adding another rendering mode.
 
 ---
 
@@ -2373,6 +2212,8 @@ A game simulation loop, an account API, and a leaderboard are different workload
 
 Some frameworks handle both frontend and backend:
 
+![Full-stack frameworks still split server and browser code. Arrows show what crosses the network; the dashed arrow is a later request from the browser.](./images/fullstack-server-browser-split.svg)
+
 ### Next.js (React)
 
 **Official Website:** https://nextjs.org/
@@ -2559,9 +2400,10 @@ In this tutorial series, we use:
 1. **Tutorial 1**: Build with vanilla JavaScript and Flask (fundamentals)
 2. **Tutorial 2**: Containerize with Docker
 3. **Tutorial 3**: Understand databases
-4. **Tutorial 5**: Understand microservices and Kubernetes
-5. **Tutorials 6-7**: Set up cluster access and deploy an application
-6. **Tutorial 9**: Rebuild with React (see framework benefits)
+4. **[Tutorial 4b](../04b-architectures/README.md)**: Compare software architectures and their tradeoffs
+5. **Tutorial 5**: Understand microservices and Kubernetes
+6. **Tutorials 6-7**: Set up cluster access and deploy an application
+7. **Tutorial 9**: Rebuild with React (see framework benefits)
 
 ## Further Reading
 

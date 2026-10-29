@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="705" viewBox="0 0 1200 705" role="img" aria-labelledby="title description">
+<title id="title">MVC, MVVM, and components divide UI code differently</title>
+<desc id="description">MVC separates a model holding data, a view displaying it, and a controller that handles input. Flask with templates is close to server-side MVC. MVVM adds a view model that exposes state the view binds to, as in Vue or Angular. Component-based UIs such as React and Svelte group the view and its state into reusable components that receive data through props.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="705" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">MVC, MVVM, and components divide UI code differently</text>
+<text id="text-2" x="40" y="83" class="muted">Each column is one pattern; arrows follow a user action through it.</text>
+<rect x="40" y="130" width="350" height="420" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">MVC (server)</text>
+<rect x="60" y="200" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-4" x="82" y="234" class="body">Controller: Flask route</text>
+<rect x="60" y="321" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-5" x="82" y="355" class="body">Model: Todo records</text>
+<path d="M215.0 281.0 L215.0 321.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="60" y="442" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-6" x="82" y="476" class="body">View: HTML template</text>
+<path d="M215.0 402.0 L215.0 442.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="425" y="130" width="350" height="420" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="447" y="164" class="heading" font-size="22px" style="font-size:22px">MVVM</text>
+<rect x="445" y="200" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-8" x="467" y="234" class="body">View: template with bindings</text>
+<rect x="445" y="321" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-9" x="467" y="355" class="body">ViewModel: reactive state</text>
+<path d="M600.0 281.0 L600.0 321.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="445" y="442" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-10" x="467" y="476" class="body">Model: API data</text>
+<path d="M600.0 402.0 L600.0 442.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="810" y="130" width="350" height="420" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="832" y="164" class="heading" font-size="22px" style="font-size:22px">Components</text>
+<rect x="830" y="200" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-12" x="852" y="234" class="body">TodoList component</text>
+<rect x="830" y="321" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-13" x="852" y="355" class="body">TodoItem components</text>
+<path d="M985.0 281.0 L985.0 321.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="830" y="442" width="310" height="81" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-14" x="852" y="476" class="body">Props down, events up</text>
+<path d="M985.0 402.0 L985.0 442.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="590" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="60" y="620" class="body">The pattern organizes code inside one application. It does not decide where that application runs or how it is</text>
+<text id="text-16" x="60" y="645" class="body">deployed.</text>
+</svg>

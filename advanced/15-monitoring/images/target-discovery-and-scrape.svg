@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="725" viewBox="0 0 1200 725" role="img" aria-labelledby="title description">
+<title id="title">Prometheus finds targets from annotations, then scrapes them</title>
+<desc id="description">Prometheus asks the Kubernetes API for Pods and Service endpoints. The kubernetes-services job keeps only endpoints whose Service carries prometheus.io/scrape: true and uses the port and path annotations to build each target URL. RabbitMQ is a static target on port 15692. Prometheus then sends an HTTP GET to every target; the up metric is 1 when a scrape succeeds and 0 when it fails.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="725" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Prometheus finds targets from annotations, then scrapes them</text>
+<text id="text-2" x="40" y="83" class="muted">Dashed arrows are discovery through the Kubernetes API; solid arrows are scrape requests.</text>
+<rect x="40" y="125" width="340" height="165" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Kubernetes API</text>
+<text id="text-4" x="62" y="193" class="body">Lists Pods and Service</text>
+<text id="text-5" x="62" y="218" class="body">endpoints in the cluster.</text>
+<rect x="40" y="360" width="340" height="186" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="62" y="394" class="heading" font-size="22px" style="font-size:22px">Annotated Service</text>
+<text id="text-7" x="62" y="428" class="code">prometheus.io/scrape: &quot;true&quot;</text>
+<text id="text-8" x="62" y="453" class="code">prometheus.io/port: &quot;8001&quot;</text>
+<text id="text-9" x="62" y="478" class="code">prometheus.io/path:</text>
+<text id="text-10" x="62" y="503" class="code">&quot;/metrics&quot;</text>
+<rect x="450" y="220" width="300" height="230" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="472" y="254" class="heading" font-size="22px" style="font-size:22px">Prometheus</text>
+<text id="text-12" x="472" y="288" class="body">kubernetes-services job</text>
+<text id="text-13" x="472" y="313" class="body">keeps annotated endpoints.</text>
+<text id="text-14" x="472" y="338" class="body">rabbitmq job: static</text>
+<text id="text-15" x="472" y="363" class="body">target.</text>
+<rect x="820" y="125" width="340" height="140" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-16" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">order-service Pod</text>
+<text id="text-17" x="842" y="193" class="body">GET</text>
+<text id="text-18" x="842" y="218" class="body">http://&lt;pod-ip&gt;:8001/metrics</text>
+<rect x="820" y="290" width="340" height="140" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-19" x="842" y="324" class="heading" font-size="22px" style="font-size:22px">RabbitMQ</text>
+<text id="text-20" x="842" y="358" class="body">GET rabbitmq:15692/metrics</text>
+<rect x="820" y="455" width="340" height="140" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="842" y="489" class="heading" font-size="22px" style="font-size:22px">up metric</text>
+<text id="text-22" x="842" y="523" class="body">1 = scrape succeeded, 0 =</text>
+<text id="text-23" x="842" y="548" class="body">failed.</text>
+<path d="M450.0 250.0 L380.0 260.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-24" x="415" y="285" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">discover</text>
+<path d="M380.0 453.0 L450.0 410.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<path d="M750.0 250.0 L820.0 195.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 335.0 L820.0 360.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 420.0 L820.0 525.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="635" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-25" x="60" y="665" class="body">Annotate either the Pod or the Service, not both, or the same process is scraped twice and counts double.</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="635" viewBox="0 0 1200 635" role="img" aria-labelledby="title description">
+<title id="title">A prefetch limit stops deliveries piling up at a slow worker</title>
+<desc id="description">Without a prefetch limit, RabbitMQ pushes deliveries to consumers round-robin as they arrive, so a slow worker can hold many unacknowledged messages while a fast worker sits idle; if the slow worker disconnects, all of them are requeued. With basic_qos(prefetch_count=1), each worker holds at most one unacknowledged delivery and receives the next only after acking, so the faster worker processes more messages.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="635" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A prefetch limit stops deliveries piling up at a slow worker</text>
+<text id="text-2" x="40" y="83" class="muted">Each lane shows what one worker holds unacknowledged at the same moment.</text>
+<rect x="40" y="170" width="220" height="300" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="204" class="heading" font-size="22px" style="font-size:22px">Queue</text>
+<text id="text-4" x="62" y="238" class="body">Messages 1 to 8</text>
+<text id="text-5" x="62" y="263" class="body">arrive.</text>
+<text id="text-6" x="520" y="142" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">No prefetch limit</text>
+<rect x="320" y="170" width="400" height="140" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="342" y="204" class="heading" font-size="22px" style="font-size:22px">Slow worker</text>
+<text id="text-8" x="342" y="238" class="body">Holds 1, 3, 5, 7 unacked; works on 1.</text>
+<rect x="320" y="335" width="400" height="140" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-9" x="342" y="369" class="heading" font-size="22px" style="font-size:22px">Fast worker</text>
+<text id="text-10" x="342" y="403" class="body">Finished 2, 4, 6, 8; now idle.</text>
+<text id="text-11" x="950" y="142" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">prefetch_count=1</text>
+<rect x="750" y="170" width="400" height="140" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="772" y="204" class="heading" font-size="22px" style="font-size:22px">Slow worker</text>
+<text id="text-13" x="772" y="238" class="body">Holds only 1 until it acks.</text>
+<rect x="750" y="335" width="400" height="140" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="772" y="369" class="heading" font-size="22px" style="font-size:22px">Fast worker</text>
+<text id="text-15" x="772" y="403" class="body">Acked 2, takes 3, then 4, 5, ...</text>
+<path d="M260.0 245.0 L320.0 245.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M260.0 410.0 L320.0 410.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="520" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="60" y="550" class="body">prefetch_count=1 trades a little throughput per worker for fairer distribution and less work stranded at a slow</text>
+<text id="text-17" x="60" y="575" class="body">consumer.</text>
+</svg>

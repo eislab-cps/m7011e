@@ -42,6 +42,8 @@ MongoDB is a NoSQL document database. Unlike traditional relational databases (l
 }
 ```
 
+![One student record can be spread across tables or kept in one document. Left: rows joined by keys at query time; right: the same data nested in one document.](./images/rows-versus-document.svg)
+
 ## Installation Guide
 
 Run commands from `13-mongodb/`. This chart deploys one standalone MongoDB instance, not a replica set or sharded cluster.
@@ -91,6 +93,8 @@ MongoDB's server stores documents; `mongosh` is a client that sends operations t
 | `helm upgrade ...` | Update Kubernetes configuration; editing initialization credentials is not itself a password rotation on an initialized database. |
 
 In mongosh, `use appdb` selects the database for subsequent operations; the first write creates it if necessary. `find()` reads matching documents, while `insertOne`, `updateOne`, and `deleteOne` change data. Read the predicate and expected result before executing a write. Deleting a Pod while retaining its volume and deleting the PVC have different persistence consequences.
+
+![A connection names a server, a login database, and a data database. The boxes nest from the server down to documents; the connection string below names each part.](./images/connection-string-scopes.svg)
 
 **Predict and verify:** Insert a document, record its identifier, and read it back. Open a new client session and query the same database. Explain why closing mongosh should leave the document intact, whereas a write to an in-memory Python list would disappear when that API process restarts. See [the command guide](../COMMANDS.md) for ports and redirection.
 
@@ -193,6 +197,8 @@ mongosh --version
 ```
 
 ## Accessing the Database
+
+![localhost means the machine where the client runs. Each column is one place you can start a client; follow it down to the server.](./images/mongodb-localhost-meaning.svg)
 
 ### Option 1: Port Forwarding (Development/Testing)
 

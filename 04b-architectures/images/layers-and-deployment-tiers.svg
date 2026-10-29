@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="915" viewBox="0 0 1200 915" role="img" aria-labelledby="title description">
+<title id="title">Logical layers and deployed tiers are different</title>
+<desc id="description">A backend process can contain presentation, application rules, and repository layers. Separately deployed browser, application server, and database are runtime tiers. The two views describe different aspects of the same system.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="915" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Logical layers and deployed tiers are different</text>
+<text id="text-2" x="40" y="83" class="muted">The left view organizes code; the right view shows execution roles separated by a network.</text>
+<rect x="40" y="140" width="540" height="610" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="181" class="heading">Inside one backend process</text>
+<text id="text-5" x="62" y="215" class="body" font-size="17px" style="font-size:17px">Arrows: in-process runtime calls</text>
+<rect x="62" y="250" width="496" height="130" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="84" y="284" class="heading" font-size="22px" style="font-size:22px">HTTP handling</text>
+<text id="text-8" x="84" y="318" class="body">Parse input and form responses.</text>
+<path d="M310 380 L310 410" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="62" y="410" width="496" height="130" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="84" y="444" class="heading" font-size="22px" style="font-size:22px">Application rules</text>
+<text id="text-12" x="84" y="478" class="body">Apply the todo operation.</text>
+<path d="M310 540 L310 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="62" y="570" width="496" height="130" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="84" y="604" class="heading" font-size="22px" style="font-size:22px">Repository</text>
+<text id="text-16" x="84" y="638" class="body">Use a storage client.</text>
+<rect x="620" y="140" width="540" height="610" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-18" x="642" y="181" class="heading">Separate deployment roles</text>
+<text id="text-19" x="642" y="215" class="body" font-size="17px" style="font-size:17px">Arrows: requests over a network</text>
+<rect x="642" y="250" width="496" height="130" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-21" x="664" y="284" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-22" x="664" y="318" class="body">Client-side UI and requests.</text>
+<path d="M890 380 L890 410" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="642" y="410" width="496" height="130" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-25" x="664" y="444" class="heading" font-size="22px" style="font-size:22px">Application server</text>
+<text id="text-26" x="664" y="478" class="body">Runs the backend code on the left.</text>
+<path d="M890 540 L890 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="642" y="570" width="496" height="130" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-29" x="664" y="604" class="heading" font-size="22px" style="font-size:22px">Database</text>
+<text id="text-30" x="664" y="638" class="body">Stores shared durable records.</text>
+<rect x="40" y="800" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-32" x="60" y="830" class="body">Several logical layers can run in one application tier. A module boundary does not create a network tier.</text>
+</svg>

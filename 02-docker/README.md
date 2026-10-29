@@ -108,6 +108,8 @@ COPY . .
 CMD ["python", "app.py"]
 ```
 
+![One image can start many containers. Arrows are commands: docker build makes the image, and each docker run makes a new container with its own writable layer.](./images/dockerfile-image-containers.svg)
+
 #### 4. Docker Registry
 A **registry** stores Docker images (like GitHub for code).
 
@@ -605,6 +607,8 @@ fetch('http://localhost:8000/api/todos')
 - Service name `backend` → IP address of backend container
 - Service name `frontend` → IP address of frontend container
 
+![Host ports and Compose service names are different addresses. Solid arrows use published host ports; the dashed arrow is how a process in one container reaches another.](./images/compose-network-and-ports.svg)
+
 ### Network Types
 
 1. **Bridge Network** (default)
@@ -802,6 +806,8 @@ USER appuser
 
 Reduce image size by using multiple stages:
 
+![A multi-stage build ships only what the final stage copies. The arrow is COPY --from=builder; nothing else from the first stage reaches the final image.](./images/multi-stage-build.svg)
+
 ```dockerfile
 # Stage 1: Build
 FROM node:22 AS builder
@@ -838,6 +844,8 @@ services:
 ```
 
 ### 8. Optimize Layer Caching
+
+![Instruction order decides what a rebuild can reuse. Each column is one Dockerfile after app.py changes; green layers come from cache, amber layers are rebuilt.](./images/layer-cache-order.svg)
 
 ```dockerfile
 # Good - dependencies cached separately

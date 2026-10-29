@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title description">
+<title id="title">A role travels in the token; only the API check enforces it</title>
+<desc id="description">An administrator assigns an admin realm role. A newly issued access token can contain that role; an existing token does not change in place. React can use the role to control presentation. Flask must verify the token and enforce the role on the protected API operation.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="680" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A role travels in the token; only the API check enforces it</text>
+<text id="text-2" x="40" y="83" class="muted">Follow the role from Keycloak into the token, then to the two places that read it.</text>
+<rect x="40" y="125" width="340" height="136" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Keycloak realm</text>
+<text id="text-4" x="62" y="193" class="body">Realm role admin assigned to</text>
+<text id="text-5" x="62" y="218" class="body">testuser in Role mapping.</text>
+<rect x="430" y="125" width="340" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="452" y="159" class="heading" font-size="22px" style="font-size:22px">Access token (JWT)</text>
+<text id="text-7" x="452" y="193" class="code">&quot;realm_access&quot;: {</text>
+<text id="text-8" x="452" y="218" class="code">&quot;roles&quot;: [&quot;admin&quot;, ...] }</text>
+<rect x="820" y="125" width="340" height="161" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-9" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">New token needed</text>
+<text id="text-10" x="842" y="193" class="body">Roles enter a newly issued token.</text>
+<text id="text-11" x="842" y="218" class="body">An already issued token keeps</text>
+<text id="text-12" x="842" y="243" class="body">its old role claims.</text>
+<rect x="40" y="360" width="520" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-13" x="62" y="394" class="heading" font-size="22px" style="font-size:22px">React:</text>
+<text id="text-14" x="62" y="424" class="heading" font-size="22px" style="font-size:22px">keycloak.hasRealmRole(&#x27;admin&#x27;)</text>
+<text id="text-15" x="62" y="458" class="body">Shows or hides the admin button.</text>
+<text id="text-16" x="62" y="483" class="body">Convenience only: anyone can call the API</text>
+<text id="text-17" x="62" y="508" class="body">directly.</text>
+<rect x="640" y="360" width="520" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="662" y="394" class="heading" font-size="22px" style="font-size:22px">Flask: &#x27;admin&#x27; in realm_access.roles</text>
+<text id="text-19" x="662" y="428" class="body">Runs after signature and claim checks.</text>
+<text id="text-20" x="662" y="453" class="body">Missing role → 403 Admin access required.</text>
+<path d="M380.0 193.0 L430.0 193.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M770.0 193.0 L820.0 193.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<path d="M540.0 261.0 L300.0 360.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M660.0 261.0 L900.0 360.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="590" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="620" class="body">Remove the React check and the data is still protected; remove the Flask check and it is not.</text>
+</svg>

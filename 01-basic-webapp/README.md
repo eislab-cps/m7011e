@@ -51,6 +51,8 @@ Read `http://localhost:8000/api/todos` in pieces:
 | `8000` | Port: where the Flask process is listening. A machine can have many servers on different ports. |
 | `/api/todos` | Path: the resource Flask routes to a handler. This does not have to correspond to a file on disk. |
 
+![A URL names the protocol, machine, process, and resource. Each card is one piece of http://localhost:8000/api/todos, read left to right.](./images/url-anatomy.svg)
+
 A **request** has a method, a target, headers, and sometimes a body. `POST /api/todos` asks our API to create a todo. `Content-Type: application/json` tells the server how to interpret the body; `{"text":"Learn HTTP"}` is the data. Flask reads that data and changes its in-memory list.
 
 A **response** has a status code, headers, and sometimes a body. This handler returns `201 Created`, a JSON content type, and the created todo with its assigned ID. JavaScript reads the response and updates the displayed list. HTTP does not automatically update the page or save data to a database.
@@ -135,6 +137,8 @@ There are different ways for clients and servers to communicate:
 
 **Same operation in both styles:**
 
+![REST names resources; JSON-RPC names procedures. Rows show the same three operations; columns show what each style puts in the URL and the body.](./images/rest-vs-json-rpc.svg)
+
 **JSON-RPC:**
 ```
 POST /api
@@ -213,6 +217,8 @@ Web APIs typically exchange data in JSON (JavaScript Object Notation):
 **Why our app needs CORS:**
 - Frontend: `http://localhost:8080`, Backend: `http://localhost:8000` → Different origins
 - Without CORS: Browser blocks JavaScript from reading API responses
+
+![CORS lets a server permit a page from another origin. Solid arrows are requests; the dashed arrow is the response the browser checks before JavaScript can read it.](./images/cors-two-origins.svg)
 
 **CORS Implementation:**
 

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+<title id="title">Virtual machines and containers isolate at different levels</title>
+<desc id="description">Virtual machines have guest operating systems and kernels managed through a hypervisor. Containers use an operating-system kernel shared with other processes. Startup, memory use, and isolation depend on configuration. Containers can run inside virtual machines.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="630" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Virtual machines and containers isolate at different levels</text>
+<text id="text-2" x="40" y="83" class="muted">Each stack is read from the hardware at the bottom to the applications at the top.</text>
+<rect x="40" y="140" width="540" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Virtual machines</text>
+<rect x="40" y="210" width="540" height="52" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-4" x="62" y="244" class="body">App A | App B</text>
+<rect x="40" y="270" width="540" height="52" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-5" x="62" y="304" class="body">Libraries | Libraries</text>
+<rect x="40" y="330" width="540" height="52" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="62" y="364" class="body">Guest OS | Guest OS</text>
+<rect x="40" y="390" width="540" height="52" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="62" y="424" class="body">Hypervisor</text>
+<rect x="40" y="450" width="540" height="52" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-8" x="62" y="484" class="body">Hardware</text>
+<rect x="620" y="140" width="540" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="642" y="174" class="heading" font-size="22px" style="font-size:22px">Containers</text>
+<rect x="620" y="210" width="540" height="52" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-10" x="642" y="244" class="body">App A | App B | App C</text>
+<rect x="620" y="270" width="540" height="52" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="642" y="304" class="body">Libraries | Libraries | Libraries</text>
+<rect x="620" y="330" width="540" height="52" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="642" y="364" class="body">Container runtime (Docker, containerd)</text>
+<rect x="620" y="390" width="540" height="52" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-13" x="642" y="424" class="body">Host OS kernel (shared)</text>
+<rect x="620" y="450" width="540" height="52" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-14" x="642" y="484" class="body">Hardware or a virtual machine</text>
+<rect x="40" y="540" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="60" y="570" class="body">Images still need compatible CPUs, operating-system support, configuration, and external dependencies.</text>
+</svg>

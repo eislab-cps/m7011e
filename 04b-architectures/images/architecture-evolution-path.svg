@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="607" viewBox="0 0 1200 607" role="img" aria-labelledby="title description">
+<title id="title">Evolve the architecture as requirements appear</title>
+<desc id="description">Start with a simple monolith. When the code becomes hard to change, introduce module boundaries and enforce them. When one module needs independent deployment, scaling, or ownership, extract it as a service behind the same interface. Each step is reversible to some degree and is justified by measured pain.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="607" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Evolve the architecture as requirements appear</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows are migrations, each triggered by a concrete need rather than a prediction.</text>
+<rect x="40" y="140" width="340" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">1. Monolith</text>
+<text id="text-4" x="62" y="208" class="body">One app, one database. Fast to</text>
+<text id="text-5" x="62" y="233" class="body">build and debug.</text>
+<rect x="430" y="140" width="340" height="136" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="452" y="174" class="heading" font-size="22px" style="font-size:22px">2. Modular monolith</text>
+<text id="text-7" x="452" y="208" class="body">Enforced module interfaces,</text>
+<text id="text-8" x="452" y="233" class="body">private tables.</text>
+<rect x="820" y="140" width="340" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-9" x="842" y="174" class="heading" font-size="22px" style="font-size:22px">3. Extract a service</text>
+<text id="text-10" x="842" y="208" class="body">Only the module that needs to</text>
+<text id="text-11" x="842" y="233" class="body">deploy or scale on its own.</text>
+<path d="M380.0 208.0 L430.0 208.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M770.0 208.0 L820.0 208.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="316" width="340" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-12" x="62" y="350" class="heading" font-size="22px" style="font-size:22px">Why step 2</text>
+<text id="text-13" x="62" y="384" class="body">Changes in one feature keep</text>
+<text id="text-14" x="62" y="409" class="body">breaking others.</text>
+<rect x="430" y="316" width="340" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-15" x="452" y="350" class="heading" font-size="22px" style="font-size:22px">Why step 3</text>
+<text id="text-16" x="452" y="384" class="body">One part needs another release</text>
+<text id="text-17" x="452" y="409" class="body">cycle, team, or capacity.</text>
+<rect x="820" y="316" width="340" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-18" x="842" y="350" class="heading" font-size="22px" style="font-size:22px">Cost of step 3</text>
+<text id="text-19" x="842" y="384" class="body">Network failures, data</text>
+<text id="text-20" x="842" y="409" class="body">ownership, CI per service.</text>
+<rect x="40" y="492" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="522" class="body">Starting with services before the boundaries are understood usually produces a distributed monolith: all the</text>
+<text id="text-22" x="60" y="547" class="body">cost, none of the independence.</text>
+</svg>

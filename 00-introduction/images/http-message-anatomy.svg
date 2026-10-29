@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="697" viewBox="0 0 1200 697" role="img" aria-labelledby="title description">
+<title id="title">An HTTP request and its response</title>
+<desc id="description">This HTTP/1.1 example shows textual request and response start lines, headers, an empty line, and an optional body. HTTP/2 and HTTP/3 preserve message semantics but encode them in frames instead of these textual lines.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="697" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">An HTTP request and its response</text>
+<text id="text-2" x="40" y="83" class="muted">An HTTP/1.1 example: start line, headers, empty line, and optional body.</text>
+<rect x="40" y="140" width="540" height="236" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Request</text>
+<text id="text-4" x="62" y="208" class="code">POST /api/todos HTTP/1.1</text>
+<text id="text-5" x="62" y="233" class="code">Host: todo.example.com</text>
+<text id="text-6" x="62" y="258" class="code">Content-Type: application/json</text>
+<text id="text-7" x="62" y="283" class="code">Authorization: Bearer eyJhbGci...</text>
+<text id="text-8" x="62" y="308" class="code"></text>
+<text id="text-9" x="62" y="333" class="code">{&quot;text&quot;: &quot;Learn HTTP&quot;}</text>
+<rect x="620" y="140" width="540" height="236" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-10" x="642" y="174" class="heading" font-size="22px" style="font-size:22px">Response</text>
+<text id="text-11" x="642" y="208" class="code">HTTP/1.1 201 Created</text>
+<text id="text-12" x="642" y="233" class="code">Content-Type: application/json</text>
+<text id="text-13" x="642" y="258" class="code">Location: /api/todos/7</text>
+<text id="text-14" x="642" y="283" class="code"></text>
+<text id="text-15" x="642" y="308" class="code">{&quot;id&quot;: 7, &quot;text&quot;: &quot;Learn HTTP&quot;}</text>
+<path d="M580.0 200.0 L620.0 200.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M620.0 346.0 L580.0 346.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="40" y="406" width="360" height="161" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-16" x="62" y="440" class="heading" font-size="22px" style="font-size:22px">Start line</text>
+<text id="text-17" x="62" y="474" class="body">Method and path, or status code.</text>
+<text id="text-18" x="62" y="499" class="body">Says what kind of message this</text>
+<text id="text-19" x="62" y="524" class="body">is.</text>
+<rect x="420" y="406" width="360" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-20" x="442" y="440" class="heading" font-size="22px" style="font-size:22px">Headers</text>
+<text id="text-21" x="442" y="474" class="body">Metadata: content type, length,</text>
+<text id="text-22" x="442" y="499" class="body">caching, credentials.</text>
+<rect x="800" y="406" width="360" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-23" x="822" y="440" class="heading" font-size="22px" style="font-size:22px">Body</text>
+<text id="text-24" x="822" y="474" class="body">The data itself, often JSON. GET</text>
+<text id="text-25" x="822" y="499" class="body">requests usually have none.</text>
+<rect x="40" y="607" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="637" class="body">HTTP/2 and HTTP/3 encode messages in binary frames, but the meaning of method, status and headers is the same.</text>
+</svg>

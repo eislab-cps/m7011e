@@ -60,6 +60,8 @@ A deployment command can become stale as people or controllers change the runnin
 4. **Redis**: Caching layer
 5. **Dex** (optional): Identity service for SSO integration
 
+![Argo CD splits reading Git, comparing state, and serving users. Arrows show requests between components; the controller applies synced manifests to the cluster.](./images/argocd-components.svg)
+
 ### How Argo CD Works
 
 ![Desired state, synchronization, and health are different facts. Follow the loop while keeping manifest alignment separate from workload readiness.](./images/argocd-controller-loop.svg)
@@ -553,6 +555,8 @@ argocd app sync hello-world-prod
 
 ### Environment Promotion Workflow
 
+![One chart, three values files, three Applications. Arrows follow configuration from Git to a namespace; each Application has its own sync policy.](./images/one-chart-three-environments.svg)
+
 1. **Develop in dev**: Make changes, test in dev environment
 2. **Promote to staging**: Update staging values or merge branches
 3. **Test in staging**: Validate changes work correctly
@@ -614,6 +618,8 @@ argocd app rollback hello-world-dev
 git revert HEAD
 git push origin main
 ```
+
+![There are two ways back from a bad commit. Each column starts from the same bad commit; follow it to what Git and the cluster say afterwards.](./images/rollback-versus-revert.svg)
 
 Argo CD automatically syncs the fix!
 

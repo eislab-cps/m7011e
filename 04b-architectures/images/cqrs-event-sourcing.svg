@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="970" viewBox="0 0 1200 970" role="img" aria-labelledby="title description">
+<title id="title">CQRS and event sourcing are separate choices</title>
+<desc id="description">The CQRS example uses a command model and a query model over current-state records without event sourcing. The event-sourcing example appends canonical events and replays history to reconstruct current state. CQRS does not itself require asynchronous projections or separate databases.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="970" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">CQRS and event sourcing are separate choices</text>
+<text id="text-2" x="40" y="83" class="muted">Left: different write and read models. Right: event history is the canonical stored state.</text>
+<rect x="40" y="140" width="540" height="660" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="183" class="heading">CQRS without event sourcing</text>
+<rect x="620" y="140" width="540" height="660" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="642" y="183" class="heading">Event sourcing</text>
+<rect x="62" y="230" width="496" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="84" y="264" class="heading" font-size="22px" style="font-size:22px">Command model</text>
+<text id="text-9" x="84" y="298" class="body">Validate an operation and write current</text>
+<text id="text-10" x="84" y="323" class="body">records.</text>
+<rect x="62" y="430" width="496" height="130" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-12" x="84" y="464" class="heading" font-size="22px" style="font-size:22px">Current-state database</text>
+<text id="text-13" x="84" y="498" class="body">Shared storage in this example.</text>
+<rect x="62" y="640" width="496" height="130" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="84" y="674" class="heading" font-size="22px" style="font-size:22px">Query model</text>
+<text id="text-16" x="84" y="708" class="body">Shape the current data for a query.</text>
+<path d="M310 365 L310 430" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M310 640 L310 560" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="203.0" y="584" width="214.0" height="30" fill="#fff"/>
+<text id="text-20" x="310" y="605" class="body" text-anchor="middle">Read current records</text>
+<rect x="642" y="230" width="496" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-22" x="664" y="264" class="heading" font-size="22px" style="font-size:22px">Handle a command</text>
+<text id="text-23" x="664" y="298" class="body">Check rules and append the resulting event.</text>
+<rect x="642" y="430" width="496" height="130" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-25" x="664" y="464" class="heading" font-size="22px" style="font-size:22px">Canonical event history</text>
+<text id="text-26" x="664" y="498" class="body">Created, renamed, completed, ...</text>
+<rect x="642" y="640" width="496" height="130" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="664" y="674" class="heading" font-size="22px" style="font-size:22px">Reconstructed current state</text>
+<text id="text-29" x="664" y="708" class="body">Apply events in their defined order.</text>
+<path d="M890 365 L890 430" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M890 560 L890 640" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="812.4" y="584" width="155.20000000000002" height="30" fill="#fff"/>
+<text id="text-33" x="890" y="605" class="body" text-anchor="middle">Replay history</text>
+<rect x="40" y="855" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-35" x="60" y="885" class="body">These patterns can be combined. Neither requires separate services, and a broker queue is not an event store.</text>
+</svg>

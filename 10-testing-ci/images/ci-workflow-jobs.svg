@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="966" viewBox="0 0 1200 966" role="img" aria-labelledby="title description">
+<title id="title">One push starts independent jobs; deployment waits for all of them</title>
+<desc id="description">A push or pull request to main or develop starts the CI Pipeline workflow. Its four jobs have no needs between them, so GitHub Actions runs them in parallel, each on a fresh ubuntu-latest runner: backend tests with PostgreSQL and Redis service containers, frontend tests, linting with flake8 and black, and a Trivy security scan. Each job reports its own status on the commit. The deploy workflow, on pushes to main, reuses the CI workflow as its test job and runs its deploy job only after that job succeeds; the deploy steps are placeholders.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="966" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">One push starts independent jobs; deployment waits for all of them</text>
+<text id="text-2" x="40" y="83" class="muted">Jobs in the same row run in parallel on fresh runners; arrows show what each step waits for.</text>
+<rect x="40" y="125" width="1120" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Trigger: push or pull request to main or develop</text>
+<text id="text-4" x="62" y="193" class="body">GitHub Actions reads .github/workflows/ci.yml and starts one run.</text>
+<rect x="40" y="290" width="265" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-5" x="62" y="324" class="heading" font-size="22px" style="font-size:22px">backend-tests</text>
+<text id="text-6" x="62" y="358" class="body">PostgreSQL + Redis</text>
+<text id="text-7" x="62" y="383" class="body">service containers</text>
+<text id="text-8" x="62" y="408" class="body">unit, integration, API</text>
+<text id="text-9" x="62" y="433" class="body">tests</text>
+<text id="text-10" x="62" y="458" class="body">coverage → Codecov</text>
+<path d="M172.5 236.0 L172.5 290.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="325" y="290" width="265" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-11" x="347" y="324" class="heading" font-size="22px" style="font-size:22px">frontend-tests</text>
+<text id="text-12" x="347" y="358" class="body">npm ci, npm test</text>
+<text id="text-13" x="347" y="383" class="body">coverage → Codecov</text>
+<path d="M457.5 236.0 L457.5 290.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="610" y="290" width="265" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="632" y="324" class="heading" font-size="22px" style="font-size:22px">lint</text>
+<text id="text-15" x="632" y="358" class="body">flake8</text>
+<text id="text-16" x="632" y="383" class="body">black --check</text>
+<path d="M742.5 236.0 L742.5 290.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="895" y="290" width="265" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-17" x="917" y="324" class="heading" font-size="22px" style="font-size:22px">security-scan</text>
+<text id="text-18" x="917" y="358" class="body">Trivy filesystem scan</text>
+<text id="text-19" x="917" y="383" class="body">SARIF → Security tab</text>
+<path d="M1027.5 236.0 L1027.5 290.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="545" width="1120" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-20" x="62" y="579" class="heading" font-size="22px" style="font-size:22px">Status checks on the commit or PR</text>
+<text id="text-21" x="62" y="613" class="body">Each job passes or fails separately; a red job names which assumption broke.</text>
+<path d="M172.5 490.0 L172.5 545.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M457.5 490.0 L457.5 545.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M742.5 490.0 L742.5 545.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1027.5 490.0 L1027.5 545.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="300" y="700" width="600" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-22" x="322" y="734" class="heading" font-size="22px" style="font-size:22px">deploy.yml (push to main only)</text>
+<text id="text-23" x="322" y="768" class="body">Job test reuses ci.yml; job deploy has needs: test.</text>
+<text id="text-24" x="322" y="793" class="body">Build image, push, deploy (placeholders).</text>
+<path d="M600.0 656.0 L600.0 700.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-25" x="615" y="686" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">only if every CI job succeeded</text>
+<rect x="40" y="876" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="906" class="body">A green pipeline shows that these checks passed on this commit, not that untested behavior works.</text>
+</svg>

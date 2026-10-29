@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title description">
+<title id="title">Argo CD splits reading Git, comparing state, and serving users</title>
+<desc id="description">The repository server clones the Git repository and renders manifests, for example by running Helm with the selected values file. The application controller asks it for the desired manifests, compares them with live resources read from the Kubernetes API, and applies changes according to the sync policy. The API server provides the web UI, CLI, and gRPC/REST API; Redis caches data, and Dex optionally connects single sign-on.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="660" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Argo CD splits reading Git, comparing state, and serving users</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show requests between components; the controller applies synced manifests to the cluster.</text>
+<rect x="40" y="125" width="300" height="160" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Git repository</text>
+<text id="text-4" x="62" y="193" class="body">Chart plus</text>
+<text id="text-5" x="62" y="218" class="body">environments/*/values.yaml.</text>
+<rect x="450" y="125" width="300" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="472" y="159" class="heading" font-size="22px" style="font-size:22px">Repository server</text>
+<text id="text-7" x="472" y="193" class="body">Clones Git and renders</text>
+<text id="text-8" x="472" y="218" class="body">manifests with Helm.</text>
+<rect x="450" y="340" width="300" height="190" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="472" y="374" class="heading" font-size="22px" style="font-size:22px">Application</text>
+<text id="text-10" x="472" y="404" class="heading" font-size="22px" style="font-size:22px">controller</text>
+<text id="text-11" x="472" y="438" class="body">Compares desired with live</text>
+<text id="text-12" x="472" y="463" class="body">state; applies per sync</text>
+<text id="text-13" x="472" y="488" class="body">policy.</text>
+<rect x="860" y="340" width="300" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="882" y="374" class="heading" font-size="22px" style="font-size:22px">Kubernetes API</text>
+<text id="text-15" x="882" y="408" class="body">Live resources in</text>
+<text id="text-16" x="882" y="433" class="body">hello-world-dev and other</text>
+<text id="text-17" x="882" y="458" class="body">namespaces.</text>
+<rect x="40" y="340" width="300" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-18" x="62" y="374" class="heading" font-size="22px" style="font-size:22px">API server</text>
+<text id="text-19" x="62" y="408" class="body">Web UI, argocd CLI,</text>
+<text id="text-20" x="62" y="433" class="body">REST/gRPC; triggers syncs.</text>
+<rect x="860" y="125" width="300" height="160" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-21" x="882" y="159" class="heading" font-size="22px" style="font-size:22px">Redis + Dex</text>
+<text id="text-22" x="882" y="193" class="body">Redis caches state; Dex</text>
+<text id="text-23" x="882" y="218" class="body">(optional) adds single</text>
+<text id="text-24" x="882" y="243" class="body">sign-on.</text>
+<path d="M450.0 205.0 L340.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-25" x="395" y="193.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">fetch</text>
+<path d="M600.0 340.0 L600.0 285.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-26" x="690.0" y="318.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">get manifests</text>
+<path d="M750.0 435.0 L860.0 435.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text id="text-27" x="805" y="423.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">watch</text>
+<text id="text-28" x="805" y="463.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">apply</text>
+<path d="M340.0 435.0 L450.0 435.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-29" x="395" y="423.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">sync request</text>
+<rect x="40" y="570" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-30" x="60" y="600" class="body">Synced means live manifests match Git; Healthy is a separate check on the resulting resources.</text>
+</svg>

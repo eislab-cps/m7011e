@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="510" viewBox="0 0 1200 510" role="img" aria-labelledby="title description">
+<title id="title">The HorizontalPodAutoscaler adjusts replicas from observed load</title>
+<desc id="description">metrics-server reports CPU usage of the Pods. The HorizontalPodAutoscaler compares utilization with its target, for example 70 percent of the requested CPU, and changes the replica count of the Deployment within the minimum and maximum. The Deployment&#x27;s ReplicaSet creates or removes Pods, and the Service spreads requests across all ready Pods, which changes the load that metrics-server observes next.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="510" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The HorizontalPodAutoscaler adjusts replicas from observed load</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows form a control loop that repeats while the autoscaler exists.</text>
+<rect x="40" y="140" width="250" height="170" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">metrics-server</text>
+<text id="text-4" x="62" y="208" class="body">Reports Pod CPU</text>
+<text id="text-5" x="62" y="233" class="body">usage.</text>
+<rect x="330" y="140" width="250" height="170" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="352" y="174" class="heading" font-size="22px" style="font-size:22px">HPA</text>
+<text id="text-7" x="352" y="208" class="body">Target 70% of</text>
+<text id="text-8" x="352" y="233" class="body">requested CPU, min 2,</text>
+<text id="text-9" x="352" y="258" class="body">max 10.</text>
+<rect x="620" y="140" width="250" height="170" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="642" y="174" class="heading" font-size="22px" style="font-size:22px">Deployment</text>
+<text id="text-11" x="642" y="208" class="body">Sets replicas; its</text>
+<text id="text-12" x="642" y="233" class="body">ReplicaSet adds or</text>
+<text id="text-13" x="642" y="258" class="body">removes Pods.</text>
+<rect x="910" y="140" width="250" height="170" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-14" x="932" y="174" class="heading" font-size="22px" style="font-size:22px">Service + Pods</text>
+<text id="text-15" x="932" y="208" class="body">Requests spread over</text>
+<text id="text-16" x="932" y="233" class="body">ready Pods.</text>
+<path d="M290.0 225.0 L330.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M580.0 225.0 L620.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M870.0 225.0 L910.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1035.0 310 L1035.0 360 L165.0 360 L165.0 310" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-17" x="600" y="385" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">new load is measured again</text>
+<rect x="40" y="420" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="60" y="450" class="body">Without CPU requests the HPA has no baseline; without metrics-server it has nothing to observe.</text>
+</svg>

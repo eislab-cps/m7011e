@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Pipes and filters describe a processing flow</title>
+<desc id="description">Imported todo records pass through validation, timestamp normalization, completion-count aggregation, and report output. Stages may be functions in one process or separately run workers. The diagram describes data transformation, not deployment.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="640" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Pipes and filters describe a processing flow</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows carry records to the next transformation; they do not imply separate servers.</text>
+<rect x="40" y="150" width="250" height="230" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Validate</text>
+<text id="text-5" x="62" y="218" class="body">Reject malformed</text>
+<text id="text-6" x="62" y="243" class="body">records.</text>
+<rect x="330" y="150" width="250" height="230" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="352" y="184" class="heading" font-size="22px" style="font-size:22px">Normalize</text>
+<text id="text-9" x="352" y="218" class="body">Use one timestamp</text>
+<text id="text-10" x="352" y="243" class="body">format.</text>
+<path d="M290 265 L330 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620" y="150" width="250" height="230" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="642" y="184" class="heading" font-size="22px" style="font-size:22px">Aggregate</text>
+<text id="text-14" x="642" y="218" class="body">Compute completion</text>
+<text id="text-15" x="642" y="243" class="body">counts.</text>
+<path d="M580 265 L620 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="910" y="150" width="250" height="230" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-18" x="932" y="184" class="heading" font-size="22px" style="font-size:22px">Write report</text>
+<text id="text-19" x="932" y="218" class="body">Produce the agreed</text>
+<text id="text-20" x="932" y="243" class="body">output.</text>
+<path d="M870 265 L910 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="430" width="1120" height="90" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-23" x="62" y="464" class="heading" font-size="22px" style="font-size:22px">Deployment is a separate choice</text>
+<text id="text-24" x="62" y="498" class="body">One process, a batch job, or workers with durable intermediate data.</text>
+<rect x="40" y="555" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="585" class="body">Agree on intermediate formats. Plan backpressure and recovery when stages have different rates or failures.</text>
+</svg>

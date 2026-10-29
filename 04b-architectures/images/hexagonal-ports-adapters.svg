@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850" role="img" aria-labelledby="title description">
+<title id="title">Ports: runtime calls and source dependencies</title>
+<desc id="description">At runtime an HTTP adapter invokes a core use case, which invokes a repository adapter. At the source-code level the HTTP adapter depends on a core input interface and the repository adapter implements a core-owned output interface. Runtime calls outward do not require the core to import the database implementation.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="850" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Ports: runtime calls and source dependencies</text>
+<text id="text-2" x="40" y="83" class="muted">Two views of the same design. A port is an application interface, not a TCP port.</text>
+<text id="text-3" x="40" y="135" class="heading">Runtime: what calls what</text>
+<rect x="40" y="175" width="320" height="180" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-5" x="62" y="209" class="heading" font-size="22px" style="font-size:22px">HTTP adapter</text>
+<text id="text-6" x="62" y="243" class="body">Translate an HTTP request.</text>
+<rect x="440" y="175" width="320" height="180" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="462" y="209" class="heading" font-size="22px" style="font-size:22px">Core use case</text>
+<text id="text-9" x="462" y="243" class="body">Call a repository</text>
+<text id="text-10" x="462" y="268" class="body">interface.</text>
+<path d="M360 265 L440 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840" y="175" width="320" height="180" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="862" y="209" class="heading" font-size="22px" style="font-size:22px">Repository adapter</text>
+<text id="text-14" x="862" y="243" class="body">Perform the storage</text>
+<text id="text-15" x="862" y="268" class="body">operation.</text>
+<path d="M760 265 L840 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="40" y="435" class="heading">Source: what depends on what</text>
+<rect x="40" y="475" width="320" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-19" x="62" y="509" class="heading" font-size="22px" style="font-size:22px">HTTP adapter</text>
+<text id="text-20" x="62" y="543" class="body">Imports the core input</text>
+<text id="text-21" x="62" y="568" class="body">interface.</text>
+<rect x="440" y="475" width="320" height="190" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-23" x="462" y="509" class="heading" font-size="22px" style="font-size:22px">Core-owned ports</text>
+<text id="text-24" x="462" y="543" class="body">Input: use-case contract.</text>
+<text id="text-25" x="462" y="568" class="body">Output: repository</text>
+<text id="text-26" x="462" y="593" class="body">contract.</text>
+<rect x="840" y="475" width="320" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="862" y="509" class="heading" font-size="22px" style="font-size:22px">Repository adapter</text>
+<text id="text-29" x="862" y="543" class="body">Implements the core output</text>
+<text id="text-30" x="862" y="568" class="body">interface.</text>
+<path d="M360 570 L440 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M840 570 L760 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="40" y="725" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-34" x="60" y="755" class="body">Solid arrows show runtime invocation. Dashed arrows show source-code dependencies toward core-owned</text>
+<text id="text-35" x="60" y="783" class="body">interfaces.</text>
+</svg>

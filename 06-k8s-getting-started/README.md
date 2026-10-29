@@ -24,6 +24,8 @@ This explains why client installation, cluster selection, authentication, and na
 | `kubectl config current-context` | Reads the selected context from local configuration. A context groups a cluster, identity, and optionally a namespace. |
 | `kubectl get nodes` | Makes an authenticated request to the selected API server. A Forbidden response indicates a permissions decision; a timeout indicates a different problem. |
 
+![kubectl reads a local file, then asks a remote API. The left column is on your laptop; the right column is what the cluster checks before acting.](./images/kubeconfig-to-api-server.svg)
+
 **Check your understanding:** Before any later `apply`, `install`, or `delete`, identify the selected cluster and namespace. Explain why changing your terminal's directory does not change your Kubernetes context. See [the command guide](../COMMANDS.md) for shell and namespace syntax.
 
 ## 1. Install kubectl

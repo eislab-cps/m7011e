@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="661" viewBox="0 0 1200 661" role="img" aria-labelledby="title description">
+<title id="title">Helm renders templates with values, then applies the result</title>
+<desc id="description">Helm combines values.yaml with the files in templates/ and substitutes placeholders such as .Values.app.name. The rendered manifests describe a Deployment, Service, Ingress, and ConfigMap. helm install sends them to the Kubernetes API in the chosen namespace and records release revision 1; helm template prints the rendered YAML without contacting the cluster.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="661" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Helm renders templates with values, then applies the result</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows follow one helm install; helm template stops after the middle step.</text>
+<rect x="40" y="125" width="340" height="161" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">values.yaml</text>
+<text id="text-4" x="62" y="193" class="code">app.name: hello-world</text>
+<text id="text-5" x="62" y="218" class="code">app.replicas: 1</text>
+<text id="text-6" x="62" y="243" class="code">domain: helloworld...</text>
+<rect x="40" y="300" width="340" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="62" y="334" class="heading" font-size="22px" style="font-size:22px">templates/</text>
+<text id="text-8" x="62" y="368" class="code">{{ .Values.app.name }}</text>
+<text id="text-9" x="62" y="393" class="code">{{ .Values.app.replicas }}</text>
+<rect x="450" y="205" width="290" height="170" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="472" y="239" class="heading" font-size="22px" style="font-size:22px">helm renders</text>
+<text id="text-11" x="472" y="273" class="body">Substitutes each</text>
+<text id="text-12" x="472" y="298" class="body">placeholder with a value.</text>
+<text id="text-13" x="472" y="323" class="body">helm template prints</text>
+<text id="text-14" x="472" y="348" class="body">this.</text>
+<rect x="820" y="125" width="340" height="186" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-15" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">Rendered manifests</text>
+<text id="text-16" x="842" y="193" class="body">Deployment hello-world</text>
+<text id="text-17" x="842" y="218" class="body">Service hello-world</text>
+<text id="text-18" x="842" y="243" class="body">Ingress hello-world</text>
+<text id="text-19" x="842" y="268" class="body">ConfigMap hello-world-html</text>
+<rect x="820" y="370" width="340" height="161" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-20" x="842" y="404" class="heading" font-size="22px" style="font-size:22px">Kubernetes API</text>
+<text id="text-21" x="842" y="438" class="body">Creates the objects in</text>
+<text id="text-22" x="842" y="463" class="body">namespace helloworld; Helm</text>
+<text id="text-23" x="842" y="488" class="body">records release revision 1.</text>
+<path d="M380.0 205.5 L450.0 260.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M380.0 368.0 L450.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M740.0 270.0 L820.0 218.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M990.0 311.0 L990.0 370.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-24" x="1065.0" y="346.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">helm install</text>
+<rect x="40" y="571" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-25" x="60" y="601" class="body">helm upgrade renders again and records revision 2; helm rollback re-applies an earlier revision&#x27;s manifests.</text>
+</svg>

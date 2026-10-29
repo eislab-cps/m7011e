@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" role="img" aria-labelledby="title description">
+<title id="title">One image can start many containers</title>
+<desc id="description">A build uses base image layers and instructions to produce an image with filesystem layers and configuration metadata. Each docker run creates a container from that image with its own writable layer. Persistent or shared data needs an explicitly mounted storage arrangement.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="530" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">One image can start many containers</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows are commands: docker build makes the image, each docker run makes a new container.</text>
+<rect x="40" y="140" width="330" height="260" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Dockerfile</text>
+<text id="text-4" x="62" y="208" class="code">FROM python:3.11</text>
+<text id="text-5" x="62" y="233" class="code">COPY requirements.txt .</text>
+<text id="text-6" x="62" y="258" class="code">RUN pip install ...</text>
+<text id="text-7" x="62" y="283" class="code">COPY . .</text>
+<text id="text-8" x="62" y="308" class="code">CMD [&quot;python&quot;, ...]</text>
+<rect x="445" y="140" width="330" height="260" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="467" y="174" class="heading" font-size="22px" style="font-size:22px">Image (read-only)</text>
+<text id="text-10" x="467" y="208" class="body">Layer: base Python</text>
+<text id="text-11" x="467" y="233" class="body">Layer: requirements.txt</text>
+<text id="text-12" x="467" y="258" class="body">Layer: installed packages</text>
+<text id="text-13" x="467" y="283" class="body">Layer: app code</text>
+<text id="text-14" x="467" y="308" class="body">Metadata: start command</text>
+<rect x="850" y="140" width="310" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="872" y="174" class="heading" font-size="22px" style="font-size:22px">Container A</text>
+<text id="text-16" x="872" y="208" class="body">Own writable layer</text>
+<rect x="850" y="285" width="310" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="872" y="319" class="heading" font-size="22px" style="font-size:22px">Container B</text>
+<text id="text-18" x="872" y="353" class="body">Own writable layer</text>
+<path d="M370.0 270.0 L445.0 270.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-19" x="408" y="258.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">build</text>
+<path d="M775.0 197.0 L850.0 197.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-20" x="812" y="185" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">run</text>
+<path d="M775.0 342.0 L850.0 342.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-21" x="812" y="330" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">run</text>
+<rect x="40" y="440" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="60" y="470" class="body">Edited source code reaches an image only after a rebuild; running containers keep their original image.</text>
+</svg>

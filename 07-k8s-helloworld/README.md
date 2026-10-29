@@ -58,6 +58,8 @@ Helm uses a templating system to generate Kubernetes YAML manifests. Here's how 
 3. **Processing**: Helm substitutes placeholders with actual values from `values.yaml`
 4. **Deployment**: Generated YAML manifests are applied to your cluster
 
+![Helm renders templates with values, then applies the result. Arrows follow one helm install; helm template stops after the rendering step.](./images/helm-render-and-apply.svg)
+
 **Example Template Usage:**
 In `templates/deployment.yaml`, you'll see:
 ```yaml
@@ -98,6 +100,8 @@ The `cert-manager.io/cluster-issuer` annotation tells cert-manager which certifi
 3. Let's Encrypt validates that you control the domain (through HTTP-01 challenge)
 4. Once verified, Let's Encrypt issues a free SSL certificate
 5. The certificate is stored as a Kubernetes secret and automatically applied to your ingress
+
+![An example ACME HTTP-01 flow ends with a TLS Secret used by Traefik. The configured issuer decides the challenge method; staging certificates are not browser-trusted.](./images/cert-manager-issuance.svg)
 
 **Benefits**:
 - Free SSL certificates from a trusted Certificate Authority
@@ -210,6 +214,9 @@ This application demonstrates several key Kubernetes concepts:
 5. **Deployment**: Ensures your specified number of replicas are always running
 
 ## Troubleshooting
+
+![Check the request path one layer at a time. Read top to bottom; each row pairs a layer with the command that inspects it and the symptom when it fails.](./images/request-path-debugging-layers.svg)
+
 If something goes wrong, you can debug with these commands:
 
 ```bash

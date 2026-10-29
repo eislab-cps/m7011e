@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="681" viewBox="0 0 1200 681" role="img" aria-labelledby="title description">
+<title id="title">VirtualService picks the route; DestinationRule sets the policy</title>
+<desc id="description">When the frontend calls backend, its Envoy sidecar first applies the VirtualService: route rules, matches, weights, the overall timeout, and retries. The chosen destination or subset is then handled with the DestinationRule&#x27;s policies: subsets defined by Pod labels, connection-pool limits, and outlier detection that temporarily ejects failing backend instances. Both resources are configuration pushed by istiod; the sidecar enforces them.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="681" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">VirtualService picks the route; DestinationRule sets the policy</text>
+<text id="text-2" x="40" y="83" class="muted">Read left to right as the client&#x27;s sidecar handles one request to host backend.</text>
+<rect x="40" y="125" width="250" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">frontend</text>
+<text id="text-4" x="62" y="189" class="heading" font-size="22px" style="font-size:22px">sidecar</text>
+<text id="text-5" x="62" y="223" class="body">Envoy receives the</text>
+<text id="text-6" x="62" y="248" class="body">call to backend:5678.</text>
+<rect x="340" y="125" width="390" height="200" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="362" y="159" class="heading" font-size="22px" style="font-size:22px">VirtualService backend</text>
+<text id="text-8" x="362" y="193" class="body">Which route and subset?</text>
+<text id="text-9" x="362" y="218" class="body">timeout: 5s for the whole call</text>
+<text id="text-10" x="362" y="243" class="body">retries: up to 3, 2s per try</text>
+<rect x="780" y="125" width="380" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-11" x="802" y="159" class="heading" font-size="22px" style="font-size:22px">DestinationRule backend</text>
+<text id="text-12" x="802" y="193" class="body">subsets v1/v2 by version label</text>
+<text id="text-13" x="802" y="218" class="body">maxConnections: 100</text>
+<text id="text-14" x="802" y="243" class="body">eject after 5 consecutive 5xx</text>
+<rect x="780" y="390" width="180" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="802" y="424" class="heading" font-size="22px" style="font-size:22px">v1 Pods</text>
+<text id="text-16" x="802" y="458" class="body">version: v1</text>
+<rect x="980" y="390" width="180" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="1002" y="424" class="heading" font-size="22px" style="font-size:22px">v2 Pods</text>
+<text id="text-18" x="1002" y="458" class="body">version: v2</text>
+<path d="M290.0 225.0 L340.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M730.0 225.0 L780.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M870.0 325.0 L870.0 390.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1070.0 325.0 L1070.0 390.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="390" width="690" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-19" x="62" y="424" class="heading" font-size="22px" style="font-size:22px">Timing caveat</text>
+<text id="text-20" x="62" y="458" class="body">The 5s overall timeout can end the call before every configured retry</text>
+<text id="text-21" x="62" y="483" class="body">have run.</text>
+<rect x="40" y="566" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-22" x="60" y="596" class="body">Applying a second file with the same name replaces the first; merge routing, retries, and subsets into one</text>
+<text id="text-23" x="60" y="621" class="body">manifest each.</text>
+</svg>

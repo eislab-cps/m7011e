@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="590" viewBox="0 0 1200 590" role="img" aria-labelledby="title description">
+<title id="title">A transaction commits every change or none of them</title>
+<desc id="description">A bank transfer debits account A and credits account B inside one transaction. If both statements succeed, COMMIT makes both changes durable and visible together. If any step fails, ROLLBACK discards both, so no reader ever sees money removed from A without being added to B.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="590" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A transaction commits every change or none of them</text>
+<text id="text-2" x="40" y="83" class="muted">The left card is one transaction; branches show its two possible outcomes.</text>
+<rect x="40" y="170" width="370" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="204" class="heading" font-size="22px" style="font-size:22px">BEGIN</text>
+<text id="text-4" x="62" y="238" class="code">UPDATE A: balance - 100</text>
+<text id="text-5" x="62" y="263" class="code">UPDATE B: balance + 100</text>
+<rect x="660" y="130" width="500" height="130" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-6" x="682" y="164" class="heading" font-size="22px" style="font-size:22px">COMMIT</text>
+<text id="text-7" x="682" y="198" class="body">Both changes become durable and visible</text>
+<text id="text-8" x="682" y="223" class="body">together.</text>
+<rect x="660" y="310" width="500" height="130" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-9" x="682" y="344" class="heading" font-size="22px" style="font-size:22px">ROLLBACK</text>
+<text id="text-10" x="682" y="378" class="body">A step failed: both changes are discarded;</text>
+<text id="text-11" x="682" y="403" class="body">balances are unchanged.</text>
+<path d="M410 250 L535 250 L535 195.0 L660 195.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-12" x="472" y="238" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">all succeed</text>
+<path d="M410 320 L535 320 L535 375.0 L660 375.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-13" x="472" y="308" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">any fails</text>
+<rect x="40" y="500" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="60" y="530" class="body">Atomicity covers the database changes only; an email sent before COMMIT cannot be rolled back.</text>
+</svg>

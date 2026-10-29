@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="716" viewBox="0 0 1200 716" role="img" aria-labelledby="title description">
+<title id="title">A delivered message waits for the consumer&#x27;s answer</title>
+<desc id="description">A published message waits in the queue as Ready. When RabbitMQ delivers it to a consumer, it becomes Unacked and is not given to anyone else. If the consumer acknowledges it, RabbitMQ deletes it. If the consumer&#x27;s channel or connection closes first, for example because the process crashed or the Pod was terminated, RabbitMQ returns the message to Ready and later redelivers it, with the redelivered flag set, to the same or another consumer. A delivery left unacknowledged on an open channel is not retried automatically.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="716" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A delivered message waits for the consumer&#x27;s answer</text>
+<text id="text-2" x="40" y="83" class="muted">Boxes are message states in the queue; arrows are the events that move a message between them.</text>
+<rect x="40" y="170" width="300" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="204" class="heading" font-size="22px" style="font-size:22px">Ready</text>
+<text id="text-4" x="62" y="238" class="body">Stored in the queue,</text>
+<text id="text-5" x="62" y="263" class="body">waiting for a consumer.</text>
+<rect x="450" y="170" width="300" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="472" y="204" class="heading" font-size="22px" style="font-size:22px">Unacked</text>
+<text id="text-7" x="472" y="238" class="body">Delivered to one consumer;</text>
+<text id="text-8" x="472" y="263" class="body">held until it answers.</text>
+<rect x="860" y="170" width="300" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-9" x="882" y="204" class="heading" font-size="22px" style="font-size:22px">Deleted</text>
+<text id="text-10" x="882" y="238" class="body">The broker&#x27;s job for this</text>
+<text id="text-11" x="882" y="263" class="body">message is done.</text>
+<rect x="450" y="400" width="300" height="161" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="472" y="434" class="heading" font-size="22px" style="font-size:22px">Channel closed</text>
+<text id="text-13" x="472" y="468" class="body">Consumer crashed, exited,</text>
+<text id="text-14" x="472" y="493" class="body">or its Pod was terminated</text>
+<text id="text-15" x="472" y="518" class="body">before acking.</text>
+<path d="M340.0 238.0 L450.0 238.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="395" y="226.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">deliver</text>
+<path d="M750.0 238.0 L860.0 238.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="805" y="226.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">basic_ack</text>
+<path d="M600.0 306.0 L600.0 400.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-18" x="670.0" y="359.0" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">no ack</text>
+<path d="M450 480.5 L190.0 480.5 L190.0 306" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-19" x="202.0" y="466.5" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">requeue; redelivered=True</text>
+<path d="M190.0 125.0 L190.0 170.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-20" x="200" y="118" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">producer publishes</text>
+<rect x="40" y="601" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="631" class="body">Redelivery means the work can run twice: make the consumer&#x27;s side effect, such as sending an email, safe to</text>
+<text id="text-22" x="60" y="656" class="body">repeat.</text>
+</svg>

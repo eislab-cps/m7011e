@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="475" viewBox="0 0 1200 475" role="img" aria-labelledby="title description">
+<title id="title">Serverless describes managed execution</title>
+<desc id="description">An HTTP, queue, or timer trigger invokes platform-managed function execution. The platform may reuse or replace execution environments. The application accesses external durable state and remains responsible for authorization, dependency failures, and duplicate effects.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="475" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Serverless describes managed execution</text>
+<text id="text-2" x="40" y="83" class="muted">A function-triggered example; platform lifecycle, concurrency, and billing vary.</text>
+<rect x="40.0" y="150" width="320.0" height="175" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Configured trigger</text>
+<text id="text-5" x="62.0" y="218" class="body">HTTP request, queue</text>
+<text id="text-6" x="62.0" y="243" class="body">message, upload, or timer.</text>
+<rect x="440.0" y="150" width="320.0" height="175" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="462.0" y="184" class="heading" font-size="22px" style="font-size:22px">Managed execution</text>
+<text id="text-9" x="462.0" y="218" class="body">Run application code.</text>
+<text id="text-10" x="462.0" y="243" class="body">Instances can be reused,</text>
+<text id="text-11" x="462.0" y="268" class="body">created, or replaced.</text>
+<path d="M360.0 237.5 L440.0 237.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="840.0" y="150" width="320.0" height="175" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="862.0" y="184" class="heading" font-size="22px" style="font-size:22px">External durable</text>
+<text id="text-15" x="862.0" y="210" class="heading" font-size="22px" style="font-size:22px">state</text>
+<text id="text-16" x="862.0" y="244" class="body">Store todos and delivery</text>
+<text id="text-17" x="862.0" y="269" class="body">status independently of</text>
+<text id="text-18" x="862.0" y="294" class="body">instance memory.</text>
+<path d="M760.0 237.5 L840.0 237.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="385" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="415" class="body">Keep shared durable state outside instance memory. Configure permissions, timeouts, retries, and capacity.</text>
+</svg>

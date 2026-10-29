@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+<title id="title">cert-manager obtains the certificate before Traefik can serve it</title>
+<desc id="description">In an illustrative ACME HTTP-01 flow, cert-manager creates certificate resources from an annotated Ingress and serves a challenge response for domain validation. It stores the issued certificate with its generated private key in a Secret used by Traefik. The actual issuer decides the challenge method. The chart uses a staging issuer whose certificates are not browser-trusted.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="675" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">cert-manager obtains the certificate before Traefik can serve it</text>
+<text id="text-2" x="40" y="83" class="muted">Example HTTP-01 issuance; the issuer configuration chooses the challenge method.</text>
+<rect x="40" y="125" width="340" height="160" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">1 Ingress annotation</text>
+<text id="text-4" x="62" y="193" class="body">cluster-issuer:</text>
+<text id="text-5" x="62" y="218" class="body">letsencrypt-staging;</text>
+<text id="text-6" x="62" y="243" class="body">tls.secretName: hello-world-tls</text>
+<rect x="430" y="125" width="340" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="452" y="159" class="heading" font-size="22px" style="font-size:22px">2 cert-manager</text>
+<text id="text-8" x="452" y="193" class="body">Creates a Certificate and an</text>
+<text id="text-9" x="452" y="218" class="body">ACME order for the host.</text>
+<rect x="820" y="125" width="340" height="160" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">3 Let&#x27;s Encrypt</text>
+<text id="text-11" x="842" y="193" class="body">Issues an HTTP-01 challenge</text>
+<text id="text-12" x="842" y="218" class="body">token for the host.</text>
+<rect x="820" y="330" width="340" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-13" x="842" y="364" class="heading" font-size="22px" style="font-size:22px">4 Domain check</text>
+<text id="text-14" x="842" y="398" class="body">Fetches the token from</text>
+<text id="text-15" x="842" y="423" class="body">/.well-known/acme-challenge/</text>
+<text id="text-16" x="842" y="448" class="body">via DNS and Traefik; a</text>
+<text id="text-17" x="842" y="473" class="body">cert-manager solver answers.</text>
+<rect x="430" y="330" width="340" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="452" y="364" class="heading" font-size="22px" style="font-size:22px">5 Secret</text>
+<text id="text-19" x="452" y="394" class="heading" font-size="22px" style="font-size:22px">hello-world-tls</text>
+<text id="text-20" x="452" y="428" class="body">Signed certificate plus the</text>
+<text id="text-21" x="452" y="453" class="body">private key cert-manager</text>
+<text id="text-22" x="452" y="478" class="body">generated.</text>
+<rect x="40" y="330" width="340" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-23" x="62" y="364" class="heading" font-size="22px" style="font-size:22px">6 Traefik serves TLS</text>
+<text id="text-24" x="62" y="398" class="body">Uses the Secret for browsers</text>
+<text id="text-25" x="62" y="423" class="body">asking for this host.</text>
+<path d="M380.0 205.0 L430.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M770.0 205.0 L820.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M990.0 285.0 L990.0 330.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M820.0 425.0 L770.0 425.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M430.0 425.0 L380.0 425.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="560" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="590" class="body">This chart selects a staging issuer, so its certificates are not browser-trusted. Production issuance needs</text>
+<text id="text-27" x="60" y="615" class="body">the appropriate issuer configuration and a successful domain-control challenge.</text>
+</svg>

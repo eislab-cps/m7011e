@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="716" viewBox="0 0 1200 716" role="img" aria-labelledby="title description">
+<title id="title">An alert rule moves from inactive to pending to firing</title>
+<desc id="description">Prometheus evaluates each rule&#x27;s expression on its evaluation interval, 30 seconds in this chart. While the expression returns nothing, the alert is inactive. When it first returns a result, the alert becomes pending, and it fires only if the condition stays true for the rule&#x27;s for duration, five minutes for HighErrorRate. If the condition clears, the alert returns to inactive. Firing alerts appear in Prometheus&#x27;s Alerts tab; sending notifications needs an Alertmanager, which this chart does not deploy.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="716" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">An alert rule moves from inactive to pending to firing</text>
+<text id="text-2" x="40" y="83" class="muted">Boxes are the states of HighErrorRate; transitions are checked every 30 seconds.</text>
+<rect x="40" y="150" width="300" height="160" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-3" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Inactive</text>
+<text id="text-4" x="62" y="218" class="body">Error rate ≤ 5%:</text>
+<text id="text-5" x="62" y="243" class="body">expression returns</text>
+<text id="text-6" x="62" y="268" class="body">nothing.</text>
+<rect x="450" y="150" width="300" height="160" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="472" y="184" class="heading" font-size="22px" style="font-size:22px">Pending</text>
+<text id="text-8" x="472" y="218" class="body">Error rate &gt; 5%; waiting</text>
+<text id="text-9" x="472" y="243" class="body">for for: 5m.</text>
+<rect x="860" y="150" width="300" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="882" y="184" class="heading" font-size="22px" style="font-size:22px">Firing</text>
+<text id="text-11" x="882" y="218" class="body">Still true after 5</text>
+<text id="text-12" x="882" y="243" class="body">minutes.</text>
+<path d="M340.0 215.0 L450.0 215.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-13" x="395" y="203.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">&gt; 5%</text>
+<path d="M750.0 215.0 L860.0 215.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-14" x="805" y="203.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">for elapsed</text>
+<path d="M450.0 255.0 L340.0 255.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-15" x="395" y="280.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">≤ 5%</text>
+<path d="M1010.0 310 L1010.0 355 L190.0 355 L190.0 310" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="600" y="345" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">condition clears: alert resolves</text>
+<rect x="860" y="400" width="300" height="161" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-17" x="882" y="434" class="heading" font-size="22px" style="font-size:22px">Alertmanager</text>
+<text id="text-18" x="882" y="468" class="body">Not deployed by this</text>
+<text id="text-19" x="882" y="493" class="body">chart; would route firing</text>
+<text id="text-20" x="882" y="518" class="body">alerts to email or chat.</text>
+<path d="M1010.0 355.0 L1010.0 400.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="40" y="400" width="760" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-21" x="62" y="434" class="heading" font-size="22px" style="font-size:22px">Where to look</text>
+<text id="text-22" x="62" y="468" class="body">Prometheus → Alerts tab shows each rule&#x27;s state, labels, and when it became</text>
+<text id="text-23" x="62" y="493" class="body">active.</text>
+<rect x="40" y="601" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="60" y="631" class="body">The for: duration filters out short spikes; it also means an alert fires at least that long after the problem</text>
+<text id="text-25" x="60" y="656" class="body">starts.</text>
+</svg>

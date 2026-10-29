@@ -401,6 +401,8 @@ These examples update the same `backend` VirtualService or DestinationRule. Appl
 **VirtualService** defines routing rules (where traffic goes)
 **DestinationRule** defines policies (how traffic is handled)
 
+![A VirtualService picks the route; a DestinationRule sets the policy. Read left to right as the client's sidecar handles one request to host backend.](./images/virtualservice-and-destinationrule.svg)
+
 ### Example 1: Simple Routing
 
 **backend-virtualservice.yaml:**
@@ -561,6 +563,8 @@ spec:
 - Everyone else → 90% to v1, 10% to v2
 - Gradually increase v2 weight as confidence grows
 
+![The canary rules send beta users to v2 and a tenth of everyone else. Rules are checked top to bottom; the first match wins.](./images/canary-routing-rules.svg)
+
 **Test it:**
 ```bash
 # Regular user (90% v1, 10% v2)
@@ -626,6 +630,8 @@ spec:
 **What this does:**
 - Only pods with `frontend` service account can call backend
 - All other requests are denied (403 Forbidden)
+
+![mTLS proves who is calling; authorization decides if it may. Follow one call from frontend to backend; the checks happen in the backend's sidecar.](./images/mtls-identity-and-authorization.svg)
 
 ---
 

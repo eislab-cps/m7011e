@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="766" viewBox="0 0 1200 766" role="img" aria-labelledby="title description">
+<title id="title">Two ways back from a bad commit</title>
+<desc id="description">An Argo CD rollback re-applies an earlier synced revision to the cluster, but Git still contains the bad commit, so automated sync must be disabled first or it re-applies the bad state; the application then shows OutOfSync until Git is fixed. A git revert creates a new commit restoring the previous configuration, so Git and the cluster agree again after the next sync. Reverting in Git is the GitOps-preferred path.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="766" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Two ways back from a bad commit</text>
+<text id="text-2" x="40" y="83" class="muted">Each column starts from the same bad commit; follow it to what Git and the cluster say afterwards.</text>
+<rect x="300" y="125" width="600" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="322" y="159" class="heading" font-size="22px" style="font-size:22px">Bad commit on main</text>
+<text id="text-4" x="322" y="193" class="body">image.tag: invalid-tag-that-doesnt-exist →</text>
+<text id="text-5" x="322" y="218" class="body">ImagePullBackOff</text>
+<rect x="40" y="300" width="520" height="161" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="62" y="334" class="heading" font-size="22px" style="font-size:22px">argocd app rollback</text>
+<text id="text-7" x="62" y="368" class="body">Re-applies an earlier synced revision.</text>
+<text id="text-8" x="62" y="393" class="body">Disable auto-sync first, or it re-applies the bad</text>
+<text id="text-9" x="62" y="418" class="body">commit.</text>
+<rect x="640" y="300" width="520" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-10" x="662" y="334" class="heading" font-size="22px" style="font-size:22px">git revert HEAD + push</text>
+<text id="text-11" x="662" y="368" class="body">New commit restores the earlier values.</text>
+<text id="text-12" x="662" y="393" class="body">Argo CD syncs it like any change.</text>
+<rect x="40" y="500" width="520" height="136" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-13" x="62" y="534" class="heading" font-size="22px" style="font-size:22px">Afterwards</text>
+<text id="text-14" x="62" y="568" class="body">Cluster: old version. Git: still bad. Status:</text>
+<text id="text-15" x="62" y="593" class="body">OutOfSync until Git is fixed.</text>
+<rect x="640" y="500" width="520" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="662" y="534" class="heading" font-size="22px" style="font-size:22px">Afterwards</text>
+<text id="text-17" x="662" y="568" class="body">Cluster and Git agree; history records the fix.</text>
+<path d="M450.0 261.0 L300.0 300.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 261.0 L900.0 300.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M300.0 461.0 L300.0 500.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M900.0 436.0 L900.0 500.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="676" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="60" y="706" class="body">Use the rollback for a fast emergency stop; still revert in Git so desired state is correct again.</text>
+</svg>

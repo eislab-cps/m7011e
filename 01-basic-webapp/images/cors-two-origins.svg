@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="495" viewBox="0 0 1200 495" role="img" aria-labelledby="title description">
+<title id="title">CORS lets a server permit a page from another origin</title>
+<desc id="description">The browser loads index.html from the frontend server at localhost port 8080. JavaScript on that page then calls the Flask API at localhost port 8000, which is a different origin because the port differs. For a JSON POST the browser first sends an OPTIONS preflight request. Flask answers with Access-Control-Allow-Origin and related headers; only if they permit the page&#x27;s origin does the browser send the request and let JavaScript read the response. The server, not the browser, still decides whether the operation is authorized.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="495" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">CORS lets a server permit a page from another origin</text>
+<text id="text-2" x="40" y="83" class="muted">Solid arrows are requests; the dashed arrow is the response the browser checks before JavaScript can read it.</text>
+<rect x="40" y="140" width="290" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Frontend server</text>
+<text id="text-4" x="62" y="208" class="body">http://localhost:8080</text>
+<text id="text-5" x="62" y="233" class="body">Serves index.html and its</text>
+<text id="text-6" x="62" y="258" class="body">JavaScript.</text>
+<rect x="455" y="140" width="290" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-7" x="477" y="174" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-8" x="477" y="208" class="body">Page origin:</text>
+<text id="text-9" x="477" y="233" class="body">localhost:8080.</text>
+<text id="text-10" x="477" y="258" class="body">Enforces the same-origin</text>
+<text id="text-11" x="477" y="283" class="body">policy.</text>
+<rect x="870" y="140" width="290" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="892" y="174" class="heading" font-size="22px" style="font-size:22px">Flask API</text>
+<text id="text-13" x="892" y="208" class="body">http://localhost:8000</text>
+<text id="text-14" x="892" y="233" class="body">Different port, so a</text>
+<text id="text-15" x="892" y="258" class="body">different origin.</text>
+<path d="M455.0 200.0 L330.0 200.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="392" y="188" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">GET /</text>
+<path d="M745.0 200.0 L870.0 200.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="807" y="188" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">OPTIONS</text>
+<text id="text-18" x="807" y="222" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">then POST</text>
+<path d="M870.0 285.0 L745.0 285.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-19" x="807" y="273" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">Allow-Origin</text>
+<rect x="40" y="380" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-20" x="60" y="410" class="body">CORS headers control which pages may read responses; they are not authentication and do not stop a server from</text>
+<text id="text-21" x="60" y="435" class="body">receiving the request.</text>
+</svg>

@@ -39,7 +39,7 @@ By the end of this tutorial, you will understand:
 
 ## Prerequisites
 
-- Completed Tutorial 1-4 (Docker, Databases, Frameworks)
+- Completed Tutorials 1-4 and [Tutorial 4B: Software Architectures](../04b-architectures/README.md)
 - Basic understanding of containers
 - Familiarity with Docker concepts
 
@@ -1049,38 +1049,7 @@ Update image → Deployment creates new ReplicaSet
 
 #### Rolling Update Process
 
-**Before Update:**
-```
-Deployment: user-service
-  ├─ ReplicaSet v1 (replicas: 3)
-  │   ├─ Pod v1-abc ✅
-  │   ├─ Pod v1-def ✅
-  │   └─ Pod v1-ghi ✅
-```
-
-**During Update (Rolling):**
-```
-Deployment: user-service (updating v1 → v2)
-  ├─ ReplicaSet v1 (replicas: 2) ← Scaling down
-  │   ├─ Pod v1-abc ✅
-  │   └─ Pod v1-def ✅
-  └─ ReplicaSet v2 (replicas: 1) ← Scaling up
-      └─ Pod v2-xyz ✅ (new)
-
-# Next iteration:
-  ├─ ReplicaSet v1 (replicas: 1)
-  │   └─ Pod v1-abc ✅
-  └─ ReplicaSet v2 (replicas: 2)
-      ├─ Pod v2-xyz ✅
-      └─ Pod v2-jkl ✅ (new)
-
-# Final state:
-  ├─ ReplicaSet v1 (replicas: 0) ← Kept for rollback
-  └─ ReplicaSet v2 (replicas: 3)
-      ├─ Pod v2-xyz ✅
-      ├─ Pod v2-jkl ✅
-      └─ Pod v2-mno ✅ (new)
-```
+![A rolling update moves Pods from the old ReplicaSet to the new one. Columns are possible snapshots during a rollout of Deployment user-service; arrows show time.](./images/rolling-update-steps.svg)
 
 **At each step:**
 - **Max Surge**: With `maxSurge: 1` below, up to 4 non-terminating Pods are allowed during the update
@@ -1714,6 +1683,8 @@ data:
   password: cGFzc3dvcmQxMjM=  # base64 encoded
 ```
 
+![ConfigMaps and Secrets reach a Pod as environment or files. Arrows show how configuration is injected when the Pod starts; the image stays unchanged.](./images/configmap-secret-injection.svg)
+
 ---
 
 ## Microservices Design Principles
@@ -2243,6 +2214,8 @@ kubectl autoscale deployment user-service --min=2 --max=10 --cpu-percent=70
 3. Service load balances across all Pods
 4. When load decreases, scales down
 
+![The HorizontalPodAutoscaler adjusts replicas from observed load. Arrows form a control loop that repeats while the autoscaler exists.](./images/hpa-control-loop.svg)
+
 ### Vertical Scaling (Resource Limits)
 
 Increase resources per Pod:
@@ -2348,6 +2321,8 @@ readinessProbe:  # Is service ready to serve traffic?
     path: /ready
     port: 5000
 ```
+
+![Repeated liveness failures trigger a container restart. Readiness failures instead affect eligibility for Service traffic after endpoint updates.](./images/liveness-vs-readiness.svg)
 
 ### 4. Version Your APIs
 ```

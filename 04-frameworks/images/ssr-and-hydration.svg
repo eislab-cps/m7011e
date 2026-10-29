@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1070" viewBox="0 0 1200 1070" role="img" aria-labelledby="title description">
+<title id="title">Request-time SSR and optional hydration</title>
+<desc id="description">The browser requests a page. An application server reads data and returns generated HTML. The browser can display that content. If the selected UI uses hydration, client code attaches behavior afterward; later interactions can make additional requests.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1070" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Request-time SSR and optional hydration</text>
+<text id="text-2" x="40" y="83" class="muted">Time runs downward. The server generates page content before the browser receives it.</text>
+<rect x="40" y="130" width="320" height="115" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-5" x="62" y="198" class="body">Receives generated HTML.</text>
+<path d="M200 245 V900" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="440" y="130" width="320" height="115" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="462" y="164" class="heading" font-size="22px" style="font-size:22px">Application server</text>
+<text id="text-9" x="462" y="198" class="body">Runs a page renderer.</text>
+<path d="M600 245 V900" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="840" y="130" width="320" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="862" y="164" class="heading" font-size="22px" style="font-size:22px">Data source</text>
+<text id="text-13" x="862" y="198" class="body">Database or API.</text>
+<path d="M1000 245 V900" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<path d="M200 295 L600 295" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="337.1" y="249" width="125.80000000000001" height="30" fill="#fff"/>
+<text id="text-17" x="400.0" y="270" class="body" text-anchor="middle">1. GET page</text>
+<path d="M600 395 L1000 395" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="688.1" y="349" width="223.8" height="30" fill="#fff"/>
+<text id="text-20" x="800.0" y="370" class="body" text-anchor="middle">2. Read required data</text>
+<path d="M1000 485 L600 485" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="722.4" y="439" width="155.20000000000002" height="30" fill="#fff"/>
+<text id="text-23" x="800.0" y="460" class="body" text-anchor="middle">3. Return data</text>
+<path d="M600 590 L200 590" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="307.7" y="544" width="184.60000000000002" height="30" fill="#fff"/>
+<text id="text-26" x="400.0" y="565" class="body" text-anchor="middle">4. Generated HTML</text>
+<rect x="40" y="640" width="320" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-28" x="62" y="674" class="heading" font-size="22px" style="font-size:22px">5. Hydrate, if used</text>
+<text id="text-29" x="62" y="708" class="body">Client code attaches</text>
+<text id="text-30" x="62" y="733" class="body">behavior to existing HTML.</text>
+<path d="M200 875 L600 875" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="204.79999999999998" y="829" width="390.40000000000003" height="30" fill="#fff"/>
+<text id="text-33" x="400.0" y="850" class="body" text-anchor="middle">Later form, navigation, or API request</text>
+<rect x="40" y="950" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-35" x="60" y="980" class="body">Plain server templates need no hydration. With React hydration, initial server and client output must match.</text>
+</svg>

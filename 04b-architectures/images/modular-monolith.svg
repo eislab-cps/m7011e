@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">A modular monolith keeps strict boundaries inside one deployment</title>
+<desc id="description">All modules run in one process and are deployed together, but each module owns its data and exposes a small public interface. Other modules may call that interface but may not read its tables or import its internals. The boundaries can later become service boundaries if independent deployment is needed.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="640" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A modular monolith keeps strict boundaries inside one deployment</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows are allowed calls through a module&#x27;s public interface; the amber box names a forbidden shortcut.</text>
+<rect x="40" y="110" width="1120" height="400" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="144" class="heading" font-size="22px" style="font-size:22px">One process, one deployment</text>
+<rect x="80" y="200" width="320" height="161" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="102" y="234" class="heading" font-size="22px" style="font-size:22px">todos module</text>
+<text id="text-5" x="102" y="268" class="body">Public: create_todo(),</text>
+<text id="text-6" x="102" y="293" class="body">list_todos()</text>
+<text id="text-7" x="102" y="318" class="body">Private: todo tables</text>
+<rect x="440" y="200" width="320" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-8" x="462" y="234" class="heading" font-size="22px" style="font-size:22px">users module</text>
+<text id="text-9" x="462" y="268" class="body">Public: get_user()</text>
+<text id="text-10" x="462" y="293" class="body">Private: user tables</text>
+<rect x="800" y="200" width="320" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="822" y="234" class="heading" font-size="22px" style="font-size:22px">notifications</text>
+<text id="text-12" x="822" y="268" class="body">Public: notify()</text>
+<text id="text-13" x="822" y="293" class="body">Private: email queue</text>
+<path d="M400.0 268.0 L440.0 268.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M240.0 200 L240.0 180 L960.0 180 L960.0 200" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="80" y="400" width="1040" height="106" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="102" y="434" class="body">Forbidden: notifications reading the todo tables directly. Enforce it with import rules or tests, not</text>
+<text id="text-15" x="102" y="459" class="body">good intentions.</text>
+<rect x="40" y="550" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="60" y="580" class="body">You get one build, one deploy and in-process calls, while keeping the option to extract a module later.</text>
+</svg>

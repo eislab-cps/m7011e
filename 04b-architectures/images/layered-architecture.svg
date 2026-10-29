@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="854" viewBox="0 0 1200 854" role="img" aria-labelledby="title description">
+<title id="title">A layered application separates presentation, logic, and data</title>
+<desc id="description">A strict layered backend separates request handling, business behavior, and data access. The diagram shows allowed dependencies for this variant. These logical layers can run in one process; separately deployed browser, application, and database roles are a different view.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="854" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A layered application separates presentation, logic, and data</text>
+<text id="text-2" x="40" y="83" class="muted">This strict variant allows each layer to depend on the layer immediately below it.</text>
+<rect x="40" y="130" width="700" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Presentation layer</text>
+<text id="text-4" x="62" y="198" class="body">Flask routes: parse the request, return JSON and a status code.</text>
+<rect x="40" y="291" width="700" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-5" x="62" y="325" class="heading" font-size="22px" style="font-size:22px">Business layer</text>
+<text id="text-6" x="62" y="359" class="body">TodoService: validate the text, apply rules, decide what to save.</text>
+<rect x="40" y="452" width="700" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-7" x="62" y="486" class="heading" font-size="22px" style="font-size:22px">Data layer</text>
+<text id="text-8" x="62" y="520" class="body">TodoRepository: SQL or an in-memory list.</text>
+<rect x="40" y="613" width="700" height="111" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-9" x="62" y="647" class="heading" font-size="22px" style="font-size:22px">Database</text>
+<text id="text-10" x="62" y="681" class="body">PostgreSQL in Tutorial 8.</text>
+<path d="M390.0 241.0 L390.0 291.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M390.0 402.0 L390.0 452.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M390.0 563.0 L390.0 613.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="800" y="130" width="360" height="186" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-11" x="822" y="164" class="heading" font-size="22px" style="font-size:22px">Typical mistake</text>
+<text id="text-12" x="822" y="198" class="body">A route handler that builds SQL</text>
+<text id="text-13" x="822" y="223" class="body">directly skips the business</text>
+<text id="text-14" x="822" y="248" class="body">layer. Rules then end up copied</text>
+<text id="text-15" x="822" y="273" class="body">in several handlers.</text>
+<rect x="800" y="340" width="360" height="186" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-16" x="822" y="374" class="heading" font-size="22px" style="font-size:22px">Layer vs tier</text>
+<text id="text-17" x="822" y="408" class="body">A layer is a code boundary. A</text>
+<text id="text-18" x="822" y="433" class="body">tier is a runtime boundary:</text>
+<text id="text-19" x="822" y="458" class="body">browser, API server, database</text>
+<text id="text-20" x="822" y="483" class="body">server.</text>
+<rect x="40" y="764" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="794" class="body">Layers make one kind of change easy (swap the database) and another harder (a new feature touches every layer).</text>
+</svg>

@@ -1441,6 +1441,8 @@ jobs:
           echo "Replace this placeholder with a verified deployment step"
 ```
 
+![One push starts independent jobs; deployment waits for all of them. Jobs in the same row run in parallel on fresh runners; arrows show what each step waits for.](./images/ci-workflow-jobs.svg)
+
 ---
 
 ## Part 5: Code Coverage and Quality Metrics

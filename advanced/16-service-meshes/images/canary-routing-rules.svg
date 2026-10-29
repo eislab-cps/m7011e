@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="621" viewBox="0 0 1200 621" role="img" aria-labelledby="title description">
+<title id="title">The canary rules send beta users to v2 and a tenth of everyone else</title>
+<desc id="description">The VirtualService&#x27;s first rule matches requests carrying the header x-beta-user: true and sends all of them to subset v2. Requests that do not match fall through to the second rule, which splits traffic by weight: 90 percent to subset v1 and 10 percent to subset v2. The DestinationRule defines subsets v1 and v2 by the Pods&#x27; version label. Increase the v2 weight as confidence grows.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="621" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The canary rules send beta users to v2 and a tenth of everyone else</text>
+<text id="text-2" x="40" y="83" class="muted">Rules are checked top to bottom; the first match wins.</text>
+<rect x="40" y="180" width="260" height="166" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="214" class="heading" font-size="22px" style="font-size:22px">Request to</text>
+<text id="text-4" x="62" y="244" class="heading" font-size="22px" style="font-size:22px">backend</text>
+<text id="text-5" x="62" y="278" class="body">From the frontend&#x27;s</text>
+<text id="text-6" x="62" y="303" class="body">sidecar.</text>
+<rect x="370" y="125" width="400" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="392" y="159" class="heading" font-size="22px" style="font-size:22px">Rule 1: header match</text>
+<text id="text-8" x="392" y="193" class="body">x-beta-user: &quot;true&quot; → v2, weight 100</text>
+<rect x="370" y="330" width="400" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-9" x="392" y="364" class="heading" font-size="22px" style="font-size:22px">Rule 2: weighted default</text>
+<text id="text-10" x="392" y="398" class="body">Everything else → v1 weight 90, v2</text>
+<text id="text-11" x="392" y="423" class="body">weight 10</text>
+<rect x="850" y="125" width="310" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="872" y="159" class="heading" font-size="22px" style="font-size:22px">subset v2</text>
+<text id="text-13" x="872" y="193" class="body">Pods with version: v2</text>
+<rect x="850" y="330" width="310" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="872" y="364" class="heading" font-size="22px" style="font-size:22px">subset v1</text>
+<text id="text-15" x="872" y="398" class="body">Pods with version: v1</text>
+<path d="M300.0 243.0 L370.0 180.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M300.0 283.0 L370.0 398.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M770.0 180.5 L850.0 180.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-16" x="810" y="168.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">100%</text>
+<path d="M770.0 398.0 L850.0 385.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-17" x="810" y="386.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">90%</text>
+<path d="M730.0 330.0 L880.0 236.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-18" x="812" y="300" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">10%</text>
+<rect x="40" y="506" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="60" y="536" class="body">Weights are proportions of requests over time, not a fixed sequence: 10 requests need not include exactly one v2</text>
+<text id="text-20" x="60" y="561" class="body">answer.</text>
+</svg>

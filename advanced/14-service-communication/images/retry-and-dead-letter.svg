@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="821" viewBox="0 0 1200 821" role="img" aria-labelledby="title description">
+<title id="title">Failed messages are retried a few times, then dead-lettered</title>
+<desc id="description">The consumer reads from email_notifications_with_dlq. On success it acknowledges the message. On failure with fewer than three retries it republishes the message with x-retry-count incremented, waits for the publisher confirm, and acknowledges the original. When the retry count reaches the limit it rejects the message with basic_nack and requeue=False; because the queue declares x-dead-letter-exchange dlx, RabbitMQ routes it to the email_notifications_failed queue, where a separate process inspects or alerts.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="821" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Failed messages are retried a few times, then dead-lettered</text>
+<text id="text-2" x="40" y="83" class="muted">Follow one message from the main queue; each branch is a consumer outcome.</text>
+<rect x="40" y="125" width="340" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Main queue</text>
+<text id="text-4" x="62" y="193" class="body">email_notifications_with_dlq</text>
+<text id="text-5" x="62" y="218" class="body">x-dead-letter-exchange: dlx</text>
+<rect x="450" y="125" width="300" height="136" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="472" y="159" class="heading" font-size="22px" style="font-size:22px">Consumer</text>
+<text id="text-7" x="472" y="193" class="body">Tries send_email; reads</text>
+<text id="text-8" x="472" y="218" class="body">x-retry-count header.</text>
+<rect x="820" y="125" width="340" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-9" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">Success</text>
+<text id="text-10" x="842" y="193" class="body">basic_ack: message deleted.</text>
+<rect x="450" y="330" width="300" height="186" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-11" x="472" y="364" class="heading" font-size="22px" style="font-size:22px">Failed, retries &lt; 3</text>
+<text id="text-12" x="472" y="398" class="body">Republish with</text>
+<text id="text-13" x="472" y="423" class="body">x-retry-count + 1; ack the</text>
+<text id="text-14" x="472" y="448" class="body">original after the</text>
+<text id="text-15" x="472" y="473" class="body">confirm.</text>
+<rect x="820" y="330" width="340" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-16" x="842" y="364" class="heading" font-size="22px" style="font-size:22px">Failed, retries ≥ 3</text>
+<text id="text-17" x="842" y="398" class="body">basic_nack with requeue=False.</text>
+<rect x="820" y="530" width="340" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-18" x="842" y="564" class="heading" font-size="22px" style="font-size:22px">dlx exchange</text>
+<text id="text-19" x="842" y="598" class="body">Routes with key</text>
+<text id="text-20" x="842" y="623" class="body">email_notifications_failed.</text>
+<rect x="380" y="530" width="370" height="161" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-21" x="402" y="564" class="heading" font-size="22px" style="font-size:22px">Dead-letter queue</text>
+<text id="text-22" x="402" y="598" class="body">email_notifications_failed</text>
+<text id="text-23" x="402" y="623" class="body">Inspected by people or a</text>
+<text id="text-24" x="402" y="648" class="body">monitoring process.</text>
+<path d="M380.0 193.0 L450.0 193.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 180.5 L820.0 180.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M540.0 261.0 L540.0 330.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M720 261 L720 291 L990.0 291 L990.0 330" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M450 423.0 L210.0 423.0 L210.0 261" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-25" x="220.0" y="409.0" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">back of the queue</text>
+<path d="M990.0 441.0 L990.0 530.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M820.0 598.0 L750.0 598.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="731" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="60" y="761" class="body">Without the retry limit, a message that always fails would loop forever and keep workers busy.</text>
+</svg>

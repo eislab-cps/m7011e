@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="626" viewBox="0 0 1200 626" role="img" aria-labelledby="title description">
+<title id="title">A stable core can offer extension points</title>
+<desc id="description">A todo-report core invokes a defined export interface. CSV and JSON plug-ins implement that interface and translate a report into different formats. Compatibility, permissions, discovery, and lifecycle still need rules.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="626" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A stable core can offer extension points</text>
+<text id="text-2" x="40" y="83" class="muted">An export interface lets the application add formats through compatible plug-ins.</text>
+<rect x="40" y="150" width="1120" height="110" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Application core: export interface</text>
+<text id="text-5" x="62" y="218" class="body">The core owns the operation and the contract that extensions must implement.</text>
+<path d="M600 260 V310 H310.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40.0" y="360" width="540.0" height="124" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="62.0" y="394" class="heading" font-size="22px" style="font-size:22px">CSV plug-in</text>
+<text id="text-9" x="62.0" y="428" class="body">Implements the export contract. Produces rows and</text>
+<text id="text-10" x="62.0" y="453" class="body">columns.</text>
+<path d="M600 260 V310 H890.0 V360" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620.0" y="360" width="540.0" height="124" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-13" x="642.0" y="394" class="heading" font-size="22px" style="font-size:22px">JSON plug-in</text>
+<text id="text-14" x="642.0" y="428" class="body">Implements the export contract. Produces a</text>
+<text id="text-15" x="642.0" y="453" class="body">structured document.</text>
+<rect x="40" y="536" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="60" y="566" class="body">Extension boundaries do not guarantee isolation. Plug-ins may share a process or run in an extension host.</text>
+</svg>

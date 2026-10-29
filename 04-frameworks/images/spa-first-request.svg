@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1140" viewBox="0 0 1200 1140" role="img" aria-labelledby="title description">
+<title id="title">A client-rendered SPA on its first visit</title>
+<desc id="description">The browser requests an HTML shell from a static host, downloads JavaScript and CSS, runs the application, fetches todo JSON from an API, and updates its DOM. Document, asset, and API requests can fail separately.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1140" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A client-rendered SPA on its first visit</text>
+<text id="text-2" x="40" y="83" class="muted">Time runs downward. Arrows are HTTP exchanges, not a complete browser scheduling trace.</text>
+<rect x="40" y="130" width="320" height="115" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-5" x="62" y="198" class="body">Displays and runs the UI.</text>
+<path d="M200 245 V970" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="440" y="130" width="320" height="115" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="462" y="164" class="heading" font-size="22px" style="font-size:22px">Static host</text>
+<text id="text-9" x="462" y="198" class="body">Serves HTML and assets.</text>
+<path d="M600 245 V970" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="840" y="130" width="320" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="862" y="164" class="heading" font-size="22px" style="font-size:22px">Todo API</text>
+<text id="text-13" x="862" y="198" class="body">Handles application data.</text>
+<path d="M1000 245 V970" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<path d="M200 295 L600 295" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="351.8" y="249" width="96.4" height="30" fill="#fff"/>
+<text id="text-17" x="400.0" y="270" class="body" text-anchor="middle">1. GET /</text>
+<path d="M600 380 L200 380" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="327.3" y="334" width="145.4" height="30" fill="#fff"/>
+<text id="text-20" x="400.0" y="355" class="body" text-anchor="middle">2. HTML shell</text>
+<path d="M200 465 L600 465" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="283.2" y="419" width="233.60000000000002" height="30" fill="#fff"/>
+<text id="text-23" x="400.0" y="440" class="body" text-anchor="middle">3. GET JS / CSS assets</text>
+<path d="M600 550 L200 550" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="288.1" y="504" width="223.8" height="30" fill="#fff"/>
+<text id="text-26" x="400.0" y="525" class="body" text-anchor="middle">4. Application assets</text>
+<rect x="40" y="590" width="320" height="85" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-28" x="62" y="624" class="heading" font-size="22px" style="font-size:22px">Run application code</text>
+<path d="M200 730 L1000 730" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="507.7" y="684" width="184.60000000000002" height="30" fill="#fff"/>
+<text id="text-31" x="600.0" y="705" class="body" text-anchor="middle">5. GET /api/todos</text>
+<path d="M1000 820 L200 820" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="532.2" y="774" width="135.60000000000002" height="30" fill="#fff"/>
+<text id="text-34" x="600.0" y="795" class="body" text-anchor="middle">6. Todo JSON</text>
+<rect x="40" y="865" width="320" height="110" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-36" x="62" y="899" class="heading" font-size="22px" style="font-size:22px">Render received data</text>
+<text id="text-37" x="62" y="933" class="body">Update the browser DOM.</text>
+<rect x="40" y="1020" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-39" x="60" y="1050" class="body">Caching and prefetching can change this sequence. Receiving the HTML shell does not mean the API succeeded.</text>
+</svg>

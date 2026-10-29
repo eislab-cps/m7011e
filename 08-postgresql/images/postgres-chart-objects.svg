@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+<title id="title">The chart creates a database process and a separate storage claim</title>
+<desc id="description">Helm renders a ConfigMap and Secret that the StatefulSet Pod reads as environment variables. The Pod postgres-statefulset-0 mounts the PersistentVolumeClaim postgresql-pvc at /var/lib/postgresql/data; the StorageClass provisions a PersistentVolume for that claim. The ClusterIP Service postgres-service and the headless Service postgresql-internal both select the Pod by its app=postgres label.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="630" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The chart creates a database process and a separate storage claim</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show which object refers to which; data lives in the volume, not in the Pod.</text>
+<rect x="40" y="130" width="300" height="150" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">ConfigMap + Secret</text>
+<text id="text-4" x="62" y="198" class="body">postgres-config: user,</text>
+<text id="text-5" x="62" y="223" class="body">PGDATA, TZ.</text>
+<text id="text-6" x="62" y="248" class="body">postgres-credentials:</text>
+<text id="text-7" x="62" y="273" class="body">password.</text>
+<rect x="450" y="130" width="300" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="472" y="164" class="heading" font-size="22px" style="font-size:22px">StatefulSet Pod</text>
+<text id="text-9" x="472" y="198" class="body">postgres-statefulset-0</text>
+<text id="text-10" x="472" y="223" class="body">runs the PostgreSQL server</text>
+<text id="text-11" x="472" y="248" class="body">on port 5432.</text>
+<rect x="860" y="130" width="300" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-12" x="882" y="164" class="heading" font-size="22px" style="font-size:22px">Services</text>
+<text id="text-13" x="882" y="198" class="body">postgres-service</text>
+<text id="text-14" x="882" y="223" class="body">(ClusterIP) for clients.</text>
+<text id="text-15" x="882" y="248" class="body">postgresql-internal</text>
+<text id="text-16" x="882" y="273" class="body">(headless).</text>
+<rect x="450" y="350" width="300" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="472" y="384" class="heading" font-size="22px" style="font-size:22px">Volume claim (PVC)</text>
+<text id="text-18" x="472" y="418" class="body">postgresql-pvc requests</text>
+<text id="text-19" x="472" y="443" class="body">10Gi, ReadWriteOnce.</text>
+<rect x="860" y="350" width="300" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-20" x="882" y="384" class="heading" font-size="22px" style="font-size:22px">Volume (PV)</text>
+<text id="text-21" x="882" y="418" class="body">Provisioned by the</text>
+<text id="text-22" x="882" y="443" class="body">local-path StorageClass;</text>
+<text id="text-23" x="882" y="468" class="body">holds the data files.</text>
+<path d="M340.0 205.0 L450.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-24" x="395" y="193.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">env</text>
+<path d="M860.0 205.0 L750.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-25" x="805" y="193.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">selects</text>
+<path d="M600.0 280.0 L600.0 350.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-26" x="670.0" y="322" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">mounts</text>
+<path d="M750.0 425.0 L860.0 425.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-27" x="805" y="413.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">bound to</text>
+<rect x="40" y="350" width="300" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-28" x="62" y="384" class="heading" font-size="22px" style="font-size:22px">Not created</text>
+<text id="text-29" x="62" y="418" class="body">Your tables, rows, and</text>
+<text id="text-30" x="62" y="443" class="body">application roles. Create</text>
+<text id="text-31" x="62" y="468" class="body">them with SQL.</text>
+<rect x="40" y="540" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-32" x="60" y="570" class="body">Replacing the Pod keeps the claim; deleting a claim can remove data, depending on the reclaim policy.</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="title description">
+<title id="title">Instruction order decides what a rebuild can reuse</title>
+<desc id="description">Docker reuses a cached layer until an instruction or its copied files change; every later layer is then rebuilt. If requirements.txt is copied and installed before the rest of the code, changing app.py only rebuilds the final COPY layer. If all code is copied first, the same change invalidates the COPY layer and forces pip install to run again.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="540" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Instruction order decides what a rebuild can reuse</text>
+<text id="text-2" x="40" y="83" class="muted">Each column is one Dockerfile after app.py changes; green layers come from cache, amber layers are rebuilt.</text>
+<text id="text-3" x="40" y="135" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">Dependencies first</text>
+<rect x="40" y="150" width="540" height="56" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-4" x="62" y="184" class="code">FROM python:3.11</text>
+<rect x="40" y="220" width="540" height="56" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-5" x="62" y="254" class="code">COPY requirements.txt .</text>
+<rect x="40" y="290" width="540" height="56" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-6" x="62" y="324" class="code">RUN pip install -r ...</text>
+<rect x="40" y="360" width="540" height="56" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-7" x="62" y="394" class="code">COPY . . (app.py changed)</text>
+<text id="text-8" x="620" y="135" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">Code first</text>
+<rect x="620" y="150" width="540" height="56" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-9" x="642" y="184" class="code">FROM python:3.11</text>
+<rect x="620" y="220" width="540" height="56" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-10" x="642" y="254" class="code">COPY . . (app.py changed)</text>
+<rect x="620" y="290" width="540" height="56" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-11" x="642" y="324" class="code">RUN pip install -r ...</text>
+<rect x="40" y="450" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="60" y="480" class="body">Copy the files that change least first, so slow steps such as package installation stay cached.</text>
+</svg>

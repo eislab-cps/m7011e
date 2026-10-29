@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="596" viewBox="0 0 1200 596" role="img" aria-labelledby="title description">
+<title id="title">A Backend for Frontend gives each client the API it needs</title>
+<desc id="description">A web app and a mobile app need different data shapes: the web dashboard shows full lists, the mobile widget shows a count and the next due item. Each client gets its own thin backend that calls the shared Todo and User services and returns one tailored response. The BFF is usually owned by the team that owns the client.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="596" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A Backend for Frontend gives each client the API it needs</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show calls; each BFF combines the same services differently.</text>
+<rect x="40" y="130" width="260" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Web app</text>
+<text id="text-4" x="62" y="198" class="body">Full lists, filters.</text>
+<rect x="40" y="330" width="260" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-5" x="62" y="364" class="heading" font-size="22px" style="font-size:22px">Mobile app</text>
+<text id="text-6" x="62" y="398" class="body">Count + next due item.</text>
+<rect x="400" y="130" width="300" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="422" y="164" class="heading" font-size="22px" style="font-size:22px">Web BFF</text>
+<text id="text-8" x="422" y="198" class="body">GET /web/dashboard</text>
+<rect x="400" y="330" width="300" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="422" y="364" class="heading" font-size="22px" style="font-size:22px">Mobile BFF</text>
+<text id="text-10" x="422" y="398" class="body">GET /mobile/summary</text>
+<rect x="830" y="130" width="330" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="852" y="164" class="heading" font-size="22px" style="font-size:22px">Todo service</text>
+<text id="text-12" x="852" y="198" class="body">General todo API.</text>
+<rect x="830" y="330" width="330" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="852" y="364" class="heading" font-size="22px" style="font-size:22px">User service</text>
+<text id="text-14" x="852" y="398" class="body">General user API.</text>
+<path d="M300.0 185.5 L400.0 185.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M300.0 385.5 L400.0 385.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M700.0 185.5 L830.0 185.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M700.0 205.5 L830.0 365.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M700.0 365.5 L830.0 205.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M700.0 385.5 L830.0 385.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="481" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="60" y="511" class="body">A gateway routes and enforces common policy; a BFF composes data for one client. Keep business rules in the</text>
+<text id="text-16" x="60" y="536" class="body">services, not in the BFF.</text>
+</svg>

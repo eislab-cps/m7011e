@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="625" viewBox="0 0 1200 625" role="img" aria-labelledby="title description">
+<title id="title">Each generated feature goes through one review loop</title>
+<desc id="description">You send one specific request with context. The assistant proposes file changes and commands. You read the diff and the commands before accepting them, then run the app and check the prediction in the browser Network tab and by reloading. If the observation differs from the prediction, you explain the difference before requesting the next small feature.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="625" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Each generated feature goes through one review loop</text>
+<text id="text-2" x="40" y="83" class="muted">Follow the arrows clockwise; the loop repeats once per small feature.</text>
+<rect x="40" y="125" width="340" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">1 Ask for one feature</text>
+<text id="text-4" x="62" y="193" class="body">Specific request plus context:</text>
+<text id="text-5" x="62" y="218" class="body">files, API, design.</text>
+<rect x="820" y="125" width="340" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="842" y="159" class="heading" font-size="22px" style="font-size:22px">2 Assistant proposes</text>
+<text id="text-7" x="842" y="193" class="body">File changes and commands such</text>
+<text id="text-8" x="842" y="218" class="body">as npm install.</text>
+<rect x="820" y="345" width="340" height="150" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-9" x="842" y="379" class="heading" font-size="22px" style="font-size:22px">3 You review</text>
+<text id="text-10" x="842" y="413" class="body">Read the diff and each command</text>
+<text id="text-11" x="842" y="438" class="body">before accepting.</text>
+<rect x="430" y="345" width="340" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="452" y="379" class="heading" font-size="22px" style="font-size:22px">4 Run and observe</text>
+<text id="text-13" x="452" y="413" class="body">npm run dev, browser Network</text>
+<text id="text-14" x="452" y="438" class="body">tab, page reload.</text>
+<rect x="40" y="345" width="340" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-15" x="62" y="379" class="heading" font-size="22px" style="font-size:22px">5 Explain</text>
+<text id="text-16" x="62" y="413" class="body">Did method, path, body, and</text>
+<text id="text-17" x="62" y="438" class="body">status match your prediction?</text>
+<path d="M380.0 200.0 L820.0 200.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M990.0 275.0 L990.0 345.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M820.0 420.0 L770.0 420.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M430.0 420.0 L380.0 420.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M210.0 345.0 L210.0 275.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-18" x="610" y="190" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">small, reviewable step</text>
+<rect x="40" y="535" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="60" y="565" class="body">Skipping steps 3 to 5 leaves you with code you cannot debug when the next request breaks it.</text>
+</svg>

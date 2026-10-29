@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="616" viewBox="0 0 1200 616" role="img" aria-labelledby="title description">
+<title id="title">Architecture choices answer different questions</title>
+<desc id="description">Code organization, deployment, communication, data, web delivery, and execution are different design dimensions. A monolith can use MVC, SSR, and events; a microservice can use ports and adapters; a managed function can host application behavior.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="616" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Architecture choices answer different questions</text>
+<text id="text-2" x="40" y="83" class="muted">Read these as independent dimensions, not successive stages in a request.</text>
+<rect x="40.0" y="150" width="352.0" height="149" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">Code organization</text>
+<text id="text-5" x="62.0" y="218" class="body">Layers, MVC, ports and</text>
+<text id="text-6" x="62.0" y="243" class="body">adapters, plug-ins.</text>
+<rect x="424.0" y="150" width="352.0" height="149" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="446.0" y="184" class="heading" font-size="22px" style="font-size:22px">Deployment</text>
+<text id="text-9" x="446.0" y="218" class="body">One application release or</text>
+<text id="text-10" x="446.0" y="243" class="body">independently released</text>
+<text id="text-11" x="446.0" y="268" class="body">services.</text>
+<rect x="808.0" y="150" width="352.0" height="149" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="830.0" y="184" class="heading" font-size="22px" style="font-size:22px">Communication</text>
+<text id="text-14" x="830.0" y="218" class="body">Function calls, HTTP,</text>
+<text id="text-15" x="830.0" y="243" class="body">commands, and published</text>
+<text id="text-16" x="830.0" y="268" class="body">events.</text>
+<rect x="40.0" y="331" width="352.0" height="149" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-18" x="62.0" y="365" class="heading" font-size="22px" style="font-size:22px">Data</text>
+<text id="text-19" x="62.0" y="399" class="body">Owned records, projections, or</text>
+<text id="text-20" x="62.0" y="424" class="body">canonical event history.</text>
+<rect x="424.0" y="331" width="352.0" height="149" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-22" x="446.0" y="365" class="heading" font-size="22px" style="font-size:22px">Web delivery</text>
+<text id="text-23" x="446.0" y="399" class="body">Client rendering, SSR, SSG,</text>
+<text id="text-24" x="446.0" y="424" class="body">and combinations.</text>
+<rect x="808.0" y="331" width="352.0" height="149" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-26" x="830.0" y="365" class="heading" font-size="22px" style="font-size:22px">Execution</text>
+<text id="text-27" x="830.0" y="399" class="body">Servers, containers, and</text>
+<text id="text-28" x="830.0" y="424" class="body">managed function platforms.</text>
+<rect x="40" y="526" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-30" x="60" y="556" class="body">Example combination: layered modules in one release, HTTP plus events, SSR pages, and container execution.</text>
+</svg>

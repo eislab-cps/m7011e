@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="586" viewBox="0 0 1200 586" role="img" aria-labelledby="title description">
+<title id="title">Microservices turn module boundaries into network boundaries</title>
+<desc id="description">The todo application split into services: a gateway routes requests to a Todo service and a User service, each with its own database. Calls between them cross the network, so they can time out or fail independently. Tutorial 5 covers deployment, discovery, and the gateway in depth.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="586" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Microservices turn module boundaries into network boundaries</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows are HTTP calls; each service owns a private database.</text>
+<rect x="40" y="200" width="260" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="234" class="heading" font-size="22px" style="font-size:22px">API gateway</text>
+<text id="text-4" x="62" y="268" class="body">Routes /api/todos and</text>
+<text id="text-5" x="62" y="293" class="body">/api/users.</text>
+<rect x="400" y="130" width="330" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="422" y="164" class="heading" font-size="22px" style="font-size:22px">Todo service</text>
+<text id="text-7" x="422" y="198" class="body">Owns todo rules.</text>
+<rect x="400" y="320" width="330" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-8" x="422" y="354" class="heading" font-size="22px" style="font-size:22px">User service</text>
+<text id="text-9" x="422" y="388" class="body">Owns accounts.</text>
+<rect x="830" y="130" width="330" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-10" x="852" y="164" class="heading" font-size="22px" style="font-size:22px">Todo database</text>
+<text id="text-11" x="852" y="198" class="body">Only the Todo service</text>
+<text id="text-12" x="852" y="223" class="body">connects.</text>
+<rect x="830" y="320" width="330" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-13" x="852" y="354" class="heading" font-size="22px" style="font-size:22px">User database</text>
+<text id="text-14" x="852" y="388" class="body">Only the User service</text>
+<text id="text-15" x="852" y="413" class="body">connects.</text>
+<path d="M300.0 238.0 L400.0 185.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M300.0 298.0 L400.0 375.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M730.0 185.5 L830.0 185.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M730.0 375.5 L830.0 375.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M565.0 241.0 L565.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-16" x="655.0" y="286.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">may time out</text>
+<rect x="40" y="496" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="60" y="526" class="body">Independent deployment and scaling come at the price of network failures, distributed data, and more to operate.</text>
+</svg>

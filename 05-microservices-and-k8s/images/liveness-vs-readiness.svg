@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="585" viewBox="0 0 1200 585" role="img" aria-labelledby="title description">
+<title id="title">Liveness and readiness probes trigger different actions</title>
+<desc id="description">The kubelet executes configured probes. Repeated liveness failure triggers container restart behavior. Readiness failure makes a Pod unready and changes its eligibility for Service routing as endpoint changes propagate. Readiness failure alone does not restart the container; direct Pod access and other restart causes remain possible.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="585" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Liveness and readiness probes trigger different actions</text>
+<text id="text-2" x="40" y="83" class="muted">Repeated liveness failures request a restart; readiness affects eligibility for Service traffic.</text>
+<rect x="40" y="200" width="330" height="170" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="234" class="heading" font-size="22px" style="font-size:22px">kubelet on the node</text>
+<text id="text-4" x="62" y="268" class="body">Calls /health and /ready on a</text>
+<text id="text-5" x="62" y="293" class="body">schedule.</text>
+<rect x="500" y="140" width="660" height="120" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="522" y="174" class="heading" font-size="22px" style="font-size:22px">Liveness fails</text>
+<text id="text-7" x="522" y="208" class="body">Container restarted: the process is assumed stuck.</text>
+<rect x="500" y="310" width="660" height="120" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="522" y="344" class="heading" font-size="22px" style="font-size:22px">Readiness fails</text>
+<text id="text-9" x="522" y="378" class="body">Pod becomes unready; Service routing updates. No probe-triggered</text>
+<text id="text-10" x="522" y="403" class="body">restart. Direct Pod traffic can still bypass the Service.</text>
+<path d="M370 260 L435 260 L435 200.0 L500 200.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M370 310 L435 310 L435 370.0 L500 370.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="470" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="60" y="500" class="body">Keep liveness checks cheap and local: a liveness probe that depends on the database restarts every Pod during a</text>
+<text id="text-12" x="60" y="525" class="body">database outage.</text>
+</svg>

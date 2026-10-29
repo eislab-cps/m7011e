@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="455" viewBox="0 0 1200 455" role="img" aria-labelledby="title description">
+<title id="title">A rolling update moves Pods from the old ReplicaSet to the new one</title>
+<desc id="description">Illustrative snapshots show an old ReplicaSet being replaced by a new one. The actual interleaving depends on maxSurge, maxUnavailable, Pod readiness, and controller timing. A rolling update does not itself guarantee zero downtime, and retained old ReplicaSets can support rollback.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="455" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A rolling update moves Pods from the old ReplicaSet to the new one</text>
+<text id="text-2" x="40" y="83" class="muted">Possible rollout snapshots; surge, availability limits, readiness, and timing determine actual states.</text>
+<rect x="40.0" y="140" width="253.0" height="160" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62.0" y="174" class="heading" font-size="22px" style="font-size:22px">Before</text>
+<text id="text-4" x="62.0" y="208" class="body">v1: 3 Pods</text>
+<text id="text-5" x="62.0" y="233" class="body">v2: none</text>
+<rect x="329.0" y="140" width="253.0" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="351.0" y="174" class="heading" font-size="22px" style="font-size:22px">Step 1</text>
+<text id="text-7" x="351.0" y="208" class="body">v1: 2 Pods</text>
+<text id="text-8" x="351.0" y="233" class="body">v2: 1 Pod (new)</text>
+<rect x="618.0" y="140" width="253.0" height="160" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="640.0" y="174" class="heading" font-size="22px" style="font-size:22px">Step 2</text>
+<text id="text-10" x="640.0" y="208" class="body">v1: 1 Pod</text>
+<text id="text-11" x="640.0" y="233" class="body">v2: 2 Pods</text>
+<rect x="907.0" y="140" width="253.0" height="160" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="929.0" y="174" class="heading" font-size="22px" style="font-size:22px">Final</text>
+<text id="text-13" x="929.0" y="208" class="body">v1: 0 Pods, kept for</text>
+<text id="text-14" x="929.0" y="233" class="body">rollback</text>
+<text id="text-15" x="929.0" y="258" class="body">v2: 3 Pods</text>
+<path d="M293.0 220.0 L329.0 220.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M582.0 220.0 L618.0 220.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M871.0 220.0 L907.0 220.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="340" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="60" y="370" class="body">New Pods should only receive traffic once their readiness probe passes; the rollout alone does not guarantee zero</text>
+<text id="text-17" x="60" y="395" class="body">downtime.</text>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="770" viewBox="0 0 1200 770" role="img" aria-labelledby="title description">
+<title id="title">Initial rendering can happen at different times</title>
+<desc id="description">One client-rendered SPA builds initial content after loading code and data. Request-time SSR generates content for the page request. SSG generates content before the visitor request. SSR and SSG need hydration only when the selected UI uses it. Later client-side navigation is a separate decision.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="770" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Initial rendering can happen at different times</text>
+<text id="text-2" x="40" y="83" class="muted">Example timelines; later navigation is separate, and hydration applies only when the UI uses it.</text>
+<rect x="40" y="130" width="150" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">CSR / SPA</text>
+<rect x="226.0" y="130" width="284.7" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="248.0" y="164" class="heading" font-size="22px" style="font-size:22px">Shell arrives</text>
+<text id="text-5" x="248.0" y="198" class="body">HTML with an empty &lt;div</text>
+<text id="text-6" x="248.0" y="223" class="body">id=&quot;app&quot;&gt; plus a JS</text>
+<text id="text-7" x="248.0" y="248" class="body">bundle.</text>
+<rect x="550.7" y="130" width="284.7" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="572.7" y="164" class="heading" font-size="22px" style="font-size:22px">JS runs</text>
+<text id="text-9" x="572.7" y="198" class="body">Browser executes the</text>
+<text id="text-10" x="572.7" y="223" class="body">bundle and calls /api for</text>
+<text id="text-11" x="572.7" y="248" class="body">data.</text>
+<rect x="875.3" y="130" width="284.7" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-12" x="897.3" y="164" class="heading" font-size="22px" style="font-size:22px">Content visible</text>
+<text id="text-13" x="897.3" y="198" class="body">Rendered in the browser;</text>
+<text id="text-14" x="897.3" y="223" class="body">Client code handles input.</text>
+<path d="M510.7 205.0 L550.7 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M835.4 205.0 L875.3 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M190.0 205.0 L226.0 205.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="310" width="150" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="62" y="344" class="heading" font-size="22px" style="font-size:22px">SSR</text>
+<rect x="226.0" y="310" width="284.7" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-16" x="248.0" y="344" class="heading" font-size="22px" style="font-size:22px">Server renders</text>
+<text id="text-17" x="248.0" y="378" class="body">Per request: fetch data,</text>
+<text id="text-18" x="248.0" y="403" class="body">build full HTML.</text>
+<rect x="550.7" y="310" width="284.7" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-19" x="572.7" y="344" class="heading" font-size="22px" style="font-size:22px">Content visible</text>
+<text id="text-20" x="572.7" y="378" class="body">Browser shows the HTML</text>
+<text id="text-21" x="572.7" y="403" class="body">before JS has run.</text>
+<rect x="875.3" y="310" width="284.7" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-22" x="897.3" y="344" class="heading" font-size="22px" style="font-size:22px">If used: hydrate</text>
+<text id="text-23" x="897.3" y="378" class="body">JS loads and attaches</text>
+<text id="text-24" x="897.3" y="403" class="body">client behavior to</text>
+<text id="text-25" x="897.3" y="428" class="body">existing HTML.</text>
+<path d="M510.7 385.0 L550.7 385.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M835.4 385.0 L875.3 385.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M190.0 385.0 L226.0 385.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="490" width="150" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="62" y="524" class="heading" font-size="22px" style="font-size:22px">SSG</text>
+<rect x="226.0" y="490" width="284.7" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="248.0" y="524" class="heading" font-size="22px" style="font-size:22px">Before requests</text>
+<text id="text-28" x="248.0" y="558" class="body">Generate HTML ahead of</text>
+<text id="text-29" x="248.0" y="583" class="body">requests; publish the files.</text>
+<rect x="550.7" y="490" width="284.7" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-30" x="572.7" y="524" class="heading" font-size="22px" style="font-size:22px">Content visible</text>
+<text id="text-31" x="572.7" y="558" class="body">CDN returns the file; no</text>
+<text id="text-32" x="572.7" y="583" class="body">render per request.</text>
+<rect x="875.3" y="490" width="284.7" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-33" x="897.3" y="524" class="heading" font-size="22px" style="font-size:22px">If used: hydrate</text>
+<text id="text-34" x="897.3" y="558" class="body">Optional JS can attach</text>
+<text id="text-35" x="897.3" y="583" class="body">behavior or fetch data.</text>
+<path d="M510.7 565.0 L550.7 565.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M835.4 565.0 L875.3 565.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M190.0 565.0 L226.0 565.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="680" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-36" x="60" y="710" class="body">Next.js, Nuxt, and SvelteKit let you choose per page, so one application can mix all three rows.</text>
+</svg>

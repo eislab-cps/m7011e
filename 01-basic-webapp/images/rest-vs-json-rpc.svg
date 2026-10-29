@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="515" viewBox="0 0 1200 515" role="img" aria-labelledby="title description">
+<title id="title">REST names resources; JSON-RPC names procedures</title>
+<desc id="description">Listing, creating, and deleting a todo in REST uses GET /api/todos, POST /api/todos with a text body, and DELETE /api/todos/1, so the method and URL carry the operation. In JSON-RPC all three are POST /api requests whose body names the method, such as getTodos, createTodo, or deleteTodo, with parameters.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="515" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">REST names resources; JSON-RPC names procedures</text>
+<text id="text-2" x="40" y="83" class="muted">Rows show the same three operations; columns show what each style puts in the URL and the body.</text>
+<rect x="40" y="130" width="260" height="230" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">Operation</text>
+<text id="text-4" x="62" y="198" class="body">List todos</text>
+<text id="text-5" x="62" y="223" class="body"></text>
+<text id="text-6" x="62" y="248" class="body">Create a todo</text>
+<text id="text-7" x="62" y="273" class="body"></text>
+<text id="text-8" x="62" y="298" class="body">Delete todo 1</text>
+<rect x="330" y="130" width="400" height="230" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="352" y="164" class="heading" font-size="22px" style="font-size:22px">REST</text>
+<text id="text-10" x="352" y="198" class="code">GET /api/todos</text>
+<text id="text-11" x="352" y="223" class="code"></text>
+<text id="text-12" x="352" y="248" class="code">POST /api/todos {text}</text>
+<text id="text-13" x="352" y="273" class="code"></text>
+<text id="text-14" x="352" y="298" class="code">DELETE /api/todos/1</text>
+<rect x="760" y="130" width="400" height="230" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="782" y="164" class="heading" font-size="22px" style="font-size:22px">JSON-RPC</text>
+<text id="text-16" x="782" y="198" class="code">POST /api getTodos</text>
+<text id="text-17" x="782" y="223" class="code"></text>
+<text id="text-18" x="782" y="248" class="code">POST /api createTodo</text>
+<text id="text-19" x="782" y="273" class="code"></text>
+<text id="text-20" x="782" y="298" class="code">POST /api deleteTodo</text>
+<rect x="40" y="400" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="430" class="body">REST lets HTTP caches, logs, and status codes see the operation; JSON-RPC keeps one endpoint and lets you batch</text>
+<text id="text-22" x="60" y="455" class="body">calls in one request.</text>
+</svg>

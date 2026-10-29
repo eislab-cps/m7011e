@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="795" viewBox="0 0 1200 795" role="img" aria-labelledby="title description">
+<title id="title">A connection names a server, a login database, and a data database</title>
+<desc id="description">The mongod server listens on port 27017 and holds several databases. The admin database stores the root user created from the chart&#x27;s credentials, so authSource=admin tells the client where to verify the login. appdb is the application database selected in the connection string or with use appdb; it contains collections such as students, and each collection contains documents.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="795" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A connection names a server, a login database, and a data database</text>
+<text id="text-2" x="40" y="83" class="muted">Boxes nest from the server down to documents; the connection string below names each part.</text>
+<rect x="40" y="125" width="1120" height="400" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">mongod server · mongodb-0 · port 27017</text>
+<rect x="80" y="200" width="440" height="300" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-4" x="102" y="234" class="heading" font-size="22px" style="font-size:22px">admin database</text>
+<text id="text-5" x="102" y="268" class="body">Stores users and roles, including the</text>
+<text id="text-6" x="102" y="293" class="body">root user from the chart&#x27;s Secret.</text>
+<text id="text-7" x="102" y="318" class="body">authSource=admin: verify the login here.</text>
+<rect x="600" y="200" width="520" height="300" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="622" y="234" class="heading" font-size="22px" style="font-size:22px">appdb database</text>
+<text id="text-9" x="622" y="268" class="body">Created on first write. Selected by /appdb in the</text>
+<text id="text-10" x="622" y="293" class="body">URI or use appdb.</text>
+<rect x="630" y="330" width="460" height="145" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="652" y="364" class="heading" font-size="22px" style="font-size:22px">students collection</text>
+<text id="text-12" x="652" y="398" class="code">{ name: &quot;John Doe&quot;, ... }</text>
+<text id="text-13" x="652" y="423" class="code">{ name: &quot;Jane Roe&quot;, ... }</text>
+<rect x="40" y="560" width="1120" height="115" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="62" y="594" class="code">mongodb://admin:PASSWORD@localhost:27017/appdb?authSource=admin</text>
+<text id="text-15" x="236" y="630" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">user and password</text>
+<text id="text-16" x="394" y="655" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">server</text>
+<text id="text-17" x="502" y="630" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">data database</text>
+<text id="text-18" x="620" y="655" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">login database</text>
+<rect x="40" y="705" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="60" y="735" class="body">Authenticating against admin while reading appdb is normal; the two databases answer different questions.</text>
+</svg>

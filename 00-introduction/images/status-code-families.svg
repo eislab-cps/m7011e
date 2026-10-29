@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="510" viewBox="0 0 1200 510" role="img" aria-labelledby="title description">
+<title id="title">Status codes classify the response outcome</title>
+<desc id="description">HTTP status families group response outcomes. 2xx indicates success, 3xx redirection including cache revalidation, 4xx a client-error response, and 5xx a server-error response. Whether to retry depends on the specific code, method, headers, and failure; a 4xx does not always require permanently changing the request.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="510" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Status codes classify the response outcome</text>
+<text id="text-2" x="40" y="83" class="muted">The first digit is the family; read it before the rest of the response.</text>
+<rect x="40.0" y="150" width="260" height="205" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-3" x="62.0" y="184" class="heading" font-size="22px" style="font-size:22px">2xx Success</text>
+<text id="text-4" x="62.0" y="218" class="body">200 OK</text>
+<text id="text-5" x="62.0" y="243" class="body">201 Created</text>
+<text id="text-6" x="62.0" y="268" class="body">204 No Content</text>
+<text id="text-7" x="62.0" y="293" class="body">The request worked.</text>
+<rect x="326.7" y="150" width="260" height="205" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="348.7" y="184" class="heading" font-size="22px" style="font-size:22px">3xx Redirect</text>
+<text id="text-9" x="348.7" y="218" class="body">301 Moved Permanently</text>
+<text id="text-10" x="348.7" y="243" class="body">304 Not Modified</text>
+<text id="text-11" x="348.7" y="268" class="body">Look somewhere else,</text>
+<text id="text-12" x="348.7" y="293" class="body">or use your cached</text>
+<text id="text-13" x="348.7" y="318" class="body">copy.</text>
+<rect x="613.4" y="150" width="260" height="205" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="635.4" y="184" class="heading" font-size="22px" style="font-size:22px">4xx Client error</text>
+<text id="text-15" x="635.4" y="218" class="body">400 Bad Request</text>
+<text id="text-16" x="635.4" y="243" class="body">401 / 403 Not allowed</text>
+<text id="text-17" x="635.4" y="268" class="body">404 Not Found</text>
+<text id="text-18" x="635.4" y="293" class="body">Inspect the specific error.</text>
+<rect x="900.0999999999999" y="150" width="260" height="205" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-19" x="922.0999999999999" y="184" class="heading" font-size="22px" style="font-size:22px">5xx Server error</text>
+<text id="text-20" x="922.0999999999999" y="218" class="body">500 Internal Error</text>
+<text id="text-21" x="922.0999999999999" y="243" class="body">502 / 503 / 504</text>
+<text id="text-22" x="922.0999999999999" y="268" class="body">The server or</text>
+<text id="text-23" x="922.0999999999999" y="293" class="body">something behind it</text>
+<text id="text-24" x="922.0999999999999" y="318" class="body">failed.</text>
+<rect x="40" y="395" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-25" x="60" y="425" class="body">The status family is a starting point. Retry behavior depends on the method and failure; for example,</text>
+<text id="text-26" x="60" y="450" class="body">429 may ask a client to wait before trying again.</text>
+</svg>

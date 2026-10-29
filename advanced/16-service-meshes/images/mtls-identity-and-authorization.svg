@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="706" viewBox="0 0 1200 706" role="img" aria-labelledby="title description">
+<title id="title">mTLS proves who is calling; authorization decides if it may</title>
+<desc id="description">Each sidecar has a certificate from istiod that encodes its workload identity, for example cluster.local/ns/default/sa/frontend for the frontend service account. With PeerAuthentication mode STRICT, the backend&#x27;s sidecar accepts only mutual TLS, so a plaintext client is rejected. The AuthorizationPolicy then compares the verified caller identity with its allowed principals; the frontend is allowed and any other workload receives 403 Forbidden.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="706" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">mTLS proves who is calling; authorization decides if it may</text>
+<text id="text-2" x="40" y="83" class="muted">Follow one call from frontend to backend; checks happen in the backend&#x27;s sidecar.</text>
+<rect x="40" y="125" width="300" height="211" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">frontend Pod</text>
+<text id="text-4" x="62" y="193" class="body">Service account frontend.</text>
+<text id="text-5" x="62" y="218" class="body">Identity in its</text>
+<text id="text-6" x="62" y="243" class="body">certificate:</text>
+<text id="text-7" x="62" y="268" class="body">cluster.local/ns/default/</text>
+<text id="text-8" x="62" y="293" class="body">sa/frontend</text>
+<rect x="450" y="125" width="330" height="240" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="472" y="159" class="heading" font-size="22px" style="font-size:22px">backend sidecar</text>
+<text id="text-10" x="472" y="193" class="body">1 PeerAuthentication STRICT:</text>
+<text id="text-11" x="472" y="218" class="body">mutual TLS required.</text>
+<text id="text-12" x="472" y="243" class="body">2 AuthorizationPolicy: is the</text>
+<text id="text-13" x="472" y="268" class="body">caller&#x27;s principal allowed?</text>
+<rect x="880" y="125" width="280" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="902" y="159" class="heading" font-size="22px" style="font-size:22px">backend container</text>
+<text id="text-15" x="902" y="193" class="body">Receives only allowed</text>
+<text id="text-16" x="902" y="218" class="body">calls.</text>
+<rect x="40" y="390" width="300" height="136" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-17" x="62" y="424" class="heading" font-size="22px" style="font-size:22px">Other workload</text>
+<text id="text-18" x="62" y="458" class="body">Different service account,</text>
+<text id="text-19" x="62" y="483" class="body">or no sidecar (plaintext).</text>
+<rect x="880" y="390" width="280" height="161" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-20" x="902" y="424" class="heading" font-size="22px" style="font-size:22px">Rejected</text>
+<text id="text-21" x="902" y="458" class="body">Plaintext: connection</text>
+<text id="text-22" x="902" y="483" class="body">rejected.</text>
+<text id="text-23" x="902" y="508" class="body">Wrong identity: 403.</text>
+<path d="M340.0 230.5 L450.0 230.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-24" x="395" y="218.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">mTLS</text>
+<path d="M780.0 230.5 L880.0 230.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-25" x="830" y="218.5" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">allow</text>
+<path d="M340.0 458.0 L450.0 335.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M780.0 335.0 L880.0 470.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-26" x="830" y="320" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">deny</text>
+<rect x="450" y="400" width="330" height="136" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-27" x="472" y="434" class="heading" font-size="22px" style="font-size:22px">istiod</text>
+<text id="text-28" x="472" y="468" class="body">Issues and rotates the</text>
+<text id="text-29" x="472" y="493" class="body">certificates.</text>
+<rect x="40" y="591" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-30" x="60" y="621" class="body">The application code does not change: identity, encryption, and the allow decision live in the proxies and Istio</text>
+<text id="text-31" x="60" y="646" class="body">resources.</text>
+</svg>

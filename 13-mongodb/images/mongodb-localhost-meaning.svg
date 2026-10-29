@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="786" viewBox="0 0 1200 786" role="img" aria-labelledby="title description">
+<title id="title">localhost means the machine where the client runs</title>
+<desc id="description">With kubectl port-forward running, mongosh on the laptop connects to localhost:27017, which is the laptop end of the tunnel; kubectl relays traffic to mongodb-service. An application Pod connects to mongodb-service:27017 through cluster DNS; localhost inside that Pod would be the Pod itself, which has no database. kubectl exec runs mongosh inside mongodb-0, where localhost is the database container.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="786" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">localhost means the machine where the client runs</text>
+<text id="text-2" x="40" y="83" class="muted">Each column is one place you can start mongosh; follow it down to the server.</text>
+<rect x="40" y="125" width="350" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Laptop</text>
+<text id="text-4" x="62" y="193" class="body">mongosh ...@localhost:27017</text>
+<rect x="40" y="320" width="350" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-5" x="62" y="354" class="heading" font-size="22px" style="font-size:22px">port-forward tunnel</text>
+<text id="text-6" x="62" y="388" class="body">localhost = your laptop; kubectl</text>
+<text id="text-7" x="62" y="413" class="body">relays to mongodb-service.</text>
+<path d="M215.0 275.0 L215.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M215.0 470.0 L450.0 520.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="425" y="125" width="350" height="150" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-8" x="447" y="159" class="heading" font-size="22px" style="font-size:22px">API Pod in cluster</text>
+<text id="text-9" x="447" y="193" class="body">Connects to</text>
+<text id="text-10" x="447" y="218" class="body">mongodb-service:27017</text>
+<rect x="425" y="320" width="350" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-11" x="447" y="354" class="heading" font-size="22px" style="font-size:22px">cluster DNS + Service</text>
+<text id="text-12" x="447" y="388" class="body">localhost here would be the API</text>
+<text id="text-13" x="447" y="413" class="body">Pod, which has no database.</text>
+<path d="M600.0 275.0 L600.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M600.0 470.0 L600.0 520.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="810" y="125" width="350" height="150" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="832" y="159" class="heading" font-size="22px" style="font-size:22px">kubectl exec</text>
+<text id="text-15" x="832" y="193" class="body">mongosh inside mongodb-0</text>
+<rect x="810" y="320" width="350" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-16" x="832" y="354" class="heading" font-size="22px" style="font-size:22px">same container</text>
+<text id="text-17" x="832" y="388" class="body">localhost = the database</text>
+<text id="text-18" x="832" y="413" class="body">container itself.</text>
+<path d="M985.0 275.0 L985.0 320.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M985.0 470.0 L750.0 520.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="300" y="520" width="600" height="111" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="322" y="554" class="heading" font-size="22px" style="font-size:22px">MongoDB server in mongodb-0</text>
+<text id="text-20" x="322" y="588" class="body">Port 27017; data on mongodb-pvc.</text>
+<rect x="40" y="671" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="60" y="701" class="body">If a connection works on the laptop but fails in a Pod, check what localhost and the host name mean at that</text>
+<text id="text-22" x="60" y="726" class="body">location.</text>
+</svg>

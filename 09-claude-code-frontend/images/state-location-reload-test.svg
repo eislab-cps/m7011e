@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+<title id="title">Local React state and backend storage survive different events</title>
+<desc id="description">With only useState, adding a todo updates the component&#x27;s memory in the browser tab, and a reload starts the component again with an empty list. After connecting to Flask, adding a todo sends POST /api/todos, Flask stores it in its own process memory, and a reload fetches it again with GET. Tutorial 1&#x27;s Flask stores todos in memory, so restarting Flask still loses them; durable storage needs a database.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="675" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Local React state and backend storage survive different events</text>
+<text id="text-2" x="40" y="83" class="muted">Each row follows adding a todo and then reloading the page.</text>
+<rect x="40" y="125" width="480" height="120" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Step 3: useState only</text>
+<text id="text-4" x="62" y="193" class="body">Add todo: setTodos updates memory in this</text>
+<text id="text-5" x="62" y="218" class="body">tab.</text>
+<rect x="640" y="125" width="520" height="120" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-6" x="662" y="159" class="heading" font-size="22px" style="font-size:22px">Reload</text>
+<text id="text-7" x="662" y="193" class="body">Component starts again: list is empty.</text>
+<path d="M520.0 185.0 L640.0 185.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="275" width="480" height="120" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-8" x="62" y="309" class="heading" font-size="22px" style="font-size:22px">Step 4: Flask API</text>
+<text id="text-9" x="62" y="343" class="body">Add todo: POST /api/todos; Flask keeps it.</text>
+<rect x="640" y="275" width="520" height="120" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-10" x="662" y="309" class="heading" font-size="22px" style="font-size:22px">Reload</text>
+<text id="text-11" x="662" y="343" class="body">useEffect runs GET /api/todos: todo is back.</text>
+<path d="M520.0 335.0 L640.0 335.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="425" width="480" height="120" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="62" y="459" class="heading" font-size="22px" style="font-size:22px">Restart Flask</text>
+<text id="text-13" x="62" y="493" class="body">Tutorial 1 stores todos in process memory.</text>
+<rect x="640" y="425" width="520" height="120" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-14" x="662" y="459" class="heading" font-size="22px" style="font-size:22px">Reload</text>
+<text id="text-15" x="662" y="493" class="body">GET returns an empty list until a database is</text>
+<text id="text-16" x="662" y="518" class="body">added.</text>
+<path d="M520.0 485.0 L640.0 485.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="585" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="60" y="615" class="body">Use the reload test after every data feature: it tells you where the state actually lives.</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" role="img" aria-labelledby="title description">
+<title id="title">Full-stack frameworks still split server and browser code</title>
+<desc id="description">A full-stack application still has distinct server and browser execution. Server-only handlers may access private data and credentials. Interactive client components and browser handlers receive only intentionally serialized data. Not every component runs in both environments; the selected framework defines the execution rules.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="500" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Full-stack frameworks still split server and browser code</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows show what crosses the network; the dashed arrow is a later request from the browser.</text>
+<rect x="40" y="140" width="500" height="230" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Runs on the server</text>
+<text id="text-4" x="62" y="208" class="body">Server-only loaders: getServerSideProps</text>
+<text id="text-5" x="62" y="233" class="body">(Next.js), +page.server.js (SvelteKit).</text>
+<text id="text-6" x="62" y="258" class="body">API routes: pages/api, +server.js, Nuxt</text>
+<text id="text-7" x="62" y="283" class="body">server/api.</text>
+<text id="text-8" x="62" y="308" class="body">May read the database and use secrets.</text>
+<rect x="660" y="140" width="500" height="230" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="682" y="174" class="heading" font-size="22px" style="font-size:22px">Runs in the browser</text>
+<text id="text-10" x="682" y="208" class="body">Interactive client components and handlers.</text>
+<text id="text-11" x="682" y="233" class="body">Event handlers, client-side navigation.</text>
+<text id="text-12" x="682" y="258" class="body">Anything sent here is visible to the user.</text>
+<path d="M540.0 225.0 L660.0 225.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-13" x="600" y="213" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">HTML + data</text>
+<path d="M660.0 300.0 L540.0 300.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-14" x="600" y="288" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">fetch /api</text>
+<rect x="40" y="410" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-15" x="60" y="440" class="body">Execution rules vary by framework; keep secrets in server-only code and review what is serialized.</text>
+</svg>

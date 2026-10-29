@@ -38,6 +38,8 @@ This tutorial alternates between shell commands and natural-language requests to
 
 Include this in development requests: **"Explain each command before running it, show which files change, and tell me how I can verify the result myself."** The goal is to retain enough understanding to diagnose the generated application. Review [HTTP](../01-basic-webapp/README.md#2-follow-one-http-request) and [the command guide](../COMMANDS.md) when needed.
 
+![Each generated feature goes through one review loop. Follow the arrows clockwise; the loop repeats once per small feature.](./images/assistant-review-loop.svg)
+
 ## Getting Started with Claude Code
 
 ### Directory Structure
@@ -184,6 +186,8 @@ API will be available at: http://localhost:8000
 
 Make sure you've started Claude Code from the main `m7011e/` directory (see "Getting Started" section above).
 
+![Three terminals run three separate programs. Solid arrows are HTTP requests from the browser; the dashed arrow is the assistant editing files that Vite serves.](./images/three-local-processes.svg)
+
 ### Step 1: Project Setup
 
 **Copy and paste this into Claude Code:**
@@ -292,6 +296,8 @@ Make sure to handle CORS properly (the Flask backend already has CORS configured
 - Loading and error states
 - useEffect for data fetching
 - Clean separation of concerns
+
+![Local React state and backend storage survive different events. Each row follows adding a todo and then reloading the page.](./images/state-location-reload-test.svg)
 
 ---
 

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1080" viewBox="0 0 1200 1080" role="img" aria-labelledby="title description">
+<title id="title">Cache-aside: the application coordinates the read</title>
+<desc id="description">The API asks Redis for a key. A cache hit can satisfy the read. On a miss, the API reads PostgreSQL, then writes the returned value into Redis with an expiry and returns it to the caller. The application handles both dependencies; Redis does not execute the SQL lookup.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1080" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Cache-aside: the application coordinates the read</text>
+<text id="text-2" x="40" y="83" class="muted">Time runs downward. Redis does not query PostgreSQL on the application&#x27;s behalf.</text>
+<rect x="40" y="130" width="320" height="115" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="62" y="164" class="heading" font-size="22px" style="font-size:22px">API handler</text>
+<text id="text-5" x="62" y="198" class="body">Coordinates the read.</text>
+<path d="M200 245 V920" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="440" y="130" width="320" height="115" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="462" y="164" class="heading" font-size="22px" style="font-size:22px">Redis cache</text>
+<text id="text-9" x="462" y="198" class="body">Returns a value or a miss.</text>
+<path d="M600 245 V920" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="840" y="130" width="320" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="862" y="164" class="heading" font-size="22px" style="font-size:22px">PostgreSQL</text>
+<text id="text-13" x="862" y="198" class="body">Owns the stored record.</text>
+<path d="M1000 245 V920" fill="none" stroke="#adc5df" stroke-width="2" stroke-dasharray="7 6"/>
+<path d="M200 295 L600 295" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="307.7" y="249" width="184.60000000000002" height="30" fill="#fff"/>
+<text id="text-17" x="400.0" y="270" class="body" text-anchor="middle">1. GET product:42</text>
+<path d="M600 385 L200 385" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="278.3" y="339" width="243.4" height="30" fill="#fff"/>
+<text id="text-20" x="400.0" y="360" class="body" text-anchor="middle">2. Cached value or miss</text>
+<text id="text-21" x="40" y="465" class="heading">On a hit, return the cached value. On a miss, continue below:</text>
+<path d="M200 545 L1000 545" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="502.8" y="499" width="194.4" height="30" fill="#fff"/>
+<text id="text-24" x="600.0" y="520" class="body" text-anchor="middle">3. Read product 42</text>
+<path d="M1000 640 L200 640" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="502.8" y="594" width="194.4" height="30" fill="#fff"/>
+<text id="text-27" x="600.0" y="615" class="body" text-anchor="middle">4. Database result</text>
+<path d="M200 735 L600 735" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="273.4" y="689" width="253.20000000000002" height="30" fill="#fff"/>
+<text id="text-30" x="400.0" y="710" class="body" text-anchor="middle">5. SET value with expiry</text>
+<rect x="40" y="805" width="320" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-32" x="62" y="839" class="heading" font-size="22px" style="font-size:22px">Return to caller</text>
+<text id="text-33" x="62" y="873" class="body">Use the retrieved result.</text>
+<rect x="40" y="965" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-35" x="60" y="995" class="body">The database remains authoritative. Expiry and invalidation need to account for concurrent writes and</text>
+<text id="text-36" x="60" y="1023" class="body">failures.</text>
+</svg>

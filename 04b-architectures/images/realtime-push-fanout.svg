@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="581" viewBox="0 0 1200 581" role="img" aria-labelledby="title description">
+<title id="title">Real-time push needs open connections and fan-out</title>
+<desc id="description">Browsers hold long-lived WebSocket or Server-Sent Events connections to one of several server instances. When a todo changes on server A, users connected to server B must also be told. A shared publish/subscribe channel such as Redis or a message broker lets every instance fan the event out to its own connections. Load balancers need to support long-lived connections.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="581" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Real-time push needs open connections and fan-out</text>
+<text id="text-2" x="40" y="83" class="muted">Solid arrows are open connections; dashed arrows are messages published between servers.</text>
+<rect x="40" y="140" width="220" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Alice</text>
+<text id="text-4" x="62" y="208" class="body">Edits a todo.</text>
+<rect x="40" y="340" width="220" height="111" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-5" x="62" y="374" class="heading" font-size="22px" style="font-size:22px">Bob</text>
+<text id="text-6" x="62" y="408" class="body">Watches the list.</text>
+<rect x="360" y="140" width="300" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-7" x="382" y="174" class="heading" font-size="22px" style="font-size:22px">Server A</text>
+<text id="text-8" x="382" y="208" class="body">Holds Alice&#x27;s connection.</text>
+<rect x="360" y="340" width="300" height="111" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-9" x="382" y="374" class="heading" font-size="22px" style="font-size:22px">Server B</text>
+<text id="text-10" x="382" y="408" class="body">Holds Bob&#x27;s connection.</text>
+<rect x="780" y="230" width="380" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="802" y="264" class="heading" font-size="22px" style="font-size:22px">Pub/sub channel</text>
+<text id="text-12" x="802" y="298" class="body">Redis or a broker: &#x27;todo 42</text>
+<text id="text-13" x="802" y="323" class="body">changed&#x27; to every instance.</text>
+<path d="M260.0 195.5 L360.0 195.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<path d="M260.0 395.5 L360.0 395.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<path d="M660.0 195.5 L780.0 255.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<path d="M780.0 341.0 L660.0 395.5" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="40" y="491" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="60" y="521" class="body">Without the shared channel Bob only sees changes made by users who happen to be connected to the same server.</text>
+</svg>

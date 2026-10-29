@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="735" viewBox="0 0 1200 735" role="img" aria-labelledby="title description">
+<title id="title">Three ways to reach the same database process</title>
+<desc id="description">A laptop uses a local port-forward listener that relays through the Kubernetes API to a selected Pod; targeting a Service selects a backing Pod rather than exposing the Service publicly. An application uses cluster Service DNS. kubectl exec starts psql inside a container, where the local PostgreSQL connection needs no laptop port-forward.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="735" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Three ways to reach the same database process</text>
+<text id="text-2" x="40" y="83" class="muted">Each row is one client path; all of them end at port 5432 in the Pod.</text>
+<rect x="40" y="125" width="300" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">Laptop psql</text>
+<text id="text-4" x="62" y="193" class="body">psql -h localhost -p 5432</text>
+<rect x="420" y="125" width="330" height="135" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-5" x="442" y="159" class="heading" font-size="22px" style="font-size:22px">Port-forward tunnel</text>
+<text id="text-6" x="442" y="193" class="body">kubectl keeps it open;</text>
+<text id="text-7" x="442" y="218" class="body">local:remote ports.</text>
+<rect x="830" y="125" width="330" height="135" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="852" y="159" class="heading" font-size="22px" style="font-size:22px">PostgreSQL Pod</text>
+<text id="text-9" x="852" y="193" class="body">Terminal must stay open.</text>
+<path d="M340.0 192.5 L420.0 192.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 192.5 L830.0 192.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="285" width="300" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="62" y="319" class="heading" font-size="22px" style="font-size:22px">App in cluster</text>
+<text id="text-11" x="62" y="353" class="body">Connects to</text>
+<text id="text-12" x="62" y="378" class="body">postgres-service:5432 in</text>
+<text id="text-13" x="62" y="403" class="body">namespace db.</text>
+<rect x="420" y="285" width="330" height="135" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="442" y="319" class="heading" font-size="22px" style="font-size:22px">Cluster DNS + Service</text>
+<text id="text-15" x="442" y="353" class="body">Name resolves to the Service,</text>
+<text id="text-16" x="442" y="378" class="body">which picks the Pod.</text>
+<rect x="830" y="285" width="330" height="135" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-17" x="852" y="319" class="heading" font-size="22px" style="font-size:22px">PostgreSQL Pod</text>
+<text id="text-18" x="852" y="353" class="body">How your API should connect.</text>
+<path d="M340.0 352.5 L420.0 352.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 352.5 L830.0 352.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="445" width="300" height="135" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-19" x="62" y="479" class="heading" font-size="22px" style="font-size:22px">kubectl exec</text>
+<text id="text-20" x="62" y="513" class="body">Runs psql -U postgres</text>
+<text id="text-21" x="62" y="538" class="body">inside the Pod.</text>
+<rect x="420" y="445" width="330" height="135" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-22" x="442" y="479" class="heading" font-size="22px" style="font-size:22px">Kubernetes API</text>
+<text id="text-23" x="442" y="513" class="body">Starts a process in the</text>
+<text id="text-24" x="442" y="538" class="body">container; no tunnel.</text>
+<rect x="830" y="445" width="330" height="135" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-25" x="852" y="479" class="heading" font-size="22px" style="font-size:22px">PostgreSQL Pod</text>
+<text id="text-26" x="852" y="513" class="body">Admin and debugging only.</text>
+<path d="M340.0 512.5 L420.0 512.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M750.0 512.5 L830.0 512.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="620" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="650" class="body">None of these paths makes the database publicly reachable; that would need a LoadBalancer or NodePort Service,</text>
+<text id="text-28" x="60" y="675" class="body">which this chart does not create.</text>
+</svg>

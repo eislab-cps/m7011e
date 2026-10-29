@@ -21,6 +21,8 @@ The todo API needs shared records, query behavior, and rules for concurrent upda
 
 Kubernetes maintains the process and its storage attachment, while a client such as `psql` sends database operations. These layers explain why installing the chart does not create your application's tables and why a ready Pod does not prove a query or password is correct. SQLite is another useful choice when in-process storage is the better requirement; see its [discussion of embedded versus client-server use](https://sqlite.org/whentouse.html).
 
+![The chart creates a database process and a separate storage claim. Arrows show which object refers to which; the data files live in the volume, not in the Pod.](./images/postgres-chart-objects.svg)
+
 ## Configuration
 
 The following table lists the configurable parameters in `values.yaml`:
@@ -170,6 +172,8 @@ The client version depends on your package manager. Use a client compatible with
 
 ## Accessing the Database
 
+![Three ways to reach the same database process. Each row is one client path; the options below describe them in detail.](./images/postgres-access-paths.svg)
+
 ### Option 1: Port Forwarding (Development/Testing)
 
 To access the database from your local machine, use `kubectl port-forward`:
@@ -304,6 +308,8 @@ helm uninstall postgresql -n db
 ```bash
 kubectl delete pvc postgresql-pvc -n db
 ```
+
+![Restarting, uninstalling, and deleting data are different operations. Read each column top to bottom: the action, what is removed, and how the volume reclaim policy affects the result.](./images/postgres-data-lifecycle.svg)
 
 ## Troubleshooting
 

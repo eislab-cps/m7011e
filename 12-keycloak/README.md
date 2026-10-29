@@ -1219,6 +1219,8 @@ def admin_only():
     return jsonify({'message': 'Admin data'})
 ```
 
+![A role travels in the token; only the API check enforces it. Follow the role from Keycloak into the token, then to the two places that read it.](./images/role-claim-enforcement.svg)
+
 ---
 
 ## Part 7: Add Social Login (GitHub Example)

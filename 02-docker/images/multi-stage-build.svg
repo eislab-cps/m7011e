@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="455" viewBox="0 0 1200 455" role="img" aria-labelledby="title description">
+<title id="title">A multi-stage build ships only what the final stage copies</title>
+<desc id="description">The builder stage starts from node:22, installs dependencies, and runs npm run build, so it contains source code, node_modules, and build tools. The final stage starts from nginx:alpine and copies only the built /app/dist directory. The shipped image therefore contains the web server and static files, which reduces its size and the software that must be patched.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="455" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">A multi-stage build ships only what the final stage copies</text>
+<text id="text-2" x="40" y="83" class="muted">The arrow is COPY --from=builder; nothing else from the first stage reaches the final image.</text>
+<rect x="40" y="140" width="500" height="160" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">Stage 1: builder (node:22)</text>
+<text id="text-4" x="62" y="208" class="body">Source code and package.json</text>
+<text id="text-5" x="62" y="233" class="body">node_modules and build tools</text>
+<text id="text-6" x="62" y="258" class="body">npm run build writes /app/dist</text>
+<rect x="660" y="140" width="500" height="160" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-7" x="682" y="174" class="heading" font-size="22px" style="font-size:22px">Stage 2: final (nginx:alpine)</text>
+<text id="text-8" x="682" y="208" class="body">Web server</text>
+<text id="text-9" x="682" y="233" class="body">/usr/share/nginx/html: copied dist files only</text>
+<text id="text-10" x="682" y="258" class="body">This is the image you push and run</text>
+<path d="M540.0 220.0 L660.0 220.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-11" x="600" y="208.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">dist only</text>
+<rect x="40" y="340" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="60" y="370" class="body">Source code, node_modules, and build tools stay behind in stage 1, so the shipped image is smaller and has less</text>
+<text id="text-13" x="60" y="395" class="body">to patch.</text>
+</svg>

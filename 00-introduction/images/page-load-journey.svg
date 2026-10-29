@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="505" viewBox="0 0 1200 505" role="img" aria-labelledby="title description">
+<title id="title">Opening a web page takes several separate steps</title>
+<desc id="description">A simplified new HTTPS connection over TCP uses name resolution, a TCP connection, TLS certificate and key checks, then an HTTP exchange. Caches and existing connections can skip work; HTTP/3 uses QUIC. Error responses and connection failures help identify how far the request progressed.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="505" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Opening a web page takes several separate steps</text>
+<text id="text-2" x="40" y="83" class="muted">A simplified new HTTPS connection over TCP; cached answers and connections can skip steps.</text>
+<rect x="40" y="150" width="250" height="175" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-3" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">1. DNS lookup</text>
+<text id="text-4" x="62" y="218" class="body">Which IP address does</text>
+<text id="text-5" x="62" y="243" class="body">example.com have?</text>
+<text id="text-6" x="62" y="268" class="body">Answer, for example:</text>
+<text id="text-7" x="62" y="293" class="body">203.0.113.10</text>
+<rect x="330" y="150" width="250" height="175" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-8" x="352" y="184" class="heading" font-size="22px" style="font-size:22px">2. TCP connect</text>
+<text id="text-9" x="352" y="218" class="body">Open a reliable</text>
+<text id="text-10" x="352" y="243" class="body">connection to that</text>
+<text id="text-11" x="352" y="268" class="body">address on port 443.</text>
+<rect x="620" y="150" width="250" height="175" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-12" x="642" y="184" class="heading" font-size="22px" style="font-size:22px">3. TLS</text>
+<text id="text-13" x="642" y="214" class="heading" font-size="22px" style="font-size:22px">handshake</text>
+<text id="text-14" x="642" y="248" class="body">Check the server&#x27;s</text>
+<text id="text-15" x="642" y="273" class="body">certificate and agree</text>
+<text id="text-16" x="642" y="298" class="body">on encryption keys.</text>
+<rect x="910" y="150" width="250" height="175" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-17" x="932" y="184" class="heading" font-size="22px" style="font-size:22px">4. HTTP</text>
+<text id="text-18" x="932" y="214" class="heading" font-size="22px" style="font-size:22px">exchange</text>
+<text id="text-19" x="932" y="248" class="body">GET / is sent; the</text>
+<text id="text-20" x="932" y="273" class="body">server replies 200 OK</text>
+<text id="text-21" x="932" y="298" class="body">with HTML.</text>
+<path d="M290.0 237.5 L330.0 237.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M580.0 237.5 L620.0 237.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M870.0 237.5 L910.0 237.5" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-22" x="165.0" y="359" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">&quot;Server not found&quot;</text>
+<text id="text-23" x="455.0" y="359" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">&quot;Connection refused&quot;</text>
+<text id="text-24" x="745.0" y="359" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">&quot;Certificate invalid&quot;</text>
+<text id="text-25" x="1035.0" y="359" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">404, 500, ...</text>
+<text id="text-26" x="600" y="387" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">Typical error when the step fails</text>
+<rect x="40" y="415" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="60" y="445" class="body">An error message is evidence: it tells you which of the four steps failed.</text>
+</svg>

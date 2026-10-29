@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="950" viewBox="0 0 1200 950" role="img" aria-labelledby="title description">
+<title id="title">The DOM contains elements and text nodes</title>
+<desc id="description">The div element contains an h1 and a ul. The h1 contains the text My Todos. The ul contains two li elements, each with its own text node. These are browser objects, not network services.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="950" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The DOM contains elements and text nodes</text>
+<text id="text-2" x="40" y="83" class="muted">A selected subtree of the todo page; arrows mean parent-child relationships.</text>
+<rect x="450" y="140" width="300" height="90" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-4" x="472" y="174" class="heading" font-size="22px" style="font-size:22px">div id=&quot;app&quot;</text>
+<path d="M600 230 V270 H250 V320" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M600 230 V270 H900 V320" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="100" y="320" width="300" height="90" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-8" x="122" y="354" class="heading" font-size="22px" style="font-size:22px">h1 element</text>
+<rect x="700" y="320" width="400" height="90" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="722" y="354" class="heading" font-size="22px" style="font-size:22px">ul id=&quot;todo-list&quot;</text>
+<path d="M250 410 L250 520" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="100" y="520" width="300" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="122" y="554" class="heading" font-size="22px" style="font-size:22px">Text node</text>
+<text id="text-14" x="122" y="588" class="body">My Todos</text>
+<path d="M900 410 V450 H745 V500" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M900 410 V450 H1035 V500" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620" y="500" width="250" height="90" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-18" x="642" y="534" class="heading" font-size="22px" style="font-size:22px">li element</text>
+<path d="M745 590 L745 675" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="620" y="675" width="250" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="642" y="709" class="heading" font-size="22px" style="font-size:22px">Text node</text>
+<text id="text-22" x="642" y="743" class="body">Todo 1</text>
+<rect x="910" y="500" width="250" height="90" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-24" x="932" y="534" class="heading" font-size="22px" style="font-size:22px">li element</text>
+<path d="M1035 590 L1035 675" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="910" y="675" width="250" height="115" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="932" y="709" class="heading" font-size="22px" style="font-size:22px">Text node</text>
+<text id="text-28" x="932" y="743" class="body">Todo 2</text>
+<rect x="40" y="840" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-30" x="60" y="870" class="body">Changing this tree changes one browser view. Saving a todo needs a separate backend operation.</text>
+</svg>

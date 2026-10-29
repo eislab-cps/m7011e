@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="747" viewBox="0 0 1200 747" role="img" aria-labelledby="title description">
+<title id="title">Cloud service models differ in who manages what</title>
+<desc id="description">With your own server you manage everything from hardware to application. With infrastructure as a service you rent virtual machines and manage the operating system upward. With platform as a service you supply the application and its data. With functions as a service you supply single functions that run on demand. With software as a service you only use the finished application.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="747" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Cloud service models differ in who manages what</text>
+<text id="text-2" x="40" y="83" class="muted">Each column is a service model; green rows are managed by you, grey rows by the provider.</text>
+<rect x="40" y="140" width="208" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">On-premises</text>
+<rect x="40" y="210" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-4" x="62" y="244" class="body">Application</text>
+<rect x="40" y="272" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-5" x="62" y="306" class="body">Data</text>
+<rect x="40" y="334" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-6" x="62" y="368" class="body">Runtime</text>
+<rect x="40" y="396" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-7" x="62" y="430" class="body">Operating system</text>
+<rect x="40" y="458" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-8" x="62" y="492" class="body">Virtualization</text>
+<rect x="40" y="520" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-9" x="62" y="554" class="body">Hardware, network</text>
+<rect x="268" y="140" width="208" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-10" x="290" y="174" class="heading" font-size="22px" style="font-size:22px">IaaS</text>
+<rect x="268" y="210" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-11" x="290" y="244" class="body">Application</text>
+<rect x="268" y="272" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-12" x="290" y="306" class="body">Data</text>
+<rect x="268" y="334" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-13" x="290" y="368" class="body">Runtime</text>
+<rect x="268" y="396" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="290" y="430" class="body">Operating system</text>
+<rect x="268" y="458" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-15" x="290" y="492" class="body">Virtualization</text>
+<rect x="268" y="520" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-16" x="290" y="554" class="body">Hardware, network</text>
+<rect x="496" y="140" width="208" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-17" x="518" y="174" class="heading" font-size="22px" style="font-size:22px">PaaS</text>
+<rect x="496" y="210" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-18" x="518" y="244" class="body">Application</text>
+<rect x="496" y="272" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="518" y="306" class="body">Data</text>
+<rect x="496" y="334" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-20" x="518" y="368" class="body">Runtime</text>
+<rect x="496" y="396" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-21" x="518" y="430" class="body">Operating system</text>
+<rect x="496" y="458" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-22" x="518" y="492" class="body">Virtualization</text>
+<rect x="496" y="520" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-23" x="518" y="554" class="body">Hardware, network</text>
+<rect x="724" y="140" width="208" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-24" x="746" y="174" class="heading" font-size="22px" style="font-size:22px">FaaS</text>
+<rect x="724" y="210" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-25" x="746" y="244" class="body">Functions</text>
+<rect x="724" y="272" width="208" height="54" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-26" x="746" y="306" class="body">Data</text>
+<rect x="724" y="334" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-27" x="746" y="368" class="body">Runtime</text>
+<rect x="724" y="396" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-28" x="746" y="430" class="body">Operating system</text>
+<rect x="724" y="458" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-29" x="746" y="492" class="body">Virtualization</text>
+<rect x="724" y="520" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-30" x="746" y="554" class="body">Hardware, network</text>
+<rect x="952" y="140" width="208" height="56" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-31" x="974" y="174" class="heading" font-size="22px" style="font-size:22px">SaaS</text>
+<rect x="952" y="210" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-32" x="974" y="244" class="body">Application</text>
+<rect x="952" y="272" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-33" x="974" y="306" class="body">Data</text>
+<rect x="952" y="334" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-34" x="974" y="368" class="body">Runtime</text>
+<rect x="952" y="396" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-35" x="974" y="430" class="body">Operating system</text>
+<rect x="952" y="458" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-36" x="974" y="492" class="body">Virtualization</text>
+<rect x="952" y="520" width="208" height="54" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-37" x="974" y="554" class="body">Hardware, network</text>
+<text id="text-38" x="40" y="608" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">Green: you manage it.   Grey: the provider manages it.</text>
+<rect x="40" y="632" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-39" x="60" y="662" class="body">Moving right means less to operate and less control. Security of your code, data and access rules always stays</text>
+<text id="text-40" x="60" y="687" class="body">with you.</text>
+</svg>

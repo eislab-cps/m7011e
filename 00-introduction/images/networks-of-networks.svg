@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title description">
+<title id="title">The internet is a network of networks</title>
+<desc id="description">A laptop sends packets through routers and interconnected networks to a hosting network. IP addresses identify network endpoints; transport ports help identify receiving endpoints within a host. Not every program listens on a port, and a hostname need not identify one fixed machine.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="480" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">The internet is a network of networks</text>
+<text id="text-2" x="40" y="83" class="muted">Arrows follow a packet from a laptop to a server; routers forward it network by network.</text>
+<rect x="40" y="150" width="188" height="200" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="184" class="heading" font-size="22px" style="font-size:22px">Laptop</text>
+<text id="text-4" x="62" y="218" class="body">IP 192.168.1.23</text>
+<text id="text-5" x="62" y="243" class="body">Browser uses a</text>
+<text id="text-6" x="62" y="268" class="body">random local</text>
+<text id="text-7" x="62" y="293" class="body">port.</text>
+<rect x="273" y="150" width="188" height="200" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-8" x="295" y="184" class="heading" font-size="22px" style="font-size:22px">Home</text>
+<text id="text-9" x="295" y="214" class="heading" font-size="22px" style="font-size:22px">router</text>
+<text id="text-10" x="295" y="248" class="body">Forwards</text>
+<text id="text-11" x="295" y="273" class="body">packets out of</text>
+<text id="text-12" x="295" y="298" class="body">the local</text>
+<text id="text-13" x="295" y="323" class="body">network (NAT).</text>
+<rect x="506" y="150" width="188" height="200" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="528" y="184" class="heading" font-size="22px" style="font-size:22px">Internet</text>
+<text id="text-15" x="528" y="214" class="heading" font-size="22px" style="font-size:22px">provider</text>
+<text id="text-16" x="528" y="248" class="body">Carries traffic</text>
+<text id="text-17" x="528" y="273" class="body">to other</text>
+<text id="text-18" x="528" y="298" class="body">networks.</text>
+<rect x="739" y="150" width="188" height="200" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-19" x="761" y="184" class="heading" font-size="22px" style="font-size:22px">Hosting</text>
+<text id="text-20" x="761" y="214" class="heading" font-size="22px" style="font-size:22px">network</text>
+<text id="text-21" x="761" y="248" class="body">A data centre</text>
+<text id="text-22" x="761" y="273" class="body">or cloud</text>
+<text id="text-23" x="761" y="298" class="body">provider.</text>
+<rect x="972" y="150" width="188" height="200" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-24" x="994" y="184" class="heading" font-size="22px" style="font-size:22px">Server</text>
+<text id="text-25" x="994" y="218" class="body">IP 203.0.113.10</text>
+<text id="text-26" x="994" y="243" class="body">Web server on</text>
+<text id="text-27" x="994" y="268" class="body">port 443.</text>
+<path d="M228.0 250.0 L273.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M461.0 250.0 L506.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M694.0 250.0 L739.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M927.0 250.0 L972.0 250.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="390" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="420" class="body">IP address = which machine. Port = which program on that machine. Neither is a name; DNS supplies the name.</text>
+</svg>

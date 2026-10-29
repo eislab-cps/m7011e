@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1000" viewBox="0 0 1200 1000" role="img" aria-labelledby="title description">
+<title id="title">SSG separates generation from page serving</title>
+<desc id="description">During a build, content becomes generated HTML and assets. The files are deployed to a static host. Later a browser requests a file and receives it without per-request application rendering. The server still handles HTTP, and optional APIs perform their own runtime work.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1000" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">SSG separates generation from page serving</text>
+<text id="text-2" x="40" y="83" class="muted">The top phase happens before the visitor requests the generated page.</text>
+<rect x="40" y="130" width="1120" height="300" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-4" x="62" y="172" class="heading">Before requests: generate the page</text>
+<rect x="70" y="220" width="300" height="155" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-6" x="92" y="254" class="heading" font-size="22px" style="font-size:22px">Content inputs</text>
+<text id="text-7" x="92" y="288" class="body">Published text and</text>
+<text id="text-8" x="92" y="313" class="body">build-time data.</text>
+<rect x="450" y="220" width="300" height="155" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-10" x="472" y="254" class="heading" font-size="22px" style="font-size:22px">Build renderer</text>
+<text id="text-11" x="472" y="288" class="body">Produce HTML and assets.</text>
+<path d="M370 295 L450 295" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="830" y="220" width="300" height="155" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-14" x="852" y="254" class="heading" font-size="22px" style="font-size:22px">Generated files</text>
+<text id="text-15" x="852" y="288" class="body">Versioned output to</text>
+<text id="text-16" x="852" y="313" class="body">deploy.</text>
+<path d="M750 295 L830 295" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="40" y="520" width="1120" height="300" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="62" y="562" class="heading">At request time: serve the generated file</text>
+<path d="M980 375 L980 620" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1001.6" y="454" width="76.80000000000001" height="30" fill="#fff"/>
+<text id="text-22" x="1040" y="475" class="body" text-anchor="middle">Deploy</text>
+<rect x="70" y="620" width="300" height="150" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-24" x="92" y="654" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-25" x="92" y="688" class="body">Parse the returned HTML.</text>
+<rect x="830" y="620" width="300" height="150" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-27" x="852" y="654" class="heading" font-size="22px" style="font-size:22px">Static host / CDN</text>
+<text id="text-28" x="852" y="688" class="body">Serve stored files over</text>
+<text id="text-29" x="852" y="713" class="body">HTTP.</text>
+<path d="M370 665 L830 665" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="551.8" y="619" width="96.4" height="30" fill="#fff"/>
+<text id="text-32" x="600.0" y="640" class="body" text-anchor="middle">GET page</text>
+<path d="M830 740 L370 740" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="522.4" y="694" width="155.20000000000002" height="30" fill="#fff"/>
+<text id="text-35" x="600.0" y="715" class="body" text-anchor="middle">Generated HTML</text>
+<rect x="40" y="875" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-37" x="60" y="905" class="body">Prebuilt HTML reflects generation inputs. Client code may still call an API for current or private data.</text>
+</svg>

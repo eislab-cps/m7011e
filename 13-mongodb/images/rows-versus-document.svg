@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="736" viewBox="0 0 1200 736" role="img" aria-labelledby="title description">
+<title id="title">One student record: spread across tables or kept in one document</title>
+<desc id="description">A relational design stores the student in a students table, each enrolled course as a row in an enrollments table referencing the student id, and the address in its own columns or table; a query joins them. A document design stores the address as an embedded object and the courses as an array inside one student document, so the common read returns one document. Data shared between many documents, such as a course title, must then be duplicated or referenced.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="736" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">One student record: spread across tables or kept in one document</text>
+<text id="text-2" x="40" y="83" class="muted">Left: rows joined by keys at query time. Right: the same data nested in one document.</text>
+<rect x="40" y="125" width="330" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="159" class="heading" font-size="22px" style="font-size:22px">students</text>
+<text id="text-4" x="62" y="193" class="code">id 1 · John Doe ·</text>
+<text id="text-5" x="62" y="218" class="code">john@example.com · age 25</text>
+<rect x="40" y="285" width="330" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-6" x="62" y="319" class="heading" font-size="22px" style="font-size:22px">enrollments</text>
+<text id="text-7" x="62" y="353" class="code">student_id 1 · M7011E</text>
+<text id="text-8" x="62" y="378" class="code">student_id 1 · D7002E</text>
+<rect x="40" y="445" width="330" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="62" y="479" class="heading" font-size="22px" style="font-size:22px">addresses</text>
+<text id="text-10" x="62" y="513" class="code">student_id 1 · Luleå ·</text>
+<text id="text-11" x="62" y="538" class="code">Sweden</text>
+<path d="M145.0 285.0 L145.0 261.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-12" x="225.0" y="279.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">references id</text>
+<path d="M145.0 445.0 L145.0 421.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-13" x="225.0" y="439.0" class="muted" text-anchor="middle" font-size="16px" style="font-size:16px">references id</text>
+<rect x="430" y="270" width="220" height="186" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="452" y="304" class="heading" font-size="22px" style="font-size:22px">Typical read</text>
+<text id="text-15" x="452" y="338" class="body">SQL joins three</text>
+<text id="text-16" x="452" y="363" class="body">tables.</text>
+<text id="text-17" x="452" y="388" class="body">MongoDB returns</text>
+<text id="text-18" x="452" y="413" class="body">one document.</text>
+<rect x="710" y="125" width="450" height="286" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="732" y="159" class="heading" font-size="22px" style="font-size:22px">One document in students</text>
+<text id="text-20" x="732" y="193" class="code">{ &quot;_id&quot;: ObjectId(...),</text>
+<text id="text-21" x="732" y="218" class="code">&quot;name&quot;: &quot;John Doe&quot;,</text>
+<text id="text-22" x="732" y="243" class="code">&quot;email&quot;: &quot;john@example.com&quot;,</text>
+<text id="text-23" x="732" y="268" class="code">&quot;age&quot;: 25,</text>
+<text id="text-24" x="732" y="293" class="code">&quot;courses&quot;: [&quot;M7011E&quot;, &quot;D7002E&quot;],</text>
+<text id="text-25" x="732" y="318" class="code">&quot;address&quot;: {</text>
+<text id="text-26" x="732" y="343" class="code">&quot;city&quot;: &quot;Luleå&quot;,</text>
+<text id="text-27" x="732" y="368" class="code">&quot;country&quot;: &quot;Sweden&quot; } }</text>
+<rect x="40" y="621" width="1120" height="85" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-28" x="60" y="651" class="body">Embedding fits data read together; shared data such as course titles still needs references or deliberate</text>
+<text id="text-29" x="60" y="676" class="body">duplication.</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="859" viewBox="0 0 1200 859" role="img" aria-labelledby="title description">
+<title id="title">Kubernetes keeps the cluster matching a desired state</title>
+<desc id="description">You describe the desired state, for example three copies of a web service, in a YAML file and submit it with kubectl. The control plane stores it and its controllers start or replace Pods on the worker nodes until the actual state matches. User requests enter through an Ingress, which routes them to a Service, which load-balances across the matching Pods.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="859" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Kubernetes keeps the cluster matching a desired state</text>
+<text id="text-2" x="40" y="83" class="muted">Solid arrows follow a user&#x27;s request; dashed arrows show the control plane adjusting the nodes.</text>
+<rect x="40" y="140" width="330" height="136" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-3" x="62" y="174" class="heading" font-size="22px" style="font-size:22px">You</text>
+<text id="text-4" x="62" y="208" class="body">kubectl apply -f app.yaml</text>
+<text id="text-5" x="62" y="233" class="body">&quot;I want 3 copies of web:v2&quot;</text>
+<rect x="40" y="326" width="330" height="161" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-6" x="62" y="360" class="heading" font-size="22px" style="font-size:22px">Control plane</text>
+<text id="text-7" x="62" y="394" class="body">Stores the desired state.</text>
+<text id="text-8" x="62" y="419" class="body">Controllers compare it with</text>
+<text id="text-9" x="62" y="444" class="body">reality and fix differences.</text>
+<path d="M205.0 276.0 L205.0 326.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="430" y="140" width="730" height="111" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-10" x="452" y="174" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-11" x="452" y="208" class="body">https://todo.example.com</text>
+<rect x="430" y="291" width="730" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-12" x="452" y="325" class="heading" font-size="22px" style="font-size:22px">Ingress</text>
+<text id="text-13" x="452" y="359" class="body">Routes by host name and path to a Service</text>
+<rect x="430" y="442" width="730" height="111" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-14" x="452" y="476" class="heading" font-size="22px" style="font-size:22px">Service</text>
+<text id="text-15" x="452" y="510" class="body">Stable name and address; load-balances to matching Pods</text>
+<path d="M795.0 251.0 L795.0 291.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M795.0 402.0 L795.0 442.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="430" y="593" width="350" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-16" x="452" y="627" class="heading" font-size="22px" style="font-size:22px">Node 1</text>
+<text id="text-17" x="452" y="661" class="body">Pod: web:v2</text>
+<text id="text-18" x="452" y="686" class="body">Pod: web:v2</text>
+<path d="M605.0 553.0 L605.0 593.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="810" y="593" width="350" height="136" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-19" x="832" y="627" class="heading" font-size="22px" style="font-size:22px">Node 2</text>
+<text id="text-20" x="832" y="661" class="body">Pod: web:v2</text>
+<text id="text-21" x="832" y="686" class="body">Pod: db</text>
+<path d="M985.0 553.0 L985.0 593.0" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M205.0 487.0 L205.0 661.0 L430.0 661.0" fill="none" stroke="#1559a6" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text id="text-22" x="217.0" y="649.0" class="muted" text-anchor="start" font-size="16px" style="font-size:16px">starts and replaces Pods</text>
+<rect x="40" y="769" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-23" x="60" y="799" class="body">If a node fails, its Pods are recreated elsewhere; the Service keeps the same name, so callers do not change.</text>
+</svg>

@@ -4,7 +4,7 @@ Tutorials for building web applications, packaging them with Docker, and deployi
 
 ## Getting Started
 
-Clone this repository and start with [Tutorial 1](./01-basic-webapp/README.md). Follow each tutorial's prerequisites and run its commands from the directory specified there.
+Clone this repository and start with the [Introduction](./00-introduction/README.md), which explains the internet, HTTP, cloud computing, and Kubernetes before any setup. Then continue with [Tutorial 1](./01-basic-webapp/README.md). Follow each tutorial's prerequisites and run its commands from the directory specified there.
 
 - **Local development:** Python 3.10 or newer, pip, Git, and a web browser. The React tutorials also use Node.js and npm.
 - **Containers:** Docker Engine or Docker Desktop with Docker Compose.
@@ -30,14 +30,16 @@ Start with [an HTTP request and response](./01-basic-webapp/README.md#2-follow-o
 
 ## Main Tutorials
 
-Work through tutorials 1-13 in order. Tutorials 3-5 explain concepts and include illustrative snippets; the other tutorials provide application files, deployment charts, or exercises to follow.
+Work through the introduction and tutorials 1-13 in order, including Tutorial 4b on architectures. The introduction and tutorials 3-5 (including 4b) explain concepts and include illustrative snippets; the other tutorials provide application files, deployment charts, or exercises to follow.
 
 | Tutorial | Topics |
 | --- | --- |
+| [00 - Introduction](./00-introduction/README.md) | How the internet and HTTP work, what cloud computing provides, and what Kubernetes does, as a map for the rest of the course. |
 | [01 - Basic Web Application](./01-basic-webapp/README.md) | Flask REST API, vanilla JavaScript, HTTP, JSON, CORS, and Swagger UI. Todos are stored in memory. |
 | [02 - Docker and Docker Compose](./02-docker/README.md) | Containerize the todo app, write Dockerfiles, run services with Compose, and understand networking and volumes. |
 | [03 - Databases](./03-databases/README.md) | Relational, document, key-value, time-series, graph, and vector databases; consistency and database selection. |
 | [04 - Frameworks](./04-frameworks/README.md) | Frontend and backend frameworks, SPA and SSR patterns, and framework choices for different services. |
+| [04b - Software Architectures](./04b-architectures/README.md) | Layers, modular monoliths, ports and adapters, services, events, pipelines, plug-ins, data patterns, BFFs, serverless, and real-time delivery; exercises on boundaries and failures. |
 | [05 - Microservices and Kubernetes](./05-microservices-and-k8s/README.md) | Service boundaries, API gateways, service discovery, deployment, scaling, and communication patterns. |
 | [06 - Kubernetes: Getting Started](./06-k8s-getting-started/README.md) | Install tools, obtain a kubeconfig through Rancher, and connect to the course cluster. |
 | [07 - Kubernetes: Hello World](./07-k8s-helloworld/README.md) | Deploy an Nginx application using Helm, Services, Ingress, and TLS certificates. |
@@ -61,10 +63,12 @@ Continue with tutorials 14-16 in `advanced/` after the main sequence. Messaging 
 ## Repository Layout
 
 ```text
+00-introduction/              Internet, HTTP, cloud, and Kubernetes basics
 01-basic-webapp/              Flask API and JavaScript frontend
 02-docker/                    Dockerfiles and Compose configuration
 03-databases/                 Database concepts
 04-frameworks/                Framework guide
+04b-architectures/            Architecture styles and tradeoffs
 05-microservices-and-k8s/      Architecture guide and illustrative examples
 06-k8s-getting-started/        Cluster setup instructions
 07-k8s-helloworld/             Hello World Helm chart

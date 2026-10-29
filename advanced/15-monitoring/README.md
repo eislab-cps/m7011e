@@ -366,9 +366,13 @@ scrape_configs:
     regex: true
 ```
 
+![Prometheus finds targets from annotations, then scrapes them. Dashed arrows are discovery through the Kubernetes API; solid arrows are scrape requests.](./images/target-discovery-and-scrape.svg)
+
 ---
 
 ## Part 5: PromQL Query Examples
+
+![From one request to a point on a rate graph. Follow the numbers left to right, then down; each step is done by a different program.](./images/counter-to-rate-graph.svg)
 
 **Request rate (requests per second):**
 ```promql
@@ -502,6 +506,8 @@ Alert rules are configured in `templates/alert-rules.yaml`:
 ```
 
 ### Viewing Alerts
+
+![An alert rule moves from inactive to pending to firing. Boxes are the states of HighErrorRate; transitions are checked every 30 seconds.](./images/alert-rule-states.svg)
 
 **In Prometheus:**
 1. Open http://localhost:9090
