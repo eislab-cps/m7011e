@@ -41,7 +41,7 @@ Work through the introduction and tutorials 1-13 in order, including Tutorial 4b
 | [04 - Frameworks](./04-frameworks/README.md) | Frontend and backend frameworks, SPA and SSR patterns, and framework choices for different services. |
 | [04b - Software Architectures](./04b-architectures/README.md) | Layers, modular monoliths, ports and adapters, services, events, pipelines, plug-ins, data patterns, BFFs, serverless, and real-time delivery; exercises on boundaries and failures. |
 | [05 - Microservices and Kubernetes](./05-microservices-and-k8s/README.md) | Service boundaries, API gateways, service discovery, deployment, scaling, and communication patterns. |
-| [06 - Kubernetes: Getting Started](./06-k8s-getting-started/README.md) | Install tools, obtain a kubeconfig through Rancher, and connect to the course cluster. |
+| [06 - Kubernetes: Getting Started](./06-k8s-getting-started/README.md) | Install tools, configure the supplied kubeconfig, and use kubectl to check context and namespace access. |
 | [07 - Kubernetes: Hello World](./07-k8s-helloworld/README.md) | Deploy an Nginx application using Helm, Services, Ingress, and TLS certificates. |
 | [08 - PostgreSQL](./08-postgresql/README.md) | Deploy PostgreSQL using Helm, a StatefulSet, persistent storage, and port forwarding. |
 | [09 - React with Claude Code](./09-claude-code-frontend/README.md) | Rebuild the todo frontend with React through an iterative AI-assisted workflow. |

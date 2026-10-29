@@ -205,7 +205,7 @@ Alistair Cockburn described **hexagonal architecture**, also called **ports and 
 - **Driving adapters** call into the core: an HTTP route, a command-line tool, a test
 - **Driven adapters** implement ports the core needs: a PostgreSQL repository, an email sender, an in-memory fake
 
-![Runtime calls go from an HTTP adapter through a use case to a repository adapter. Dashed code-dependency arrows point from technical adapters toward interfaces owned by the core.](./images/hexagonal-ports-adapters.svg)
+![The hexagonal core owns todo use cases and ports. HTTP and CLI adapters invoke it; PostgreSQL and test adapters implement its repository contract. Solid arrows show runtime calls, and dashed arrows show code dependencies toward core-owned interfaces.](./images/hexagonal-ports-adapters.svg)
 
 A **port** means an application interface here, not a TCP port. The hexagon is a drawing convention, not a requirement to create six interfaces. At runtime a use case calls its repository adapter; at the source-code level that adapter implements a port defined by the core. Keeping these two arrow meanings separate explains dependency inversion.
 

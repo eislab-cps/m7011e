@@ -1,42 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850" role="img" aria-labelledby="title description">
-<title id="title">Ports: runtime calls and source dependencies</title>
-<desc id="description">At runtime an HTTP adapter invokes a core use case, which invokes a repository adapter. At the source-code level the HTTP adapter depends on a core input interface and the repository adapter implements a core-owned output interface. Runtime calls outward do not require the core to import the database implementation.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1110" viewBox="0 0 1200 1110" role="img" aria-labelledby="title description">
+<title id="title">Hexagonal architecture: ports and adapters</title>
+<desc id="description">A hexagonal application core contains todo use cases and owns an input port and a repository output port. An HTTP adapter or CLI invokes the input port. At runtime the use cases call a selected repository adapter through the output port. PostgreSQL and an in-memory test adapter implement that core-owned contract. Solid arrows show runtime calls; dashed arrows point from technical adapters to the core-owned interfaces they depend on. The six-sided drawing does not require six interfaces.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
-<rect width="1200" height="850" fill="#fff"/>
+<rect width="1200" height="1110" fill="#fff"/>
 <style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
-<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Ports: runtime calls and source dependencies</text>
-<text id="text-2" x="40" y="83" class="muted">Two views of the same design. A port is an application interface, not a TCP port.</text>
-<text id="text-3" x="40" y="135" class="heading">Runtime: what calls what</text>
-<rect x="40" y="175" width="320" height="180" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
-<text id="text-5" x="62" y="209" class="heading" font-size="22px" style="font-size:22px">HTTP adapter</text>
-<text id="text-6" x="62" y="243" class="body">Translate an HTTP request.</text>
-<rect x="440" y="175" width="320" height="180" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
-<text id="text-8" x="462" y="209" class="heading" font-size="22px" style="font-size:22px">Core use case</text>
-<text id="text-9" x="462" y="243" class="body">Call a repository</text>
-<text id="text-10" x="462" y="268" class="body">interface.</text>
-<path d="M360 265 L440 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
-<rect x="840" y="175" width="320" height="180" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
-<text id="text-13" x="862" y="209" class="heading" font-size="22px" style="font-size:22px">Repository adapter</text>
-<text id="text-14" x="862" y="243" class="body">Perform the storage</text>
-<text id="text-15" x="862" y="268" class="body">operation.</text>
-<path d="M760 265 L840 265" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
-<text id="text-17" x="40" y="435" class="heading">Source: what depends on what</text>
-<rect x="40" y="475" width="320" height="190" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
-<text id="text-19" x="62" y="509" class="heading" font-size="22px" style="font-size:22px">HTTP adapter</text>
-<text id="text-20" x="62" y="543" class="body">Imports the core input</text>
-<text id="text-21" x="62" y="568" class="body">interface.</text>
-<rect x="440" y="475" width="320" height="190" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
-<text id="text-23" x="462" y="509" class="heading" font-size="22px" style="font-size:22px">Core-owned ports</text>
-<text id="text-24" x="462" y="543" class="body">Input: use-case contract.</text>
-<text id="text-25" x="462" y="568" class="body">Output: repository</text>
-<text id="text-26" x="462" y="593" class="body">contract.</text>
-<rect x="840" y="475" width="320" height="190" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
-<text id="text-28" x="862" y="509" class="heading" font-size="22px" style="font-size:22px">Repository adapter</text>
-<text id="text-29" x="862" y="543" class="body">Implements the core output</text>
-<text id="text-30" x="862" y="568" class="body">interface.</text>
-<path d="M360 570 L440 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
-<path d="M840 570 L760 570" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
-<rect x="40" y="725" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
-<text id="text-34" x="60" y="755" class="body">Solid arrows show runtime invocation. Dashed arrows show source-code dependencies toward core-owned</text>
-<text id="text-35" x="60" y="783" class="body">interfaces.</text>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Hexagonal architecture: ports and adapters</text>
+<text id="text-2" x="40" y="83" class="muted">Business rules stay inside the hexagon; adapters connect through interfaces owned by the core.</text>
+<polygon id="application-core" points="600.000,175.000 838.157,312.500 838.157,587.500 600.000,725.000 361.843,587.500 361.843,312.500" fill="#f3f0fc" stroke="#8e79b3" stroke-width="3"/>
+<text id="text-4" x="40" y="160" class="heading" font-size="22px" style="font-size:22px">Driving adapters</text>
+<text id="text-5" x="940" y="160" class="heading" font-size="22px" style="font-size:22px">Driven adapters</text>
+<text id="text-6" x="600" y="265" class="heading" font-size="24px" style="font-size:24px" text-anchor="middle">Application core</text>
+<text id="text-7" x="600" y="299" class="body" text-anchor="middle">Business rules and ports</text>
+<rect x="40" y="325" width="220" height="140" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-9" x="62" y="359" class="heading" font-size="22px" style="font-size:22px">HTTP adapter</text>
+<text id="text-10" x="62" y="393" class="body">Translate a</text>
+<text id="text-11" x="62" y="418" class="body">request.</text>
+<rect x="330" y="325" width="180" height="140" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-13" x="352" y="359" class="heading" font-size="22px" style="font-size:22px">Input port</text>
+<text id="text-14" x="352" y="393" class="body">Use-case API</text>
+<text id="text-15" x="352" y="418" class="body">Core-owned</text>
+<rect x="690" y="325" width="180" height="140" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-17" x="712" y="359" class="heading" font-size="22px" style="font-size:22px">Output port</text>
+<text id="text-18" x="712" y="393" class="body">Repository API</text>
+<text id="text-19" x="712" y="418" class="body">Core-owned</text>
+<rect x="940" y="325" width="220" height="140" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="962" y="359" class="heading" font-size="22px" style="font-size:22px">PostgreSQL</text>
+<text id="text-22" x="962" y="393" class="body">Repository</text>
+<text id="text-23" x="962" y="418" class="body">adapter.</text>
+<rect x="40" y="600" width="220" height="140" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-25" x="62" y="634" class="heading" font-size="22px" style="font-size:22px">CLI or test</text>
+<text id="text-26" x="62" y="668" class="body">Invoke the same</text>
+<text id="text-27" x="62" y="693" class="body">use-case contract.</text>
+<rect x="940" y="600" width="220" height="140" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-29" x="962" y="634" class="heading" font-size="22px" style="font-size:22px">Test adapter</text>
+<text id="text-30" x="962" y="668" class="body">In-memory</text>
+<text id="text-31" x="962" y="693" class="body">repository fake.</text>
+<path d="M260 370 L330 370" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M510 370 H600 V480" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M600 620 V635 H750 V465" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M870 370 L940 370" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M260 670 H300 V440 H330" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M260 425 L330 425" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M940 425 L870 425" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M940 670 H900 V445 H870" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<text id="text-40" x="600" y="520" class="heading" font-size="23px" style="font-size:23px" text-anchor="middle">Todo use cases</text>
+<text id="text-41" x="600" y="551" class="body" text-anchor="middle">Validate todo text</text>
+<text id="text-42" x="600" y="582" class="body" text-anchor="middle">Apply completion rules</text>
+<text id="text-43" x="600" y="610" class="body" font-size="16px" style="font-size:16px" text-anchor="middle">Independent of HTTP and SQL</text>
+<rect x="40" y="800" width="1120" height="150" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<path d="M70 841 L160 841" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text id="text-46" x="185" y="848" class="body">Runtime calls: HTTP → core use cases → selected repository adapter.</text>
+<path d="M70 893 L160 893" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<text id="text-48" x="185" y="900" class="body">Code dependencies: adapters depend on interfaces owned by the core.</text>
+<rect x="40" y="985" width="1120" height="88" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-50" x="60" y="1015" class="body">The hexagon marks the application boundary. It does not require six ports or six services. A port here is an</text>
+<text id="text-51" x="60" y="1043" class="body">application interface, not a TCP port.</text>
 </svg>

@@ -1,6 +1,6 @@
 # Tutorial 6 - Getting started using Kubernetes
 
-This guide provides step-by-step instructions to help you begin working with Kubernetes on the LTU-Rancher cluster.
+This guide connects your computer to the course Kubernetes cluster using `kubectl` and the kubeconfig supplied by the teaching team. You will select a context, check your namespace access, and inspect resources from the terminal.
 
 ## Why Use an API Client Instead of Logging into Every Server?
 
@@ -16,13 +16,14 @@ This explains why client installation, cluster selection, authentication, and na
 | --- | --- |
 | `kubectl version --client` | Prints the local client version without checking cluster access. |
 | `helm version`, `docker --version` | Check that those local programs are installed. They do not prove that a cluster or application is reachable. |
-| `mkdir -p .kube` | Creates the local configuration directory if needed. `-p` also permits an already-existing directory. |
-| `chmod 700 .kube` | Restricts directory access to its owner. |
-| `cp ... ~/.kube/m7011e.yaml` | Copies the downloaded configuration to your own machine. Replace the source filename; this does not create cluster resources. |
+| `mkdir -p "$HOME/.kube"` | Creates the local configuration directory if needed. `-p` also permits an already-existing directory. |
+| `chmod 700 "$HOME/.kube"` | Restricts directory access to its owner. |
+| `cp ... ~/.kube/m7011e.yaml` | Copies the course configuration to your own machine. Replace the source filename; this does not create cluster resources. |
 | `chmod 600 ...` | Allows only the owner to read and write the configuration file. These permissions do not encrypt the credentials in it. |
 | `export KUBECONFIG=...` | Selects that file for programs started from the current shell. Another terminal needs its own setting. |
 | `kubectl config current-context` | Reads the selected context from local configuration. A context groups a cluster, identity, and optionally a namespace. |
-| `kubectl get nodes` | Makes an authenticated request to the selected API server. A Forbidden response indicates a permissions decision; a timeout indicates a different problem. |
+| `kubectl auth can-i list pods -n YOUR_NAMESPACE` | Asks whether your identity may list Pods in the named namespace. Replace the placeholder with your assigned namespace. |
+| `kubectl get pods -n YOUR_NAMESPACE` | Reads Pods from the selected cluster and namespace. An empty list can be a successful result. |
 
 ![kubectl reads a local file, then asks a remote API. The left column is on your laptop; the right column is what the cluster checks before acting.](./images/kubeconfig-to-api-server.svg)
 
@@ -39,118 +40,123 @@ Install `helm`, the package manager for Kubernetes that simplifies application d
 **Installation:** Follow the official guide at [https://helm.sh/docs/intro/install](https://helm.sh/docs/intro/install/)
 
 ## 3. Install Docker or Podman
-Install a container runtime to package and run applications as containers. Choose either Docker or Podman. Podman is a modern, daemonless alternative to Docker that offers enhanced security and doesn't require root privileges.
+Use a container tool to build images and run the local examples. The course commands use Docker and Docker Compose. Podman is an alternative, but check command and Compose compatibility if you choose it. These tools are separate from kubectl: connecting to the course API does not run a local container engine.
 
 - **Docker Desktop:** [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
 - **Podman:** [https://podman.io/getting-started/installation](https://podman.io/getting-started/installation)
 
-## 4. Verification
-Once everything is installed, verify your setup by running the commands below. Note that the example version strings are illustrative. Choose a kubectl version within one minor version of the cluster API server; see the [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/). Match the server version shown in Rancher when possible.
+## 4. Verify the Local Tools
 
-### kubectl
+Run these on your own computer:
+
 ```bash
 kubectl version --client
-```
-Expected output (versions may vary):
-```text
-Client Version: version.Info{Major:"1", Minor:"27", GitVersion:"v1.27.4", GitCommit:"fa3d7990104d7c1f16943a67f11b154b71f6a132", GitTreeState:"clean", BuildDate:"2023-07-19T12:20:54Z", GoVersion:"go1.20.6", Compiler:"gc", Platform:"linux/amd64"}
-Kustomize Version: v5.0.1
-```
-
-### Helm
-```bash
 helm version
-```
-Expected output (versions may vary):
-```text
-version.BuildInfo{Version:"v3.12.2", GitCommit:"1e210a2c8cc5117d1055bfaa5d40f51bbc2e345e", GitTreeState:"clean", GoVersion:"go1.20.5"}
-```
-
-### Docker
-```bash
 docker --version
 ```
-Expected output (versions may vary):
-```text
-Docker version 20.10.24+dfsg1, build 297e128
-```
 
-# Kubernetes Cluster Access
+These print installed client versions. They do not contact the course cluster or prove that Docker's engine is running. If you chose Podman, use `podman --version` for the last check. Use the kubectl version recommended by the teaching team; kubectl should be within one minor version of the API server according to the [version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl).
 
-Contact **Casper Lunderberg** to obtain access credentials for the Kubernetes cluster.
+## 5. Obtain the Course Kubeconfig
 
-**Cluster Details:**
-- **Rancher Management Interface:** [https://ltu-rancher.se](https://ltu-rancher.se)
-- **Domain Pattern:** Each cluster includes a pre-registered domain (e.g., `ltu-m7011e-1.se`) for ingress configuration and external access
+Follow the teaching team's instructions to obtain your **kubeconfig**, assigned **namespace**, and the **ingress domain** to use in later tutorials. The domain and account examples elsewhere in the repository are placeholders; use the values assigned for this year's course.
 
-## Download Kubernetes Configuration
+A kubeconfig contains cluster connection settings, certificate information, and credentials or a reference to an authentication method. It is not a Kubernetes workload manifest. Keep your copy private and outside the project repository. If the supplied authentication method needs an additional client or login step, follow the instructions that accompany the file.
 
-### 1. Log in to Rancher
-Navigate to the Rancher interface and log in with your provided credentials.
+## 6. Configure kubectl
 
-![Rancher UI](./login.png)
+Keep the course configuration in its own file so it does not replace an existing default `~/.kube/config`. The commands below assume that you saved the supplied file as `m7011e.yaml` in Downloads; adjust the source path to its actual location.
 
-### 2. Select Your Cluster
-Click on your assigned cluster name (e.g., `ltu-m7011e-johan`).
+### Linux and macOS
 
-![Pick cluster](./cluster.png)
-
-### 3. Download KubeConfig
-Click on "Download KubeConfig" to download your cluster configuration file.
-
-![Download kubectl](./kubectl.png)
-
-### 4. Configure kubectl
-
-#### Linux and macOS
 ```bash
-# Navigate to your home directory
-cd ~
+# Create a private local directory for Kubernetes client configuration.
+mkdir -p "$HOME/.kube"
+chmod 700 "$HOME/.kube"
 
-# Create the .kube directory if it doesn't exist
-mkdir -p .kube
+# Copy the course kubeconfig; change this source path if necessary.
+cp "$HOME/Downloads/m7011e.yaml" "$HOME/.kube/m7011e.yaml"
+chmod 600 "$HOME/.kube/m7011e.yaml"
 
-# Set proper permissions
-chmod 700 .kube
-
-# Copy the downloaded config file (replace with your actual filename)
-cp ~/Downloads/ltu-m7011e-johan.yaml ~/.kube/m7011e.yaml
-
-# Set proper permissions for the config file
-chmod 600 ~/.kube/m7011e.yaml
-
-# Select the course config for this shell
+# Select the course file for kubectl and Helm in this terminal.
 export KUBECONFIG="$HOME/.kube/m7011e.yaml"
 ```
 
-#### Windows (PowerShell)
+`mkdir -p` creates the directory if needed. `cp` copies the file, and `chmod` limits access to your user; it does not encrypt the contents. `export` changes the environment of this shell and programs started from it. None of these commands creates a resource in the cluster.
+
+### Windows (PowerShell)
+
 ```powershell
-# Navigate to your user profile
-cd $env:USERPROFILE
+# Create the client configuration directory.
+New-Item -Path "$env:USERPROFILE\.kube" -ItemType Directory -Force
 
-# Create the .kube directory if it doesn't exist
-New-Item -Path ".kube" -ItemType Directory -Force
+# Copy the course kubeconfig; change this source path if necessary.
+Copy-Item -Path "$env:USERPROFILE\Downloads\m7011e.yaml" -Destination "$env:USERPROFILE\.kube\m7011e.yaml"
 
-# Copy the downloaded config file (adjust path as needed)
-Copy-Item -Path "Downloads\ltu-m7011e-johan.yaml" -Destination ".kube\m7011e.yaml"
+# Select the course file for programs started from this terminal.
 $env:KUBECONFIG = "$env:USERPROFILE\.kube\m7011e.yaml"
 ```
 
-The commands above keep any existing default kubeconfig. Set `KUBECONFIG` again in each new terminal used for the course, or configure your shell profile.
+`New-Item` creates the directory, `Copy-Item` copies the file, and `$env:KUBECONFIG` selects it for this PowerShell session. Store it under your own Windows account and restrict access using the file's security settings.
 
-### 5. Verify Connection
-Test your cluster connection:
+Set `KUBECONFIG` again in each new terminal used for the course, or add the setting to your shell profile. Kubernetes documents [how kubeconfig files and contexts work](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/).
+
+## 7. Check the Selected Context
+
 ```bash
+kubectl config get-contexts
 kubectl config current-context
-kubectl get nodes
 ```
 
-Expected output (node names and details will vary):
-```text
-NAME                STATUS   ROLES                              AGE   VERSION
-ubuntu-8gb-hel1-1   Ready    control-plane,etcd,master,worker   77m   v1.33.3+k3s1
+Both commands read local configuration. `get-contexts` lists available contexts and marks the selected one with `*`; `current-context` prints its name. A context groups a cluster, an identity, and optionally a default namespace. Seeing a context name does not yet prove that the API server is reachable.
+
+If the supplied file has several contexts, select the course context. Replace `YOUR_CONTEXT` with its name from the list:
+
+```bash
+kubectl config use-context YOUR_CONTEXT
 ```
 
-If you see output similar to the above showing your cluster nodes in "Ready" status, your kubectl is properly configured and connected to the cluster.
+This changes which context is selected in the local kubeconfig. It does not log in as a different user unless that context selects different credentials, and it does not create another cluster.
 
-If your course account cannot list nodes, check access to your assigned namespace instead with `kubectl get pods -n YOUR_NAMESPACE`. A Forbidden response can indicate namespace-scoped permissions rather than a connection failure.
+## 8. Verify Access to Your Namespace
+
+Replace `YOUR_NAMESPACE` with the namespace assigned by the teaching team in every command below:
+
+```bash
+kubectl auth can-i list pods -n YOUR_NAMESPACE
+kubectl get pods -n YOUR_NAMESPACE
+kubectl get services -n YOUR_NAMESPACE
+```
+
+`auth can-i` checks authorization for the named operation. `get pods` and `get services` send read requests to the API server. The `-n` flag selects the namespace for that request. A successful response can contain resources or say `No resources found`; an empty namespace is not a connection failure. See the [`kubectl auth can-i` reference](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_auth/kubectl_auth_can-i/).
+
+You can also check the client and server versions after access is configured:
+
+```bash
+kubectl version
+```
+
+The server version comes from the selected API server. Compare it with your client version using the policy linked above. Listing nodes with `kubectl get nodes` is optional and needs cluster-level permission; a namespace-scoped course account may correctly receive `Forbidden` for that command.
+
+### Interpret a Failed Check
+
+| Result | Meaning and next check |
+| --- | --- |
+| No current context, or an attempt to contact an unexpected local address | Check `KUBECONFIG` and the context list in this terminal. |
+| DNS error, connection refused, or timeout | Check the API address in the supplied configuration, network access, and any course VPN requirement. |
+| Certificate validation error | Check the configuration and endpoint with the teaching team. Do not bypass verification as a setup step. |
+| Authentication error, often `Unauthorized` | Check the provided credentials or authentication instructions; expired credentials may need renewal. |
+| `Forbidden`, or `auth can-i` prints `no` | The operation is not permitted. Check the namespace and assigned access; installing kubectl does not grant permissions. |
+
+Do not paste credentials or a raw kubeconfig into an issue when reporting a problem. Report the command, context name, namespace, and error instead.
+
+## Check Your Understanding
+
+1. Why can `kubectl version --client` succeed while `kubectl get pods` fails?
+2. What changes when you open another terminal without setting `KUBECONFIG`?
+3. Why can listing Pods in your namespace succeed while listing nodes returns `Forbidden`?
+4. Does changing your terminal's working directory change the selected cluster?
+
+## Next Step
+
+Continue with [Tutorial 7: Hello World](../07-k8s-helloworld/README.md). Confirm the selected context and use the namespace and domain assigned for the course before running its deployment commands.

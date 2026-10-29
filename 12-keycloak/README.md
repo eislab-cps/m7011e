@@ -2077,7 +2077,7 @@ Example settings (adjust to your application):
 
 ## Exercise: Deploy Todo App on Kubernetes with Production TLS
 
-This exercise challenges you to deploy the complete todo application on LTU Rancher with production Let's Encrypt certificates.
+This exercise challenges you to deploy the complete todo application on the course Kubernetes cluster using kubectl and Helm, with production Let's Encrypt certificates. Configure access as described in [Tutorial 6](../06-k8s-getting-started/README.md).
 
 ### Overview
 
