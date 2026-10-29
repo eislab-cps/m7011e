@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1070" viewBox="0 0 1200 1070" role="img" aria-labelledby="title description">
+<title id="title">Your VM runs a complete small Kubernetes cluster</title>
+<desc id="description">A laptop reaches an Ubuntu VM with SSH. A remote shell runs kubectl against the local K3s API. The same VM runs the control plane, node services, containerd, bundled networking and storage, and application Pods. Separately, browsers reach Traefik and ServiceLB through public HTTP and HTTPS ports, and Traefik routes requests to an application Service and Pod.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1559a6"/></marker></defs>
+<rect width="1200" height="1070" fill="#fff"/>
+<style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
+<text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Your VM runs a complete small Kubernetes cluster</text>
+<text id="text-2" x="40" y="83" class="muted">SSH manages the host. kubectl uses the API. Web traffic enters through Traefik.</text>
+<rect x="360" y="130" width="800" height="770" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
+<text id="text-4" x="382" y="172" class="heading" font-size="22px" style="font-size:22px">Your Ubuntu VM: the public IP assigned to your group</text>
+<rect x="40" y="215" width="260" height="155" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-6" x="62" y="249" class="heading" font-size="22px" style="font-size:22px">Your laptop</text>
+<text id="text-7" x="62" y="283" class="body">SSH client.</text>
+<text id="text-8" x="62" y="308" class="body">Remote terminal over</text>
+<text id="text-9" x="62" y="333" class="body">port 22.</text>
+<rect x="390" y="215" width="320" height="155" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-11" x="412" y="249" class="heading" font-size="22px" style="font-size:22px">Remote shell</text>
+<text id="text-12" x="412" y="283" class="body">Ubuntu user commands.</text>
+<text id="text-13" x="412" y="308" class="body">kubectl runs here.</text>
+<rect x="790" y="215" width="340" height="155" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-15" x="812" y="249" class="heading" font-size="22px" style="font-size:22px">K3s control plane</text>
+<text id="text-16" x="812" y="283" class="body">Kubernetes API on 6443.</text>
+<text id="text-17" x="812" y="308" class="body">Desired state and scheduling.</text>
+<path d="M300 293 L390 293" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M710 293 L790 293" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="390" y="430" width="350" height="165" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-21" x="412" y="464" class="heading" font-size="22px" style="font-size:22px">Node services</text>
+<text id="text-22" x="412" y="498" class="body">kubelet and containerd.</text>
+<text id="text-23" x="412" y="523" class="body">Run containers in Pods.</text>
+<rect x="790" y="430" width="340" height="165" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
+<text id="text-25" x="812" y="464" class="heading" font-size="22px" style="font-size:22px">Bundled services</text>
+<text id="text-26" x="812" y="498" class="body">Networking and cluster DNS.</text>
+<text id="text-27" x="812" y="523" class="body">Local storage provisioning.</text>
+<rect x="40" y="710" width="260" height="155" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
+<text id="text-29" x="62" y="744" class="heading" font-size="22px" style="font-size:22px">Browser</text>
+<text id="text-30" x="62" y="778" class="body">Group domain.</text>
+<text id="text-31" x="62" y="803" class="body">HTTP 80 or HTTPS 443.</text>
+<rect x="390" y="710" width="350" height="155" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
+<text id="text-33" x="412" y="744" class="heading" font-size="22px" style="font-size:22px">Traefik + ServiceLB</text>
+<text id="text-34" x="412" y="778" class="body">Receive web traffic through VM</text>
+<text id="text-35" x="412" y="803" class="body">host ports 80 and 443.</text>
+<rect x="790" y="710" width="340" height="155" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-37" x="812" y="744" class="heading" font-size="22px" style="font-size:22px">Service and app Pod</text>
+<text id="text-38" x="812" y="778" class="body">Route to Nginx on port 80.</text>
+<text id="text-39" x="812" y="803" class="body">The application runs here.</text>
+<path d="M300 788 L390 788" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M740 788 L790 788" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M565 595 V650 H960 V710" fill="none" stroke="#1559a6" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="599.1" y="654" width="321.8" height="30" fill="#fff"/>
+<text id="text-44" x="760" y="675" class="body" text-anchor="middle">Runs the application containers</text>
+<rect x="40" y="945" width="1120" height="60" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
+<text id="text-46" x="60" y="975" class="body">One VM is one failure boundary. More application replicas on this VM do not protect against losing it.</text>
+</svg>

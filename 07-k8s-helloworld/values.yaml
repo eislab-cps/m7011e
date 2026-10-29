@@ -3,7 +3,7 @@ app:
   name: hello-world
   replicas: 1
 
-domain: helloworld.ltu-m7011e-johan.se
+domain: group-07-m7011e-ltu.se
 email: johan.kristiansson@ltu.se
 
 message: "Hello from Kubernetes with SSL!"

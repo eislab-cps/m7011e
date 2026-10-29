@@ -254,7 +254,7 @@ The main objects, at a glance:
 
 Follow a request in the picture: the browser reaches the **Ingress**, which routes `todo.example.com` to the right **Service**, which forwards it to one of the **Pods**, wherever they currently run.
 
-This is all you need for now. [Tutorial 5](../05-microservices-and-k8s/README.md) explains these objects and the controller pattern properly, [Tutorial 6](../06-k8s-getting-started/README.md) connects you to the course cluster, and [Tutorial 7](../07-k8s-helloworld/README.md) deploys your first application with an Ingress and a TLS certificate.
+This is all you need for now. [Tutorial 5](../05-microservices-and-k8s/README.md) explains these objects and the controller pattern, [Tutorial 5B](../05b-k3s-setup/README.md) takes you from SSH access to your group's VM through K3s installation and HTTPS, and [Tutorial 6](../06-k8s-getting-started/README.md) adds optional laptop access. [Tutorial 7](../07-k8s-helloworld/README.md) then deploys an application using Helm.
 
 **A caution:** Kubernetes solves operational problems, and it adds its own complexity. A small project can be served well by a single VM or a PaaS. The course uses Kubernetes because it makes scheduling, discovery, rollout, and recovery visible, and because it is widely used in industry.
 
@@ -271,7 +271,8 @@ Each later tutorial zooms in on part of the picture above:
 | Where data lives, replication | [03 — Databases](../03-databases/README.md), [08 — PostgreSQL](../08-postgresql/README.md), [13 — MongoDB](../13-mongodb/README.md) |
 | What runs in the browser and what on the server | [04 — Frameworks](../04-frameworks/README.md), [09 — React with Claude Code](../09-claude-code-frontend/README.md) |
 | How to split and connect a system | [04b — Software Architectures](../04b-architectures/README.md), [05 — Microservices and Kubernetes](../05-microservices-and-k8s/README.md) |
-| Cluster, nodes, Pods, Services, Ingress, TLS | [06 — Getting Started](../06-k8s-getting-started/README.md), [07 — Hello World](../07-k8s-helloworld/README.md) |
+| VM access, SSH, K3s, kubeconfig permissions, certificates | [05B — K3s on Your VM and HTTPS](../05b-k3s-setup/README.md) |
+| Cluster, nodes, Pods, Services, Ingress, TLS | [06 — Laptop Access](../06-k8s-getting-started/README.md), [07 — Hello World](../07-k8s-helloworld/README.md) |
 | Releasing safely and repeatably | [10 — Testing and CI](../10-testing-ci/README.md), [11 — Argo CD and GitOps](../11-argocd-gitops/README.md) |
 | Statelessness, cookies, tokens | [12 — Keycloak](../12-keycloak/README.md) |
 | Communication between services | [14 — Service Communication](../advanced/14-service-communication/README.md), [16 — Service Meshes](../advanced/16-service-meshes/README.md) |

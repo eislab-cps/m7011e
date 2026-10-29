@@ -2,7 +2,9 @@
 
 This tutorial will guide you through deploying a simple application using Helm to verify your Kubernetes setup is working correctly.
 
-Run the following commands from `07-k8s-helloworld/`. The cluster needs the `traefik` ingress class, cert-manager, a `letsencrypt-staging` ClusterIssuer, and DNS for your chosen hostname pointing to the ingress controller. Check these with course staff if you use another cluster.
+Complete [Tutorial 5B: K3s on Your VM and HTTPS](../05b-k3s-setup/README.md) first, including its demo cleanup. It installs the `traefik` ingress class, cert-manager, and the `letsencrypt-staging` and `letsencrypt-prod` ClusterIssuers. Your assigned domain must point to the VM, with ports 80 and 443 reachable.
+
+Run the following commands from `07-k8s-helloworld/` on the VM, or from a laptop configured through [Tutorial 6](../06-k8s-getting-started/README.md). You need the repository files and Helm on whichever computer runs the Helm commands. This chart defaults to staging even if another application previously obtained a production certificate; issuer selection belongs to each application's Ingress.
 
 ## Why This Exercise Uses Helm, Ingress, and TLS Together
 
@@ -121,12 +123,12 @@ app:
   name: hello-world
   replicas: 1
 
-domain: helloworld.ltu-m7011e-johan.se  # Change this to your domain
+domain: group-07-m7011e-ltu.se  # Replace with your assigned group domain
 
 message: "Hello from Kubernetes with SSL!"
 ```
 
-**Important**: Replace `ltu-m7011e-johan.se` with your actual assigned domain name. The chart does not create the ClusterIssuer; its ACME email is configured by the cluster administrator, not by this chart's unused `email` value.
+Replace the example group number with your assigned domain. Using this base domain requires no invented `helloworld` subdomain; a new subdomain would need its own DNS configuration. The chart does not create the ClusterIssuer: its ACME account contact was configured in Tutorial 5B, not by this chart's unused `email` value.
 
 ## Understanding Kubernetes Namespaces
 A **namespace** in Kubernetes is like a virtual cluster within your physical cluster. It provides:
@@ -200,7 +202,7 @@ NAME                           READY   STATUS    RESTARTS   AGE
 hello-world-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
 ```
 
-Your application should now be accessible at your configured domain (e.g., `https://helloworld.ltu-m7011e-johan.se`).
+Your application should now be accessible at your configured group domain (for example, `https://group-07-m7011e-ltu.se` for the example group).
 
 ![Helloworld](./webapp.png)
 
@@ -236,7 +238,7 @@ kubectl describe ingress hello-world -n helloworld
 kubectl get certificate -n helloworld
 
 # Check if DNS is resolving correctly
-nslookup your-domain.ltu-m7011e-johan.se
+nslookup group-07-m7011e-ltu.se  # Replace with your assigned domain
 ```
 
 ### Common Issues

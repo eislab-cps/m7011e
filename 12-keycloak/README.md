@@ -24,7 +24,7 @@ Learn how to add professional authentication and authorization to your applicati
 
 ## Prerequisites
 
-- Completed Tutorial 6 (Kubernetes Getting Started)
+- Completed [Tutorial 5B](../05b-k3s-setup/README.md) (K3s, cert-manager, and HTTPS); [Tutorial 6](../06-k8s-getting-started/README.md) covers optional laptop access
 - kubectl configured and connected to your cluster
 - Basic understanding of web applications
 - Helm, a storage class, Traefik, cert-manager, the named ClusterIssuer, and domain DNS configured
@@ -2077,7 +2077,7 @@ Example settings (adjust to your application):
 
 ## Exercise: Deploy Todo App on Kubernetes with Production TLS
 
-This exercise challenges you to deploy the complete todo application on the course Kubernetes cluster using kubectl and Helm, with production Let's Encrypt certificates. Configure access as described in [Tutorial 6](../06-k8s-getting-started/README.md).
+This exercise challenges you to deploy the complete todo application on your group's Kubernetes cluster using kubectl and Helm, with production Let's Encrypt certificates. [Tutorial 5B](../05b-k3s-setup/README.md) installs the cluster and certificate issuers; [Tutorial 6](../06-k8s-getting-started/README.md) explains optional laptop access. Configure DNS for every hostname the application needs.
 
 ### Overview
 

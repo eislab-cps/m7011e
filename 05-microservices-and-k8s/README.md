@@ -43,11 +43,11 @@ By the end of this tutorial, you will understand:
 - Basic understanding of containers
 - Familiarity with Docker concepts
 
-This is a conceptual guide. Images such as `user-service:v2` are placeholders for services you must build and publish; the repository does not contain those applications. YAML fragments illustrate individual fields. Follow Tutorials 6-7 for a complete deployment. Ingress examples require a compatible controller, and TLS examples also require cert-manager and the named issuer.
+This is a conceptual guide. Images such as `user-service:v2` are placeholders for services you must build and publish; the repository does not contain those applications. YAML fragments illustrate individual fields. [Tutorial 5B](../05b-k3s-setup/README.md) creates your cluster, Tutorial 6 offers laptop access, and Tutorial 7 provides a complete application deployment. Ingress examples require a compatible controller, and TLS examples also require cert-manager and the named issuer.
 
 ## Read the Kubernetes Commands as State Changes
 
-The service names and images in this conceptual chapter are examples. Inspect the YAML and identify its namespace, image, ports, and selectors; use Tutorials 6–7 for a runnable deployment. These commands act on the cluster selected by your kubeconfig:
+The service names and images in this conceptual chapter are examples. Inspect the YAML and identify its namespace, image, ports, and selectors; use Tutorials 5B–7 for cluster setup and a runnable deployment. These commands act on the cluster selected by your kubeconfig:
 
 | Command pattern | What it changes or observes |
 | --- | --- |
@@ -2424,7 +2424,8 @@ The important distinction is the workload's identity and lifecycle, not simply w
 ## Next Steps
 
 In the following tutorials, you will:
-- **Tutorial 6**: Set up Kubernetes cluster and kubectl
+- **[Tutorial 5B](../05b-k3s-setup/README.md)**: Log in to your VM, install K3s, configure kubectl permissions, and set up cert-manager and HTTPS
+- **[Tutorial 6](../06-k8s-getting-started/README.md)**: Optionally connect from your laptop using an SSH tunnel
 - **Tutorial 7**: Deploy applications with Helm and Ingress
 - **Tutorial 8**: Deploy PostgreSQL with StatefulSets
 - **Tutorial 9**: Build a React frontend

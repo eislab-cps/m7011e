@@ -8,8 +8,8 @@ Clone this repository and start with the [Introduction](./00-introduction/README
 
 - **Local development:** Python 3.10 or newer, pip, Git, and a web browser. The React tutorials also use Node.js and npm.
 - **Containers:** Docker Engine or Docker Desktop with Docker Compose.
-- **Kubernetes:** Access to the course cluster (or a suitable development cluster), kubectl, and Helm. [Tutorial 6](./06-k8s-getting-started/README.md) explains the course cluster setup.
-- **Cluster services:** Some examples rely on an ingress controller, cert-manager, and a storage class supplied by the cluster. Replace example namespaces, domains, credentials, and registry names with your own values.
+- **Kubernetes:** Your group receives an Ubuntu VM, public IP, and domain. [Tutorial 5B](./05b-k3s-setup/README.md) explains SSH, K3s installation, kubeconfig permissions, cert-manager, and Let's Encrypt. [Tutorial 6](./06-k8s-getting-started/README.md) adds optional laptop access with kubectl and Helm.
+- **Cluster services:** Tutorial 5B sets up the ingress, storage provisioner, and certificate issuers used later. Replace example namespaces, domains, credentials, and registry names with your own values; additional subdomains need matching DNS.
 
 These are teaching examples. Some store data in memory or use development servers; deployment on Kubernetes alone does not make an application ready for production.
 
@@ -30,7 +30,7 @@ Start with [an HTTP request and response](./01-basic-webapp/README.md#2-follow-o
 
 ## Main Tutorials
 
-Work through the introduction and tutorials 1-13 in order, including Tutorial 4b on architectures. The introduction and tutorials 3-5 (including 4b) explain concepts and include illustrative snippets; the other tutorials provide application files, deployment charts, or exercises to follow.
+Work through the introduction and tutorials 1-13 in order, including Tutorial 4b on architectures and Tutorial 5B on creating your cluster. The introduction and tutorials 3-5 (including 4b) explain concepts and include illustrative snippets; the other tutorials provide installation steps, application files, deployment charts, or exercises to follow.
 
 | Tutorial | Topics |
 | --- | --- |
@@ -41,7 +41,8 @@ Work through the introduction and tutorials 1-13 in order, including Tutorial 4b
 | [04 - Frameworks](./04-frameworks/README.md) | Frontend and backend frameworks, SPA and SSR patterns, and framework choices for different services. |
 | [04b - Software Architectures](./04b-architectures/README.md) | Layers, modular monoliths, ports and adapters, services, events, pipelines, plug-ins, data patterns, BFFs, serverless, and real-time delivery; exercises on boundaries and failures. |
 | [05 - Microservices and Kubernetes](./05-microservices-and-k8s/README.md) | Service boundaries, API gateways, service discovery, deployment, scaling, and communication patterns. |
-| [06 - Kubernetes: Getting Started](./06-k8s-getting-started/README.md) | Install tools, configure the supplied kubeconfig, and use kubectl to check context and namespace access. |
+| [05B - K3s on Your VM and HTTPS](./05b-k3s-setup/README.md) | SSH, K3s components and installation, copying the administrator kubeconfig with private permissions, Traefik, cert-manager, staging and production Let's Encrypt certificates, and troubleshooting. |
+| [06 - Kubernetes: Getting Started](./06-k8s-getting-started/README.md) | Optional laptop tools and access through an SSH tunnel, kubeconfig contexts, and namespace checks. |
 | [07 - Kubernetes: Hello World](./07-k8s-helloworld/README.md) | Deploy an Nginx application using Helm, Services, Ingress, and TLS certificates. |
 | [08 - PostgreSQL](./08-postgresql/README.md) | Deploy PostgreSQL using Helm, a StatefulSet, persistent storage, and port forwarding. |
 | [09 - React with Claude Code](./09-claude-code-frontend/README.md) | Rebuild the todo frontend with React through an iterative AI-assisted workflow. |
@@ -70,7 +71,8 @@ Continue with tutorials 14-16 in `advanced/` after the main sequence. Messaging 
 04-frameworks/                Framework guide
 04b-architectures/            Architecture styles and tradeoffs
 05-microservices-and-k8s/      Architecture guide and illustrative examples
-06-k8s-getting-started/        Cluster setup instructions
+05b-k3s-setup/                VM, SSH, K3s, kubeconfig, and HTTPS setup
+06-k8s-getting-started/        Optional laptop access and client tools
 07-k8s-helloworld/             Hello World Helm chart
 08-postgresql/                PostgreSQL Helm chart and helper scripts
 09-claude-code-frontend/       React and Claude Code walkthrough

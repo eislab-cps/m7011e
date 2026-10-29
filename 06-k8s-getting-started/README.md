@@ -1,162 +1,167 @@
-# Tutorial 6 - Getting started using Kubernetes
+# Tutorial 6: Kubernetes Client Tools and Optional Laptop Access
 
-This guide connects your computer to the course Kubernetes cluster using `kubectl` and the kubeconfig supplied by the teaching team. You will select a context, check your namespace access, and inspect resources from the terminal.
+Complete [Tutorial 5B: K3s on Your VM and HTTPS](../05b-k3s-setup/README.md) first. Your cluster now runs on the group's VM, and its administrator kubeconfig has been copied to the Ubuntu user's `~/.kube/config` with owner-only permissions.
+
+You can keep using kubectl inside SSH on the VM. This tutorial offers another workflow: run kubectl and Helm on your laptop through an **SSH tunnel**. It does not require exposing the Kubernetes API publicly. Both workflows manage the same cluster; neither creates another cluster.
 
 ## Why Use an API Client Instead of Logging into Every Server?
 
-With manual server administration, a deployment can depend on a particular host, shell session, and sequence of commands. Kubernetes instead exposes an API for declaring and observing resources. Controllers and node agents carry out the work. `kubectl` is a client of that API; it is not the cluster itself and does not normally deploy by opening SSH sessions to every node.
+Kubernetes exposes an API for declaring and observing resources. Controllers and node agents carry out the work. `kubectl` is a client of that API, not the cluster itself. A kubectl operation does not normally open an SSH session on each node. Here SSH provides VM administration and, optionally, a tunnel carrying the API connection.
 
-This explains why client installation, cluster selection, authentication, and namespace permissions are different steps. Helm is another client-side tool: it packages and renders related resource definitions. Having kubectl or Helm installed does not grant permission to change a cluster, and changing your local directory does not select a new cluster.
+Helm is another client-side tool: it packages and renders related resource definitions. Installing either client does not grant permission to use a cluster. The kubeconfig selects the API endpoint, identity, and context.
 
-## What the Setup Commands Actually Configure
+## What These Commands Configure
 
-`kubectl` and Helm are clients on your computer. Kubernetes runs elsewhere. A **kubeconfig** tells the clients which API server to contact and which credentials and context to use. Installing the clients and configuring access are separate steps.
-
-| Command below | Meaning and scope |
+| Command | Meaning and scope |
 | --- | --- |
-| `kubectl version --client` | Prints the local client version without checking cluster access. |
-| `helm version`, `docker --version` | Check that those local programs are installed. They do not prove that a cluster or application is reachable. |
-| `mkdir -p "$HOME/.kube"` | Creates the local configuration directory if needed. `-p` also permits an already-existing directory. |
-| `chmod 700 "$HOME/.kube"` | Restricts directory access to its owner. |
-| `cp ... ~/.kube/m7011e.yaml` | Copies the course configuration to your own machine. Replace the source filename; this does not create cluster resources. |
-| `chmod 600 ...` | Allows only the owner to read and write the configuration file. These permissions do not encrypt the credentials in it. |
-| `export KUBECONFIG=...` | Selects that file for programs started from the current shell. Another terminal needs its own setting. |
-| `kubectl config current-context` | Reads the selected context from local configuration. A context groups a cluster, identity, and optionally a namespace. |
-| `kubectl auth can-i list pods -n YOUR_NAMESPACE` | Asks whether your identity may list Pods in the named namespace. Replace the placeholder with your assigned namespace. |
-| `kubectl get pods -n YOUR_NAMESPACE` | Reads Pods from the selected cluster and namespace. An empty list can be a successful result. |
+| `kubectl version --client` | Reads the installed client version without contacting the cluster. |
+| `helm version` | Checks the local Helm client. |
+| `scp ...` | Copies the private kubeconfig from the VM through SSH. |
+| `export KUBECONFIG=...` | Selects the course file for this shell and its child processes. |
+| `kubectl config set-cluster ...` | Changes the API endpoint in the selected local file. |
+| `ssh -N -L ...` | Keeps a local port connected through SSH to a remote endpoint. |
+| `kubectl config current-context` | Reads which cluster/identity/context is selected locally. |
+| `kubectl auth can-i ...` | Asks the API whether the selected identity may perform an operation. |
+| `kubectl get pods -n default` | Reads Pods from the selected cluster and namespace. |
 
-![kubectl reads a local file, then asks a remote API. The left column is on your laptop; the right column is what the cluster checks before acting.](./images/kubeconfig-to-api-server.svg)
+![The client reads its kubeconfig and sends an HTTPS API request. For laptop access, SSH carries this connection to the VM; authentication and authorization still happen at the API server.](./images/kubeconfig-to-api-server.svg)
 
-**Check your understanding:** Before any later `apply`, `install`, or `delete`, identify the selected cluster and namespace. Explain why changing your terminal's directory does not change your Kubernetes context. See [the command guide](../COMMANDS.md) for shell and namespace syntax.
+Before a deployment, identify the client computer, selected context, namespace, and API path. Changing your working directory does not change the cluster. See [the command guide](../COMMANDS.md) for shell syntax and Kubernetes flags.
 
-## 1. Install kubectl
-Install the `kubectl` command-line tool to interact with and manage Kubernetes clusters.
+## 1. Install kubectl on Your Laptop
 
-**Installation:** Follow the official guide at [https://kubernetes.io/docs/tasks/tools](https://kubernetes.io/docs/tasks/tools/)
-
-## 2. Install Helm
-Install `helm`, the package manager for Kubernetes that simplifies application deployment and management.
-
-**Installation:** Follow the official guide at [https://helm.sh/docs/intro/install](https://helm.sh/docs/intro/install/)
-
-## 3. Install Docker or Podman
-Use a container tool to build images and run the local examples. The course commands use Docker and Docker Compose. Podman is an alternative, but check command and Compose compatibility if you choose it. These tools are separate from kubectl: connecting to the course API does not run a local container engine.
-
-- **Docker Desktop:** [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
-- **Podman:** [https://podman.io/getting-started/installation](https://podman.io/getting-started/installation)
-
-## 4. Verify the Local Tools
-
-Run these on your own computer:
+Use the [official installation instructions](https://kubernetes.io/docs/tasks/tools/) for your operating system. K3s already provides kubectl on the VM; installing this laptop client is optional.
 
 ```bash
 kubectl version --client
-helm version
-docker --version
 ```
 
-These print installed client versions. They do not contact the course cluster or prove that Docker's engine is running. If you chose Podman, use `podman --version` for the last check. Use the kubectl version recommended by the teaching team; kubectl should be within one minor version of the API server according to the [version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl).
+This prints local version information. Choose a client within one minor version of the API server, following the [version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl). The pinned cluster in Tutorial 5B uses Kubernetes 1.36; check the actual server version after connecting rather than relying on an old version screenshot.
 
-## 5. Obtain the Course Kubeconfig
+## 2. Install Helm Where You Will Run Helm Commands
 
-Follow the teaching team's instructions to obtain your **kubeconfig**, assigned **namespace**, and the **ingress domain** to use in later tutorials. The domain and account examples elsewhere in the repository are placeholders; use the values assigned for this year's course.
-
-A kubeconfig contains cluster connection settings, certificate information, and credentials or a reference to an authentication method. It is not a Kubernetes workload manifest. Keep your copy private and outside the project repository. If the supplied authentication method needs an additional client or login step, follow the instructions that accompany the file.
-
-## 6. Configure kubectl
-
-Keep the course configuration in its own file so it does not replace an existing default `~/.kube/config`. The commands below assume that you saved the supplied file as `m7011e.yaml` in Downloads; adjust the source path to its actual location.
-
-### Linux and macOS
+Follow the [Helm installation guide](https://helm.sh/docs/intro/install/) on the laptop, or on the VM if you will run later Helm exercises inside SSH.
 
 ```bash
-# Create a private local directory for Kubernetes client configuration.
+helm version
+```
+
+This checks the client, not cluster access. Use the matching computer's repository checkout when later running commands such as `helm install ... .`: `.` means the chart in that computer's current directory.
+
+Docker and Compose remain the local build/run tools from [Tutorial 2](../02-docker/README.md). They are separate from cluster access. The VM's K3s uses its bundled containerd runtime.
+
+## 3. Copy the Kubeconfig to Your Laptop
+
+The source is the private copy created on the VM in Tutorial 5B. It grants administrator access to your group's cluster, so keep the laptop copy outside the repository and readable only by your account. This copy is not a manifest to submit with `kubectl apply`.
+
+### Linux and macOS: Laptop Terminal 1
+
+```bash
+VM_IP='203.0.113.10'
 mkdir -p "$HOME/.kube"
 chmod 700 "$HOME/.kube"
-
-# Copy the course kubeconfig; change this source path if necessary.
-cp "$HOME/Downloads/m7011e.yaml" "$HOME/.kube/m7011e.yaml"
+scp "ubuntu@$VM_IP:.kube/config" "$HOME/.kube/m7011e.yaml"
 chmod 600 "$HOME/.kube/m7011e.yaml"
-
-# Select the course file for kubectl and Helm in this terminal.
 export KUBECONFIG="$HOME/.kube/m7011e.yaml"
 ```
 
-`mkdir -p` creates the directory if needed. `cp` copies the file, and `chmod` limits access to your user; it does not encrypt the contents. `export` changes the environment of this shell and programs started from it. None of these commands creates a resource in the cluster.
+Replace the example IP with the assigned VM address. `mkdir -p` creates the directory, and `chmod` makes the directory and file private to your account. **scp** copies files over SSH: `ubuntu@ADDRESS:.kube/config` names a path relative to the remote Ubuntu user's home; the destination is on your laptop. The separate filename keeps an existing laptop `~/.kube/config` intact. Use `scp -i /path/to/key ...` if your SSH login requires a specific private-key file.
 
-### Windows (PowerShell)
+### Windows PowerShell: Laptop Terminal 1
 
 ```powershell
-# Create the client configuration directory.
+$vmIp = '203.0.113.10'
 New-Item -Path "$env:USERPROFILE\.kube" -ItemType Directory -Force
-
-# Copy the course kubeconfig; change this source path if necessary.
-Copy-Item -Path "$env:USERPROFILE\Downloads\m7011e.yaml" -Destination "$env:USERPROFILE\.kube\m7011e.yaml"
-
-# Select the course file for programs started from this terminal.
+scp "ubuntu@${vmIp}:.kube/config" "$env:USERPROFILE\.kube\m7011e.yaml"
 $env:KUBECONFIG = "$env:USERPROFILE\.kube\m7011e.yaml"
 ```
 
-`New-Item` creates the directory, `Copy-Item` copies the file, and `$env:KUBECONFIG` selects it for this PowerShell session. Store it under your own Windows account and restrict access using the file's security settings.
+`New-Item` creates the directory, scp copies the remote file, and the environment setting selects the copy for this PowerShell session. Use your own Windows account and restrict the file's access with its security settings.
 
-Set `KUBECONFIG` again in each new terminal used for the course, or add the setting to your shell profile. Kubernetes documents [how kubeconfig files and contexts work](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/).
+The file initially names `https://127.0.0.1:6443`. That address meant the VM when used there. On the laptop it means the laptop, so the next two steps configure a local tunnel endpoint.
 
-## 7. Check the Selected Context
+## 4. Set the Laptop Copy's API Address
+
+### Linux and macOS: Laptop Terminal 1
+
+```bash
+COURSE_CLUSTER="$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')"
+kubectl config set-cluster "$COURSE_CLUSTER" --server='https://127.0.0.1:16443'
+```
+
+### Windows PowerShell: Laptop Terminal 1
+
+```powershell
+$courseCluster = kubectl config view --minify -o jsonpath='{.clusters[0].name}'
+kubectl config set-cluster "$courseCluster" --server='https://127.0.0.1:16443'
+```
+
+`config view --minify` reads the selected context's configuration. The JSONPath expression extracts its cluster entry's name; it does not print the private credentials. `set-cluster` updates that entry's `server` field in the selected laptop file while retaining its CA settings. It does not change the VM's configuration or create another cluster.
+
+Port `16443` is our chosen laptop listener; the API itself still listens on the VM's port `6443`. Certificate validation remains enabled. The tunnel uses the VM's loopback endpoint, which matches the loopback identity in the K3s API certificate.
+
+## 5. Start the SSH Tunnel in a Second Laptop Terminal
+
+Keep Terminal 1 for kubectl. Open another terminal for this long-running SSH connection.
+
+### Linux and macOS: Laptop Terminal 2
+
+```bash
+VM_IP='203.0.113.10'
+ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:16443:127.0.0.1:6443 "ubuntu@$VM_IP"
+```
+
+### Windows PowerShell: Laptop Terminal 2
+
+```powershell
+$vmIp = '203.0.113.10'
+ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:16443:127.0.0.1:6443 "ubuntu@$vmIp"
+```
+
+Replace the address in this terminal too. `-N` asks SSH to forward connections without starting a remote shell. `-L` binds **laptop** address `127.0.0.1:16443` and forwards through SSH to **VM** address `127.0.0.1:6443`. The first loopback address restricts the listener to your laptop. `ExitOnForwardFailure=yes` makes SSH stop if it cannot establish the forwarding listener, for example because the local port is occupied.
+
+No output can be normal: keep this terminal open. Ctrl+C closes the tunnel; it does not stop K3s or the applications. If you use a different local port, change both the forwarding command and the laptop kubeconfig endpoint. See the [SSH manual](https://man.openbsd.org/ssh) for forwarding options.
+
+The request path is laptop kubectl → local port 16443 → SSH → VM API port 6443. The Kubernetes API still checks its TLS connection and client credentials. This route does not require a public firewall rule for port 6443.
+
+## 6. Check Context and Access in Laptop Terminal 1
 
 ```bash
 kubectl config get-contexts
 kubectl config current-context
-```
-
-Both commands read local configuration. `get-contexts` lists available contexts and marks the selected one with `*`; `current-context` prints its name. A context groups a cluster, an identity, and optionally a default namespace. Seeing a context name does not yet prove that the API server is reachable.
-
-If the supplied file has several contexts, select the course context. Replace `YOUR_CONTEXT` with its name from the list:
-
-```bash
-kubectl config use-context YOUR_CONTEXT
-```
-
-This changes which context is selected in the local kubeconfig. It does not log in as a different user unless that context selects different credentials, and it does not create another cluster.
-
-## 8. Verify Access to Your Namespace
-
-Replace `YOUR_NAMESPACE` with the namespace assigned by the teaching team in every command below:
-
-```bash
-kubectl auth can-i list pods -n YOUR_NAMESPACE
-kubectl get pods -n YOUR_NAMESPACE
-kubectl get services -n YOUR_NAMESPACE
-```
-
-`auth can-i` checks authorization for the named operation. `get pods` and `get services` send read requests to the API server. The `-n` flag selects the namespace for that request. A successful response can contain resources or say `No resources found`; an empty namespace is not a connection failure. See the [`kubectl auth can-i` reference](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_auth/kubectl_auth_can-i/).
-
-You can also check the client and server versions after access is configured:
-
-```bash
+kubectl auth can-i list pods -n default
+kubectl get pods -n default
+kubectl get services -n default
 kubectl version
 ```
 
-The server version comes from the selected API server. Compare it with your client version using the policy linked above. Listing nodes with `kubectl get nodes` is optional and needs cluster-level permission; a namespace-scoped course account may correctly receive `Forbidden` for that command.
+The first two commands read local context information. The others contact the VM API through the tunnel. `auth can-i` checks permission; the copied administrator configuration should permit these reads. `-n default` selects one namespace, while later tutorials use namespaces such as `helloworld`, `db`, and `tls-demo`. An empty Pod list can be a successful result. `kubectl version` includes the server version, unlike `--client` alone.
 
-### Interpret a Failed Check
+In a new Terminal 1, set `KUBECONFIG` again. In a new Terminal 2, re-establish the tunnel. If the original K3s administrator credentials are renewed later, refresh both the VM copy and the laptop copy; reapply the laptop endpoint change after copying.
 
-| Result | Meaning and next check |
+If you are working directly on the VM instead, select its `~/.kube/config` as shown in Tutorial 5B and run these checks there. The laptop tunnel and modified laptop endpoint are unnecessary for that workflow.
+
+## Interpret a Failed Check
+
+| Result | What to check |
 | --- | --- |
-| No current context, or an attempt to contact an unexpected local address | Check `KUBECONFIG` and the context list in this terminal. |
-| DNS error, connection refused, or timeout | Check the API address in the supplied configuration, network access, and any course VPN requirement. |
-| Certificate validation error | Check the configuration and endpoint with the teaching team. Do not bypass verification as a setup step. |
-| Authentication error, often `Unauthorized` | Check the provided credentials or authentication instructions; expired credentials may need renewal. |
-| `Forbidden`, or `auth can-i` prints `no` | The operation is not permitted. Check the namespace and assigned access; installing kubectl does not grant permissions. |
+| No current context, or an unexpected cluster name | `KUBECONFIG` in the terminal running kubectl. |
+| Connection refused at `127.0.0.1:16443` | The SSH tunnel is not listening, or the client address/port differs from the forwarding command. |
+| SSH connection or authentication error | The VM IP, network access to SSH, and the supplied SSH authentication method. |
+| Forwarding reports that the remote connection is refused | K3s's service and API listener on the VM. |
+| TLS certificate validation error | The selected CA, API endpoint, VM configuration, and whether the copy is current. Do not bypass TLS verification to hide a setup error. |
+| `Unauthorized` or `Forbidden` | Authentication or permissions, respectively; inspect the credentials and namespace. |
 
-Do not paste credentials or a raw kubeconfig into an issue when reporting a problem. Report the command, context name, namespace, and error instead.
+When reporting a problem, include the command, client computer, context name, namespace, and error. Keep private keys, tokens, and raw kubeconfigs out of issues.
 
 ## Check Your Understanding
 
-1. Why can `kubectl version --client` succeed while `kubectl get pods` fails?
-2. What changes when you open another terminal without setting `KUBECONFIG`?
-3. Why can listing Pods in your namespace succeed while listing nodes returns `Forbidden`?
-4. Does changing your terminal's working directory change the selected cluster?
+1. Why does a copied `127.0.0.1:6443` endpoint fail on the laptop without another change?
+2. Which two places must agree if you change local port `16443`?
+3. Why can `kubectl version --client` succeed when the tunnel is closed?
+4. Does closing SSH stop an Nginx Deployment running under K3s?
+5. Why must Helm and kubectl select the intended kubeconfig even when the chart files are in the correct directory?
 
 ## Next Step
 
-Continue with [Tutorial 7: Hello World](../07-k8s-helloworld/README.md). Confirm the selected context and use the namespace and domain assigned for the course before running its deployment commands.
+Continue with [Tutorial 7: Hello World](../07-k8s-helloworld/README.md). Use your assigned group domain, confirm the selected context, and remove Tutorial 5B's demo route before deploying a new application on that same hostname and path.
