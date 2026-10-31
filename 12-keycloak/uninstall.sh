@@ -25,7 +25,7 @@ read -p "Delete persistent data? This will remove all database data (yes/no): " 
 
 if [ "$DELETE_DATA" = "yes" ]; then
     echo "Deleting persistent volume claims..."
-    kubectl delete pvc postgresql-pvc -n "$NAMESPACE"
+    kubectl --kubeconfig "$HOME/.kube/config" delete pvc postgresql-pvc -n "$NAMESPACE"
     echo "Data deleted."
 fi
 
@@ -33,7 +33,7 @@ echo ""
 if [ "$DELETE_DATA" = "yes" ]; then
     read -p "Also delete the dedicated namespace? (yes/no): " DELETE_NAMESPACE
     if [ "$DELETE_NAMESPACE" = "yes" ]; then
-        kubectl delete namespace "$NAMESPACE"
+        kubectl --kubeconfig "$HOME/.kube/config" delete namespace "$NAMESPACE"
     fi
 else
     echo "Database PVC and namespace retained."

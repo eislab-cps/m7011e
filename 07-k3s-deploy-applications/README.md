@@ -1,10 +1,12 @@
-# Tutorial 7 - Deploy a simple web app on Kubernetes 
+# Tutorial 7: Deploy Applications on K3s
 
-This tutorial will guide you through deploying a simple application using Helm to verify your Kubernetes setup is working correctly.
+Use Helm to deploy, inspect, and update a Hello World web application on your group's existing K3s cluster. Tutorial 5B installed the cluster; Tutorial 6 prepared Helm and optional laptop access. This tutorial installs the application, not another cluster.
 
 Complete [Tutorial 5B: K3s on Your VM and HTTPS](../05b-k3s-setup/README.md) first, including its demo cleanup. It installs the `traefik` ingress class, cert-manager, and the `letsencrypt-staging` and `letsencrypt-prod` ClusterIssuers. Your assigned domain must point to the VM, with ports 80 and 443 reachable.
 
-Run the following commands from `07-k8s-helloworld/` on the VM, or from a laptop configured through [Tutorial 6](../06-k8s-getting-started/README.md). You need the repository files and Helm on whichever computer runs the Helm commands. This chart defaults to staging even if another application previously obtained a production certificate; issuer selection belongs to each application's Ingress.
+Run the following commands from `07-k3s-deploy-applications/` on the VM, or from a laptop configured through [Tutorial 6: K3s Remote Access and Helm](../06-k3s-remote-access-and-helm/README.md). You need the repository files, Helm, and the private `~/.kube/config` on the computer running the commands. For laptop access, keep the SSH tunnel open. In Windows PowerShell, use `"$HOME/.kube/config"` wherever a command shows `~/.kube/config`.
+
+The `--kubeconfig` option selects the private file in each command; there is no environment variable to set first. This chart defaults to staging even if another application previously obtained a production certificate; issuer selection belongs to each application's Ingress.
 
 ## Why This Exercise Uses Helm, Ingress, and TLS Together
 
@@ -44,7 +46,7 @@ Helm uses a templating system to generate Kubernetes YAML manifests. Here's how 
 
 **Project Structure:**
 ```
-07-k8s-helloworld/
+07-k3s-deploy-applications/
 ├── Chart.yaml              # Chart metadata and version info
 ├── values.yaml             # Configuration values
 └── templates/              # Template directory
@@ -60,7 +62,7 @@ Helm uses a templating system to generate Kubernetes YAML manifests. Here's how 
 3. **Processing**: Helm substitutes placeholders with actual values from `values.yaml`
 4. **Deployment**: Generated YAML manifests are applied to your cluster
 
-![Helm renders templates with values, then applies the result. Arrows follow one helm install; helm template stops after the rendering step.](./images/helm-render-and-apply.svg)
+![Helm renders templates with values, then applies the result. Arrows follow one release installation; helm template stops after rendering.](./images/helm-render-and-apply.svg)
 
 **Example Template Usage:**
 In `templates/deployment.yaml`, you'll see:
@@ -106,10 +108,9 @@ The `cert-manager.io/cluster-issuer` annotation tells cert-manager which certifi
 ![An example ACME HTTP-01 flow ends with a TLS Secret used by Traefik. The configured issuer decides the challenge method; staging certificates are not browser-trusted.](./images/cert-manager-issuance.svg)
 
 **Benefits**:
-- Free SSL certificates from a trusted Certificate Authority
-- Automatic renewal before certificate expiration
-- No manual certificate management required
-- Industry-standard security for your web application
+- Production certificates are trusted by normal browsers; staging certificates are for testing issuance.
+- cert-manager automates issuance and renewal, so you do not copy replacement certificates by hand.
+- Certificate resources expose status and errors. Renewal still depends on a working controller, issuer, and challenge path.
 
 HTTPS becomes available after DNS, ingress routing, and certificate issuance succeed. The default staging certificate is untrusted by browsers. Switch the annotation to an existing `letsencrypt-prod` issuer when you are ready for a trusted certificate.
 
@@ -125,15 +126,15 @@ app:
 
 domain: group-07-m7011e-ltu.se  # Replace with your assigned group domain
 
-message: "Hello from Kubernetes with SSL!"
+message: "Hello from K3s with HTTPS!"
 ```
 
 Replace the example group number with your assigned domain. Using this base domain requires no invented `helloworld` subdomain; a new subdomain would need its own DNS configuration. The chart does not create the ClusterIssuer: its ACME account contact was configured in Tutorial 5B, not by this chart's unused `email` value.
 
 ## Understanding Kubernetes Namespaces
-A **namespace** in Kubernetes is like a virtual cluster within your physical cluster. It provides:
+A **namespace** organizes resources within your K3s cluster. It provides:
 
-- **Isolation**: Resources in different namespaces are separated from each other
+- **Resource scope**: Objects belong to a named scope; access and network isolation need their own policies
 - **Organization**: Group related resources together (e.g., development, staging, production)
 - **Resource Management**: Apply quotas and policies per namespace
 - **Naming**: Avoid conflicts by allowing same resource names in different namespaces
@@ -144,13 +145,13 @@ Think of namespaces as folders on your computer - they help organize and separat
 
 | Command below | What you ask for | Evidence to inspect |
 | --- | --- | --- |
-| `kubectl create namespace helloworld` | Create a named scope for this exercise's resources. | The namespace exists; this alone does not create an app or network isolation. |
-| `helm install helloworld -f values.yaml -n helloworld .` | Render this directory's chart with the file's values and create a release in the selected cluster. | The release exists; then inspect Pods, routing, and certificates separately. |
-| `kubectl get pods -n helloworld` | Read Pod status. | `READY 1/1` is more informative than `Running` alone. Neither proves public HTTPS works. |
-| `kubectl get all -n helloworld` | Read a common subset of workload resources. | Despite its name, it does not list every resource type; inspect Ingresses and Certificates explicitly. |
-| `kubectl describe ...` | Read detailed resource state and recent associated events. | Look for image, scheduling, endpoint, or certificate errors relevant to that resource. |
-| `helm upgrade ...` | Apply a new rendered release revision. | Check that the intended field changed and the workload became ready. |
-| `helm rollback ...` | Restore an earlier release revision's configuration. | Inspect the restored resources; external effects and stored data are separate. |
+| `kubectl --kubeconfig ~/.kube/config create namespace helloworld` | Create a named scope for this exercise's resources. | The namespace exists; this alone does not create an app or network isolation. |
+| `helm --kubeconfig ~/.kube/config install helloworld -f values.yaml -n helloworld .` | Render this directory's chart with the file's values and create a release in the selected cluster. | The release exists; then inspect Pods, routing, and certificates separately. |
+| `kubectl --kubeconfig ~/.kube/config get pods -n helloworld` | Read Pod status. | `READY 1/1` is more informative than `Running` alone. Neither proves public HTTPS works. |
+| `kubectl --kubeconfig ~/.kube/config get all -n helloworld` | Read a common subset of workload resources. | Despite its name, it does not list every resource type; inspect Ingresses and Certificates explicitly. |
+| `kubectl --kubeconfig ~/.kube/config describe ...` | Read detailed resource state and recent associated events. | Look for image, scheduling, endpoint, or certificate errors relevant to that resource. |
+| `helm --kubeconfig ~/.kube/config upgrade ...` | Apply a new rendered release revision. | Check that the intended field changed and the workload became ready. |
+| `helm --kubeconfig ~/.kube/config rollback ...` | Restore an earlier release revision's configuration. | Inspect the restored resources; external effects and stored data are separate. |
 
 **Observe in stages:** First render locally, then check the workload, then the Service, then routing, then TLS, then the browser response. Explain why a Pod can be ready while the public hostname still fails. `Ctrl+C` stops a watch or port forward; cleanup commands at the end delete resources instead.
 
@@ -159,7 +160,7 @@ Think of namespaces as folders on your computer - they help organize and separat
 Create a dedicated namespace for your hello world application:
 
 ```bash
-kubectl create namespace helloworld
+kubectl --kubeconfig ~/.kube/config create namespace helloworld
 ```
 
 This groups your application resources. Network isolation requires separate NetworkPolicies; namespaces alone do not block traffic.
@@ -168,11 +169,12 @@ This groups your application resources. Network isolation requires separate Netw
 Deploy your application using Helm:
 
 ```bash
-helm install helloworld -f values.yaml -n helloworld .
+helm --kubeconfig ~/.kube/config install helloworld -f values.yaml -n helloworld .
 ```
 
 **Command breakdown:**
 - `helm install` - Deploy a new application
+- `--kubeconfig ~/.kube/config` - Select your private configuration for the K3s cluster
 - `helloworld` - Name of this deployment (release name)
 - `-f values.yaml` - Use your custom values file
 - `-n helloworld` - Deploy into the "helloworld" namespace
@@ -183,16 +185,16 @@ Check that your application is running:
 
 ```bash
 # Check pods in the namespace
-kubectl get pods -n helloworld
+kubectl --kubeconfig ~/.kube/config get pods -n helloworld
 
 # Check all resources
-kubectl get all -n helloworld
+kubectl --kubeconfig ~/.kube/config get all -n helloworld
 
 # Check if your ingress is configured
-kubectl get ingress -n helloworld
+kubectl --kubeconfig ~/.kube/config get ingress -n helloworld
 
 # View your application's HTML content
-kubectl get configmap hello-world-html -n helloworld -o yaml
+kubectl --kubeconfig ~/.kube/config get configmap hello-world-html -n helloworld -o yaml
 ```
 
 ### Expected Output
@@ -217,33 +219,31 @@ This application demonstrates several key Kubernetes concepts:
 
 ## Troubleshooting
 
-![Check the request path one layer at a time. Read top to bottom; each row pairs a layer with the command that inspects it and the symptom when it fails.](./images/request-path-debugging-layers.svg)
+![Check the request path one layer at a time. Each row pairs a layer with what to inspect and a possible failure symptom. The commands below select your private kubeconfig.](./images/request-path-debugging-layers.svg)
 
 If something goes wrong, you can debug with these commands:
 
 ```bash
 # Check Helm releases
-helm list -n helloworld
+helm --kubeconfig ~/.kube/config list -n helloworld
 
 # View detailed pod information
-kubectl describe pods -n helloworld
+kubectl --kubeconfig ~/.kube/config describe pods -n helloworld
 
 # Check application logs
-kubectl logs -l app=hello-world -n helloworld
+kubectl --kubeconfig ~/.kube/config logs -l app=hello-world -n helloworld
 
 # Check ingress status
-kubectl describe ingress hello-world -n helloworld
+kubectl --kubeconfig ~/.kube/config describe ingress hello-world -n helloworld
 
 # Verify certificate status
-kubectl get certificate -n helloworld
+kubectl --kubeconfig ~/.kube/config get certificate -n helloworld
 
-# Check if DNS is resolving correctly
-nslookup group-07-m7011e-ltu.se  # Replace with your assigned domain
 ```
 
 ### Common Issues
-- **Pod not starting**: Check `kubectl describe pod` for resource constraints or image issues
-- **Website not accessible**: Verify ingress configuration and DNS resolution
+- **Pod not starting**: Check `kubectl --kubeconfig ~/.kube/config describe pod` for resource constraints or image issues
+- **Website not accessible**: Inspect the Ingress route and Service endpoints. Contact the teaching assistant if the supplied domain or VM network is unavailable.
 - **SSL certificate issues**: Check certificate issuer status and Let's Encrypt rate limits
 - **Template errors**: Run `helm template . -f values.yaml` to test template rendering
 
@@ -251,7 +251,7 @@ nslookup group-07-m7011e-ltu.se  # Replace with your assigned domain
 ### Update Your Application
 After making changes to values or templates:
 ```bash
-helm upgrade helloworld -f values.yaml -n helloworld .
+helm --kubeconfig ~/.kube/config upgrade helloworld -f values.yaml -n helloworld .
 ```
 
 ### View Generated YAML
@@ -265,7 +265,7 @@ This renders templates with your values and prints YAML; it does not contact the
 ### Rollback Changes
 If an update causes issues:
 ```bash
-helm rollback helloworld -n helloworld
+helm --kubeconfig ~/.kube/config rollback helloworld -n helloworld
 ```
 
 ## Cleanup (when finished)
@@ -273,11 +273,11 @@ helm rollback helloworld -n helloworld
 After verifying and experimenting with the app, remove the release:
 
 ```bash
-helm uninstall helloworld -n helloworld
+helm --kubeconfig ~/.kube/config uninstall helloworld -n helloworld
 ```
 
 If the namespace is dedicated to this exercise and you no longer need any of its resources:
 
 ```bash
-kubectl delete namespace helloworld
+kubectl --kubeconfig ~/.kube/config delete namespace helloworld
 ```

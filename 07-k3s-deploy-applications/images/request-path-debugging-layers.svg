@@ -5,18 +5,18 @@
 <rect width="1200" height="755" fill="#fff"/>
 <style>text{font-family:'DejaVu Sans',sans-serif;fill:#152b43}.body{font-size:18px}.muted{fill:#425b70;font-size:18px}.heading{font-size:23px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:17px}</style>
 <text id="text-1" x="40" y="49" class="body" font-size="28px" style="font-size:28px" font-weight="700">Check the request path one layer at a time</text>
-<text id="text-2" x="40" y="83" class="muted">Read top to bottom: each layer must work before the next one can be tested.</text>
+<text id="text-2" x="40" y="83" class="muted">Use the assigned hostname; follow failures from the browser to the Pod.</text>
 <rect x="40" y="120" width="200" height="80" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
 <text id="text-3" x="62" y="154" class="heading" font-size="22px" style="font-size:22px">DNS</text>
 <rect x="260" y="120" width="470" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
-<text id="text-4" x="282" y="154" class="code">nslookup &lt;your-domain&gt;</text>
+<text id="text-4" x="282" y="154" class="body">Use your assigned group domain</text>
 <rect x="750" y="120" width="410" height="80" rx="14" fill="#eff5fc" stroke="#adc5df" stroke-width="2"/>
 <text id="text-5" x="772" y="154" class="body">Name does not resolve: browser cannot</text>
 <text id="text-6" x="772" y="179" class="body">find the site.</text>
 <rect x="40" y="220" width="200" height="80" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
 <text id="text-7" x="62" y="254" class="heading" font-size="22px" style="font-size:22px">TLS</text>
 <rect x="260" y="220" width="470" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
-<text id="text-8" x="282" y="254" class="code">kubectl get certificate -n helloworld</text>
+<text id="text-8" x="282" y="254" class="body">Inspect Certificate and issuer</text>
 <rect x="750" y="220" width="410" height="80" rx="14" fill="#f3f0fc" stroke="#bcb0d6" stroke-width="2"/>
 <text id="text-9" x="772" y="254" class="body">READY False, or browser warns about</text>
 <text id="text-10" x="772" y="279" class="body">name or issuer.</text>
@@ -24,7 +24,7 @@
 <rect x="40" y="320" width="200" height="80" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
 <text id="text-11" x="62" y="354" class="heading" font-size="22px" style="font-size:22px">Ingress</text>
 <rect x="260" y="320" width="470" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
-<text id="text-12" x="282" y="354" class="code">kubectl describe ingress -n helloworld</text>
+<text id="text-12" x="282" y="354" class="body">Inspect host and path rules</text>
 <rect x="750" y="320" width="410" height="80" rx="14" fill="#fff6e8" stroke="#d5ba83" stroke-width="2"/>
 <text id="text-13" x="772" y="354" class="body">404 from Traefik: host or path does</text>
 <text id="text-14" x="772" y="379" class="body">not match.</text>
@@ -32,7 +32,7 @@
 <rect x="40" y="420" width="200" height="80" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
 <text id="text-15" x="62" y="454" class="heading" font-size="22px" style="font-size:22px">Service</text>
 <rect x="260" y="420" width="470" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
-<text id="text-16" x="282" y="454" class="code">kubectl get endpoints -n helloworld</text>
+<text id="text-16" x="282" y="454" class="body">Inspect selectors and EndpointSlices</text>
 <rect x="750" y="420" width="410" height="80" rx="14" fill="#edf8f2" stroke="#9bceba" stroke-width="2"/>
 <text id="text-17" x="772" y="454" class="body">No endpoints: selector matches no</text>
 <text id="text-18" x="772" y="479" class="body">ready Pod (502/503).</text>
@@ -40,7 +40,7 @@
 <rect x="40" y="520" width="200" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
 <text id="text-19" x="62" y="554" class="heading" font-size="22px" style="font-size:22px">Pod</text>
 <rect x="260" y="520" width="470" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
-<text id="text-20" x="282" y="554" class="code">kubectl get pods -n helloworld</text>
+<text id="text-20" x="282" y="554" class="body">Inspect status, events, and logs</text>
 <rect x="750" y="520" width="410" height="80" rx="14" fill="#f4f6f8" stroke="#c3ccd5" stroke-width="2"/>
 <text id="text-21" x="772" y="554" class="body">Not 1/1 ready, crash loop, or wrong</text>
 <text id="text-22" x="772" y="579" class="body">ConfigMap content.</text>

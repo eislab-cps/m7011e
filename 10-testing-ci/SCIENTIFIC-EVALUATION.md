@@ -160,4 +160,4 @@ Include the following in the `Report/` folder or `Report` repository and link th
 
 At the oral exam, explain why the comparison is fair, what the harness does, what measurements mean and what alternative explanations exist. Be ready to demonstrate a manageable scenario if requested, with full saved results available rather than relying on a long experiment finishing during the examination.
 
-Related material: [Tutorial 10](./README.md) for tests and CI, [Tutorial 5](../05-microservices-and-k8s/README.md) for controller behavior, [Tutorial 4b](../04b-architectures/README.md) for architecture tradeoffs and [optional Tutorial 15](../advanced/15-monitoring/README.md) for measurement tools. A monitoring stack is not a separate numbered pass requirement.
+Related material: [Tutorial 10](./README.md) for tests and CI, [Tutorial 5](../05-microservices-and-k3s/README.md) for controller behavior, [Tutorial 4b](../04b-architectures/README.md) for architecture tradeoffs and [optional Tutorial 15](../advanced/15-monitoring/README.md) for measurement tools. A monitoring stack is not a separate numbered pass requirement.

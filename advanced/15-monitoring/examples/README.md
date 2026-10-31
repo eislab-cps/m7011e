@@ -6,11 +6,11 @@ These examples demonstrate how to instrument Python applications with Prometheus
 
 | Command pattern | What to understand |
 | --- | --- |
-| `kubectl run ... --restart=Never -- curl ...` | Starts a client process inside the cluster. Kubernetes options come before `--`; the program and its arguments come afterward. An attached `--rm` client is temporary. |
-| `kubectl exec ... -c ... -- ...` | Runs a program in an existing container rather than starting a local program. Use that location to interpret `localhost` and Service names. |
-| `kubectl port-forward ...` | Supplies a local path to a Service for laptop-based tools and the local load generator. It does not make the Service public. |
+| `kubectl --kubeconfig ~/.kube/config run ... --restart=Never -- curl ...` | Starts a client process inside the cluster. Kubernetes options come before `--`; the program and its arguments come afterward. An attached `--rm` client is temporary. |
+| `kubectl --kubeconfig ~/.kube/config exec ... -c ... -- ...` | Runs a program in an existing container rather than starting a local program. Use that location to interpret `localhost` and Service names. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ...` | Supplies a local path to a Service for laptop-based tools and the local load generator. It does not make the Service public. |
 | `curl .../metrics` | Reads an export of measurements. Prometheus still needs a working scrape configuration to store those measurements. |
-| `kubectl run load-generator ...` | Starts a sustained workload in the cluster. Identify its Pod so you can stop the experiment when you finish. |
+| `kubectl --kubeconfig ~/.kube/config run load-generator ...` | Starts a sustained workload in the cluster. Identify its Pod so you can stop the experiment when you finish. |
 | `./build-images.sh` | Builds local image artifacts. Publishing and selecting them in a Deployment are separate steps. |
 
 **Predict:** How should sending ten application requests affect a request counter? Why might a five-minute rate graph take time to show that change? Compare application logs, exporter data, target status, and the graph in that order. Read [the main tutorial's explanations](../README.md#read-the-monitoring-commands-as-an-experiment) and [command guide](../../../COMMANDS.md).
@@ -43,7 +43,7 @@ This will:
 ## Verify Deployment
 
 ```bash
-kubectl get pods -n monitoring
+kubectl --kubeconfig ~/.kube/config get pods -n monitoring
 ```
 
 Expected output:
@@ -68,19 +68,19 @@ The order-service is a Flask API that demonstrates HTTP request instrumentation.
 
 **Test the API from within the cluster:**
 ```bash
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://order-service.monitoring.svc:8001/api/orders
 ```
 
 **View metrics:**
 ```bash
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://order-service.monitoring.svc:8001/metrics
 ```
 
 **Or port-forward to access locally:**
 ```bash
-kubectl port-forward -n monitoring svc/order-service 8001:8001
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/order-service 8001:8001
 # Then: curl http://localhost:8001/metrics
 ```
 
@@ -97,12 +97,12 @@ The rabbitmq-consumer demonstrates message queue monitoring with Prometheus.
 
 **View consumer logs:**
 ```bash
-kubectl logs -n monitoring -l app=rabbitmq-consumer -f
+kubectl --kubeconfig ~/.kube/config logs -n monitoring -l app=rabbitmq-consumer -f
 ```
 
 **View consumer metrics:**
 ```bash
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://rabbitmq-consumer.monitoring.svc:8000/metrics
 ```
 
@@ -116,13 +116,13 @@ Generate single requests from within the cluster:
 
 ```bash
 # Create a new order
-kubectl run -it --rm test-client --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm test-client --image=curlimages/curl --restart=Never -- \
   curl -X POST http://order-service.monitoring.svc:8001/api/orders \
   -H "Content-Type: application/json" \
   -d '{"customer": "Alice", "items": ["laptop", "mouse"]}'
 
 # Get all orders
-kubectl run -it --rm test-client --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm test-client --image=curlimages/curl --restart=Never -- \
   curl http://order-service.monitoring.svc:8001/api/orders
 ```
 
@@ -132,14 +132,14 @@ Run a load generator pod inside the cluster:
 
 ```bash
 # Start continuous load generator
-kubectl run load-generator -n monitoring --image=curlimages/curl -- \
+kubectl --kubeconfig ~/.kube/config run load-generator -n monitoring --image=curlimages/curl -- \
   sh -c "while true; do curl http://order-service.monitoring.svc:8001/api/orders; sleep 2; done"
 
 # Watch the traffic in logs
-kubectl logs -n monitoring load-generator -f
+kubectl --kubeconfig ~/.kube/config logs -n monitoring load-generator -f
 
 # Delete when done
-kubectl delete pod -n monitoring load-generator
+kubectl --kubeconfig ~/.kube/config delete pod -n monitoring load-generator
 ```
 
 ### Option 3: Local Load Generator (Advanced)
@@ -152,10 +152,10 @@ Open two terminal windows and run:
 
 ```bash
 # Terminal 1: Port-forward order-service
-kubectl port-forward -n monitoring svc/order-service 8001:8001
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/order-service 8001:8001
 
 # Terminal 2: Port-forward RabbitMQ
-kubectl port-forward -n monitoring svc/rabbitmq 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/rabbitmq 5672:5672
 ```
 
 Keep these terminals running. You should see:
@@ -238,8 +238,8 @@ rate(rabbitmq_messages_processed_total[1m])
 
 **Port-forward Grafana and Prometheus:**
 ```bash
-kubectl port-forward -n monitoring svc/grafana 3000:3000
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
 ```
 
 ### Prometheus (http://localhost:9090)
@@ -346,25 +346,25 @@ active.dec()
 
 **Check pod status:**
 ```bash
-kubectl get pods -n monitoring
+kubectl --kubeconfig ~/.kube/config get pods -n monitoring
 ```
 
 **View pod logs:**
 ```bash
-kubectl logs -n monitoring -l app=order-service
-kubectl logs -n monitoring -l app=rabbitmq-consumer
+kubectl --kubeconfig ~/.kube/config logs -n monitoring -l app=order-service
+kubectl --kubeconfig ~/.kube/config logs -n monitoring -l app=rabbitmq-consumer
 ```
 
 **Describe pod for events:**
 ```bash
-kubectl describe pod -n monitoring -l app=order-service
+kubectl --kubeconfig ~/.kube/config describe pod -n monitoring -l app=order-service
 ```
 
 ### RabbitMQ Consumer CrashLoopBackOff
 
 The consumer waits for RabbitMQ to be ready. Check:
 ```bash
-kubectl logs -n monitoring -l app=rabbitmq-consumer
+kubectl --kubeconfig ~/.kube/config logs -n monitoring -l app=rabbitmq-consumer
 ```
 
 If RabbitMQ is slow to start, the consumer will retry automatically (up to 30 attempts).
@@ -375,13 +375,13 @@ If RabbitMQ is slow to start, the consumer will retry automatically (up to 30 at
 
 **Check Prometheus targets:**
 ```bash
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
 ```
 Then open http://localhost:9090 → **Status** → **Targets**
 
 **Test metrics endpoint from cluster:**
 ```bash
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://order-service.monitoring.svc:8001/metrics
 ```
 
@@ -410,8 +410,8 @@ cd ..
 helm upgrade monitoring -n monitoring .
 
 # Or manually restart deployments if already using your images
-kubectl rollout restart deployment/order-service -n monitoring
-kubectl rollout restart deployment/rabbitmq-consumer -n monitoring
+kubectl --kubeconfig ~/.kube/config rollout restart deployment/order-service -n monitoring
+kubectl --kubeconfig ~/.kube/config rollout restart deployment/rabbitmq-consumer -n monitoring
 ```
 
 ## Next Steps

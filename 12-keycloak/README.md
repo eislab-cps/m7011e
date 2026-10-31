@@ -24,7 +24,7 @@ Learn how to add professional authentication and authorization to your applicati
 
 ## Prerequisites
 
-- Completed [Tutorial 5B](../05b-k3s-setup/README.md) (K3s, cert-manager, and HTTPS); [Tutorial 6](../06-k8s-getting-started/README.md) covers optional laptop access
+- Completed [Tutorial 5B](../05b-k3s-setup/README.md) (K3s, cert-manager, and HTTPS); [Tutorial 6](../06-k3s-remote-access-and-helm/README.md) covers optional laptop access
 - kubectl configured and connected to your cluster
 - Basic understanding of web applications
 - Helm, a storage class, Traefik, cert-manager, the named ClusterIssuer, and domain DNS configured
@@ -60,7 +60,7 @@ Read the arrows as messages between running programs. A redirect changes the pag
 
 Keycloak's login session and the API's access token also have different jobs. The login session lets Keycloak recognize the browser during a later sign-in redirect, enabling single sign-on. The access token travels with an API request; Flask validates its signature and claims without receiving the user's password. Keycloak signs these tokens using a private key. The API can obtain the corresponding public keys, which verify signatures but cannot create valid signatures of their own.
 
-**HTTP and TLS connection:** A token is data carried in an HTTP header. A digital signature protects it against undetected alteration; it does not hide the contents or prevent a stolen bearer token from being used. HTTPS protects the connection carrying it. Review [the HTTP exchange](../01-basic-webapp/README.md#2-follow-one-http-request) and [TLS and certificates](../07-k8s-helloworld/README.md#before-deploying-how-https-reaches-your-application) if those distinctions are unfamiliar.
+**HTTP and TLS connection:** A token is data carried in an HTTP header. A digital signature protects it against undetected alteration; it does not hide the contents or prevent a stolen bearer token from being used. HTTPS protects the connection carrying it. Review [the HTTP exchange](../01-basic-webapp/README.md#2-follow-one-http-request) and [TLS and certificates](../07-k3s-deploy-applications/README.md#before-deploying-how-https-reaches-your-application) if those distinctions are unfamiliar.
 
 The TLS certificate key and the realm's token-signing key serve different purposes. In this deployment, Traefik uses the TLS certificate to establish the browser's protected connection to the hostname. Keycloak uses its realm signing key to sign tokens; Flask uses the realm's published public keys to check those signatures. A browser trusting the HTTPS certificate does not, on its own, validate an API token.
 
@@ -71,7 +71,7 @@ The TLS certificate key and the realm's token-signing key serve different purpos
 | Command below | What it actually does |
 | --- | --- |
 | `./install.sh` | Runs Helm `upgrade --install` for the Keycloak chart, creates its namespace if needed, and waits for the PostgreSQL and Keycloak rollouts. It does not create the `myapp` realm, frontend client, or test users. |
-| `kubectl get pods -n keycloak -w` | Watches workload status. `Ctrl+C` ends the watch; it does not stop Keycloak. Pod readiness alone does not prove that the public hostname and certificate are correct. |
+| `kubectl --kubeconfig ~/.kube/config get pods -n keycloak -w` | Watches workload status. `Ctrl+C` ends the watch; it does not stop Keycloak. Pod readiness alone does not prove that the public hostname and certificate are correct. |
 | `python3 create-realm.py` or `./create-realm.sh` | Calls Keycloak's admin API to create identity configuration, using the administrator credentials set in the script. This is separate from Kubernetes deployment. |
 | The user and client creation scripts | Configure accounts and application registrations inside the selected realm. Check the realm and client details in the console afterward. |
 | `export KEYCLOAK_URL=...` | Sets the URL for backend programs started from this terminal. It does not change the frontend's JavaScript configuration or an already-running Pod. |
@@ -116,7 +116,7 @@ This deploys both PostgreSQL and Keycloak in the `keycloak` namespace. It takes 
 
 ```bash
 # Watch pods starting up
-kubectl get pods -n keycloak -w
+kubectl --kubeconfig ~/.kube/config get pods -n keycloak -w
 
 # Expected output after a few minutes:
 # NAME                         READY   STATUS    RESTARTS   AGE
@@ -1314,10 +1314,10 @@ To run the backend regression tests without a live Keycloak server, install `pyt
 
 ```bash
 # Check pod status
-kubectl describe pod -n keycloak -l app=keycloak
+kubectl --kubeconfig ~/.kube/config describe pod -n keycloak -l app=keycloak
 
 # Check logs
-kubectl logs -n keycloak -l app=keycloak
+kubectl --kubeconfig ~/.kube/config logs -n keycloak -l app=keycloak
 
 # Common issues:
 # - Database password mismatch (check values.yaml)
@@ -1500,10 +1500,10 @@ Or manually:
 helm uninstall keycloak -n keycloak
 
 # Delete data
-kubectl delete pvc -n keycloak --all
+kubectl --kubeconfig ~/.kube/config delete pvc -n keycloak --all
 
 # Delete namespace
-kubectl delete namespace keycloak
+kubectl --kubeconfig ~/.kube/config delete namespace keycloak
 ```
 
 ---
@@ -2077,14 +2077,14 @@ Example settings (adjust to your application):
 
 ## Exercise: Deploy Todo App on Kubernetes with Production TLS
 
-This exercise challenges you to deploy the complete todo application on your group's Kubernetes cluster using kubectl and Helm, with production Let's Encrypt certificates. [Tutorial 5B](../05b-k3s-setup/README.md) installs the cluster and certificate issuers; [Tutorial 6](../06-k8s-getting-started/README.md) explains optional laptop access. Configure DNS for every hostname the application needs.
+This exercise challenges you to deploy the complete todo application on your group's Kubernetes cluster using kubectl and Helm, with production Let's Encrypt certificates. [Tutorial 5B](../05b-k3s-setup/README.md) installs the cluster and certificate issuers; [Tutorial 6](../06-k3s-remote-access-and-helm/README.md) explains optional laptop access. Configure DNS for every hostname the application needs.
 
 ### Overview
 
 Deploy a full-stack authenticated application:
 - **Keycloak** - Already running (from earlier in this tutorial)
-- **Flask Backend API** - Containerized and deployed on K8s
-- **React Frontend** - Containerized and deployed on K8s with HTTPS
+- **Flask Backend API** - Containerized and deployed on K3s
+- **React Frontend** - Containerized and deployed on K3s with HTTPS
 
 ### Prerequisites
 
@@ -2272,11 +2272,11 @@ spec:
 Run the following commands from `12-keycloak/`. Create `example-part-3-todo-rbac/k8s/` and your chosen namespace first. Replace `yournamespace` consistently in both manifests.
 
 ```bash
-kubectl apply -f example-part-3-todo-rbac/k8s/backend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f example-part-3-todo-rbac/k8s/backend-deployment.yaml
 
 # Verify deployment
-kubectl get pods -n yournamespace -l app=todo-backend
-kubectl get ingress -n yournamespace
+kubectl --kubeconfig ~/.kube/config get pods -n yournamespace -l app=todo-backend
+kubectl --kubeconfig ~/.kube/config get ingress -n yournamespace
 
 # Test backend
 curl https://todo-api.ltu-m7011e-yourname.se/
@@ -2469,14 +2469,14 @@ spec:
 **4.2 Deploy Frontend**
 
 ```bash
-kubectl apply -f example-part-3-todo-rbac/k8s/frontend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f example-part-3-todo-rbac/k8s/frontend-deployment.yaml
 
 # Verify deployment
-kubectl get pods -n yournamespace -l app=todo-frontend
-kubectl get ingress -n yournamespace
+kubectl --kubeconfig ~/.kube/config get pods -n yournamespace -l app=todo-frontend
+kubectl --kubeconfig ~/.kube/config get ingress -n yournamespace
 
 # Check TLS certificate
-kubectl get certificate -n yournamespace
+kubectl --kubeconfig ~/.kube/config get certificate -n yournamespace
 ```
 
 ### Step 5: Update Keycloak Client
@@ -2585,7 +2585,7 @@ Submit:
 - [ ] Both Dockerfiles
 - [ ] Screenshots of running application
 - [ ] Screenshot of valid TLS certificate
-- [ ] Output of `kubectl get all -n yournamespace`
+- [ ] Output of `kubectl --kubeconfig ~/.kube/config get all -n yournamespace`
 - [ ] Brief report explaining your deployment choices
 
 ---

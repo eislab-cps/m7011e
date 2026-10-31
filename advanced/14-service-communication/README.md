@@ -67,8 +67,8 @@ By the end of this tutorial, you will understand:
 
 ## Prerequisites
 
-- Completed Tutorial 5 (Microservices and Kubernetes)
-- Completed Tutorial 6 (Kubernetes Getting Started)
+- Completed Tutorial 5 (Microservices and K3s Concepts)
+- Completed Tutorial 6 (K3s Remote Access and Helm)
 - Basic Python knowledge
 - Kubernetes cluster access
 
@@ -81,8 +81,8 @@ The broker is a running server. A producer and consumer are separate client proc
 | Command below | Meaning and observable result |
 | --- | --- |
 | `helm install rabbitmq -n rabbitmq . --set ...` | Installs this chart in the selected cluster. `--set` overrides chart values; the values affect broker configuration, not a running Python producer's environment automatically. |
-| `kubectl port-forward ... 15672:15672` | Opens the HTTP management UI locally. This is not the AMQP connection used by the Python examples. |
-| `kubectl port-forward ... 5672:5672` | Opens the AMQP listener used by the local producer and consumer. Keep the tunnel alive while running them. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ... 15672:15672` | Opens the HTTP management UI locally. This is not the AMQP connection used by the Python examples. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ... 5672:5672` | Opens the AMQP listener used by the local producer and consumer. Keep the tunnel alive while running them. |
 | `pip install -r requirements.txt` in `examples/` | Installs the client dependencies. It does not start RabbitMQ. |
 | `python consumer_simple.py` | Starts a long-running client waiting for deliveries; an idle terminal can be the expected state. |
 | `python producer_simple.py` | Publishes the example messages, then finishes. A producer exiting is different from a consumer crashing. |
@@ -711,14 +711,14 @@ Start the following block from the repository root. The chart requires the confi
 cd advanced/14-service-communication
 
 # Create namespace
-kubectl create namespace rabbitmq
+kubectl --kubeconfig ~/.kube/config create namespace rabbitmq
 
 # Install Helm chart
 helm install rabbitmq -n rabbitmq .
 
 # Check deployment status
-kubectl get pods -n rabbitmq
-kubectl get svc -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get pods -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get svc -n rabbitmq
 ```
 
 **Expected output:**
@@ -731,15 +731,15 @@ rabbitmq-service-api              NodePort   10.96.xxx.xxx   <none>        5672:
 rabbitmq-service-management       NodePort   10.96.xxx.xxx   <none>        15672:30001/TCP   30s
 ```
 
-### Step 3: Access RabbitMQ Using kubectl port-forward
+### Step 3: Access RabbitMQ Using kubectl --kubeconfig ~/.kube/config port-forward
 
-Instead of using Ingress, we'll use kubectl port-forward for local access:
+Instead of using Ingress, we'll use kubectl --kubeconfig ~/.kube/config port-forward for local access:
 
 **Option A: Forward Management UI (Web Interface)**
 
 ```bash
 # Forward RabbitMQ management UI to localhost:15672
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 ```
 
 Now open your browser:
@@ -760,7 +760,7 @@ You'll see the RabbitMQ Management UI where you can:
 
 ```bash
 # Forward RabbitMQ AMQP port to localhost:5672
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 ```
 
 Now you can run the Python examples from your local machine:
@@ -775,10 +775,10 @@ python consumer_simple.py
 
 ```bash
 # Terminal 1: Forward AMQP API
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 
 # Terminal 2: Forward Management UI
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 ```
 
 Now you can:
@@ -813,7 +813,7 @@ connection = pika.BlockingConnection(
 
 To find your NodeIP:
 ```bash
-kubectl get nodes -o wide
+kubectl --kubeconfig ~/.kube/config get nodes -o wide
 # Use the INTERNAL-IP or EXTERNAL-IP of any node
 ```
 
@@ -882,7 +882,7 @@ import sys
 # Connect to RabbitMQ
 # If running locally or via port-forward: use 'localhost'
 # If running inside Kubernetes cluster: use 'rabbitmq-service-api'
-RABBITMQ_HOST = 'localhost'  # Change to 'rabbitmq-service-api' if inside K8s
+RABBITMQ_HOST = 'localhost'  # Change to 'rabbitmq-service-api' if inside K3s
 
 print(f"[Producer] Connecting to RabbitMQ at {RABBITMQ_HOST}...")
 connection = pika.BlockingConnection(
@@ -927,7 +927,7 @@ import pika
 import json
 import time
 
-RABBITMQ_HOST = 'localhost'  # Change to 'rabbitmq-service-api' if inside K8s
+RABBITMQ_HOST = 'localhost'  # Change to 'rabbitmq-service-api' if inside K3s
 
 print(f"[Consumer] Connecting to RabbitMQ at {RABBITMQ_HOST}...")
 connection = pika.BlockingConnection(
@@ -1223,7 +1223,7 @@ While the examples are running, view the queue in the web UI.
 
 ```bash
 # Forward management UI to your local machine
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 ```
 
 **Then access the UI:**
@@ -1247,10 +1247,10 @@ To run all examples locally with full monitoring:
 
 ```bash
 # Terminal 1: Forward AMQP API (required for Python scripts)
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 
 # Terminal 2: Forward Management UI (optional - for monitoring)
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 
 # Terminal 3: Run examples
 cd examples
@@ -1266,8 +1266,8 @@ python consumer_simple.py
 ```text
 pika.exceptions.AMQPConnectionError: <class 'ConnectionRefusedError'>
 ```
-- Check RabbitMQ is running: `kubectl get pods -n rabbitmq`
-- Check service is accessible: `kubectl get svc -n rabbitmq`
+- Check RabbitMQ is running: `kubectl --kubeconfig ~/.kube/config get pods -n rabbitmq`
+- Check service is accessible: `kubectl --kubeconfig ~/.kube/config get svc -n rabbitmq`
 - If testing locally, ensure port-forward is running
 - Verify credentials in the `rabbitmq-credentials` Secret
 

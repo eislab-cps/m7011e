@@ -4,7 +4,7 @@ Quick guide to deploy Prometheus and Grafana monitoring for your microservices.
 
 ## Understand the Commands and Their Evidence
 
-`./install.sh` deploys the chart and sample services into `monitoring`; it does not generate application load. `kubectl get pods` inspects workload state, while `kubectl describe` provides details and events when a workload is not ready.
+`./install.sh` deploys the chart and sample services into `monitoring`; it does not generate application load. `kubectl --kubeconfig ~/.kube/config get pods` inspects workload state, while `kubectl --kubeconfig ~/.kube/config describe` provides details and events when a workload is not ready.
 
 The two port forwards have different destinations: `3000:3000` opens Grafana and `9090:9090` opens Prometheus. They remain running in their terminals. Use Prometheus target status to establish whether data is being collected before interpreting a Grafana graph. `helm upgrade` changes cluster configuration; inspect the resulting resources and measurements after each change.
 
@@ -31,7 +31,7 @@ cd advanced/15-monitoring
 ./install.sh
 
 # Or manually:
-kubectl create namespace monitoring
+kubectl --kubeconfig ~/.kube/config create namespace monitoring
 helm install monitoring -n monitoring .
 ```
 
@@ -39,7 +39,7 @@ helm install monitoring -n monitoring .
 
 ```bash
 # Check pods
-kubectl get pods -n monitoring
+kubectl --kubeconfig ~/.kube/config get pods -n monitoring
 
 # Expected output:
 # NAME                           READY   STATUS    RESTARTS   AGE
@@ -48,7 +48,7 @@ kubectl get pods -n monitoring
 # rabbitmq-xxxxx                 1/1     Running   0          30s
 
 # Check services
-kubectl get svc -n monitoring
+kubectl --kubeconfig ~/.kube/config get svc -n monitoring
 
 # Expected output:
 # NAME                 TYPE       PORT(S)
@@ -59,10 +59,10 @@ kubectl get svc -n monitoring
 
 ## Step 3: Access Grafana
 
-### Option A: kubectl port-forward (Recommended for local testing)
+### Option A: kubectl --kubeconfig ~/.kube/config port-forward (Recommended for local testing)
 
 ```bash
-kubectl port-forward -n monitoring svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/grafana 3000:3000
 ```
 
 Open browser: **http://localhost:3000**
@@ -73,7 +73,7 @@ Open browser: **http://localhost:3000**
 
 ```bash
 # Get node IP
-kubectl get nodes -o wide
+kubectl --kubeconfig ~/.kube/config get nodes -o wide
 
 # Access via NodePort
 # Grafana: http://<NODE_IP>:30300
@@ -81,10 +81,10 @@ kubectl get nodes -o wide
 
 ## Step 4: Access Prometheus
 
-### kubectl port-forward
+### kubectl --kubeconfig ~/.kube/config port-forward
 
 ```bash
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
 ```
 
 Open browser: **http://localhost:9090**
@@ -190,7 +190,7 @@ This deploys:
 ### Verify Deployment
 
 ```bash
-kubectl get pods -n monitoring
+kubectl --kubeconfig ~/.kube/config get pods -n monitoring
 ```
 
 Expected output:
@@ -207,7 +207,7 @@ rabbitmq-xxx                         1/1     Running   0          1m
 
 1. Port-forward Prometheus:
    ```bash
-   kubectl port-forward -n monitoring svc/prometheus 9090:9090
+   kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
    ```
 
 2. Open Prometheus: http://localhost:9090
@@ -249,7 +249,7 @@ Prometheus evaluates the included rules. To send notifications, deploy or connec
 helm uninstall monitoring -n monitoring
 
 # Delete namespace (optional)
-kubectl delete namespace monitoring
+kubectl --kubeconfig ~/.kube/config delete namespace monitoring
 ```
 
 ## Troubleshooting
@@ -258,7 +258,7 @@ kubectl delete namespace monitoring
 
 **Check service annotations:**
 ```bash
-kubectl get svc your-service -n monitoring -o yaml | grep prometheus
+kubectl --kubeconfig ~/.kube/config get svc your-service -n monitoring -o yaml | grep prometheus
 ```
 
 **Check Prometheus targets:**
@@ -272,7 +272,7 @@ kubectl get svc your-service -n monitoring -o yaml | grep prometheus
 curl http://localhost:8001/metrics
 
 # Test from within cluster
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://your-service:8001/metrics
 ```
 
@@ -293,25 +293,25 @@ kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
 
 **Check logs:**
 ```bash
-kubectl logs -n monitoring prometheus-xxxxx
-kubectl logs -n monitoring grafana-xxxxx
+kubectl --kubeconfig ~/.kube/config logs -n monitoring prometheus-xxxxx
+kubectl --kubeconfig ~/.kube/config logs -n monitoring grafana-xxxxx
 ```
 
 **Check events:**
 ```bash
-kubectl get events -n monitoring --sort-by='.lastTimestamp'
+kubectl --kubeconfig ~/.kube/config get events -n monitoring --sort-by='.lastTimestamp'
 ```
 
 **Check resource limits:**
 ```bash
-kubectl describe pod -n monitoring prometheus-xxxxx
+kubectl --kubeconfig ~/.kube/config describe pod -n monitoring prometheus-xxxxx
 ```
 
 ### High Memory Usage
 
 **Check current usage:**
 ```bash
-kubectl top pods -n monitoring
+kubectl --kubeconfig ~/.kube/config top pods -n monitoring
 ```
 
 **Reduce retention:**

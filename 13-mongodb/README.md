@@ -85,11 +85,11 @@ MongoDB's server stores documents; `mongosh` is a client that sends operations t
 | Command below | Meaning in this setup |
 | --- | --- |
 | `./install.sh` / `helm install mongodb -f values.yaml -n db .` | Alternative installation paths for this one standalone database instance. The script runs Helm; neither path creates a replica set. |
-| `kubectl get pods -n db` / `kubectl get pvc -n db` | Inspect the running database process / its storage claim. A ready Pod and a bound claim answer different questions. |
-| `kubectl port-forward -n db svc/mongodb-service 27017:27017` | Open a local-to-cluster tunnel. With `27018:27017`, the local client must use 27018. |
+| `kubectl --kubeconfig ~/.kube/config get pods -n db` / `kubectl --kubeconfig ~/.kube/config get pvc -n db` | Inspect the running database process / its storage claim. A ready Pod and a bound claim answer different questions. |
+| `kubectl --kubeconfig ~/.kube/config port-forward -n db svc/mongodb-service 27017:27017` | Open a local-to-cluster tunnel. With `27018:27017`, the local client must use 27018. |
 | `mongosh .../appdb?authSource=admin` | Connect to application database `appdb` while authenticating the configured root account against `admin`. The authentication database and data database need not be the same. |
-| `kubectl exec ... -- mongosh ...` | Run the client inside the Pod instead of on your laptop. The meaning of `localhost` changes with that execution location. |
-| `mongodump ... --archive > backup.archive` through `kubectl exec` | Create an archive inside the remote command's output stream and save it to a local file. The shell performing `>` determines the file's location. |
+| `kubectl --kubeconfig ~/.kube/config exec ... -- mongosh ...` | Run the client inside the Pod instead of on your laptop. The meaning of `localhost` changes with that execution location. |
+| `mongodump ... --archive > backup.archive` through `kubectl --kubeconfig ~/.kube/config exec` | Create an archive inside the remote command's output stream and save it to a local file. The shell performing `>` determines the file's location. |
 | `helm upgrade ...` | Update Kubernetes configuration; editing initialization credentials is not itself a password rotation on an initialized database. |
 
 In mongosh, `use appdb` selects the database for subsequent operations; the first write creates it if necessary. `find()` reads matching documents, while `insertOne`, `updateOne`, and `deleteOne` change data. Read the predicate and expected result before executing a write. Deleting a Pod while retaining its volume and deleting the PVC have different persistence consequences.
@@ -119,7 +119,7 @@ Create the namespace where MongoDB will be deployed:
 Or manually:
 
 ```bash
-kubectl create namespace db
+kubectl --kubeconfig ~/.kube/config create namespace db
 ```
 
 ### Step 3: Install the Chart
@@ -141,7 +141,7 @@ helm install mongodb -f values.yaml -n db .
 Check that the MongoDB pod is running:
 
 ```bash
-kubectl get pods -n db
+kubectl --kubeconfig ~/.kube/config get pods -n db
 ```
 
 Expected output:
@@ -153,7 +153,7 @@ mongodb-0    1/1     Running   0          1m
 Check the service:
 
 ```bash
-kubectl get svc -n db
+kubectl --kubeconfig ~/.kube/config get svc -n db
 ```
 
 Expected output:
@@ -202,10 +202,10 @@ mongosh --version
 
 ### Option 1: Port Forwarding (Development/Testing)
 
-To access the database from your local machine, use `kubectl port-forward`:
+To access the database from your local machine, use `kubectl --kubeconfig ~/.kube/config port-forward`:
 
 ```bash
-kubectl port-forward -n db svc/mongodb-service 27017:27017
+kubectl --kubeconfig ~/.kube/config port-forward -n db svc/mongodb-service 27017:27017
 ```
 
 This command forwards local port 27017 to the MongoDB service running in Kubernetes. Keep this terminal window open while you need database access.
@@ -221,7 +221,7 @@ mongosh "mongodb://admin:your-password@localhost:27017/appdb?authSource=admin"
 If port 27017 is already in use on your local machine, forward to a different port:
 
 ```bash
-kubectl port-forward -n db svc/mongodb-service 27018:27017
+kubectl --kubeconfig ~/.kube/config port-forward -n db svc/mongodb-service 27018:27017
 ```
 
 Then connect to `localhost:27018` instead.
@@ -241,7 +241,7 @@ Or simply `mongodb-service` if they're in the same namespace.
 To access the database directly from the pod:
 
 ```bash
-kubectl exec -it -n db mongodb-0 -- mongosh -u admin --authenticationDatabase admin
+kubectl --kubeconfig ~/.kube/config exec -it -n db mongodb-0 -- mongosh -u admin --authenticationDatabase admin
 ```
 
 ## Example Usage for Students
@@ -473,7 +473,7 @@ helm uninstall mongodb -n db
 **Note**: The PVC is annotated `helm.sh/resource-policy: keep`, so Helm retains it on uninstall. To completely remove all data:
 
 ```bash
-kubectl delete pvc -n db mongodb-pvc
+kubectl --kubeconfig ~/.kube/config delete pvc -n db mongodb-pvc
 ```
 
 ## Troubleshooting
@@ -482,36 +482,36 @@ kubectl delete pvc -n db mongodb-pvc
 
 Check pod logs:
 ```bash
-kubectl logs -n db mongodb-0
+kubectl --kubeconfig ~/.kube/config logs -n db mongodb-0
 ```
 
 Describe the pod for events:
 ```bash
-kubectl describe pod -n db mongodb-0
+kubectl --kubeconfig ~/.kube/config describe pod -n db mongodb-0
 ```
 
 ### Storage Issues
 
 Check PVC status:
 ```bash
-kubectl get pvc -n db
+kubectl --kubeconfig ~/.kube/config get pvc -n db
 ```
 
 Ensure your StorageClass exists:
 ```bash
-kubectl get storageclass
+kubectl --kubeconfig ~/.kube/config get storageclass
 ```
 
 ### Connection Issues
 
 Verify the service is running:
 ```bash
-kubectl get svc -n db mongodb-service
+kubectl --kubeconfig ~/.kube/config get svc -n db mongodb-service
 ```
 
 Test connectivity from within the cluster:
 ```bash
-kubectl run -it --rm debug --image=mongo:7 --restart=Never -n db -- mongosh "mongodb://mongodb-service:27017/appdb" -u admin --authenticationDatabase admin
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=mongo:7 --restart=Never -n db -- mongosh "mongodb://mongodb-service:27017/appdb" -u admin --authenticationDatabase admin
 ```
 
 ### Authentication Issues
@@ -524,10 +524,10 @@ Data is persisted using a PersistentVolumeClaim. The data will survive pod resta
 
 ```bash
 # Dump the database
-kubectl exec -n db mongodb-0 -- mongodump --uri="mongodb://admin:your-password@localhost:27017" --archive > backup.archive
+kubectl --kubeconfig ~/.kube/config exec -n db mongodb-0 -- mongodump --uri="mongodb://admin:your-password@localhost:27017" --archive > backup.archive
 
 # Restore from backup
-cat backup.archive | kubectl exec -i -n db mongodb-0 -- mongorestore --uri="mongodb://admin:your-password@localhost:27017" --archive
+cat backup.archive | kubectl --kubeconfig ~/.kube/config exec -i -n db mongodb-0 -- mongorestore --uri="mongodb://admin:your-password@localhost:27017" --archive
 ```
 
 ## MongoDB Compass (GUI)

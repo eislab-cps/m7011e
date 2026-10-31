@@ -4,11 +4,11 @@ Run commands from `advanced/16-service-meshes/examples/`. Istio installation may
 
 ## Understand the Commands in the Experiment
 
-The installer configures Istio; the namespace label requests sidecars for new eligible Pods; `kubectl apply -f simple-demo.yaml` creates this demo. These are three different changes. `kubectl get pods` should show ready application and proxy containers before you test traffic.
+The installer configures Istio; the namespace label requests sidecars for new eligible Pods; `kubectl --kubeconfig ~/.kube/config apply -f simple-demo.yaml` creates this demo. These are three different changes. `kubectl --kubeconfig ~/.kube/config get pods` should show ready application and proxy containers before you test traffic.
 
-`kubectl exec deploy/client -c client -- ...` starts the following program in the client container. The shell loop repeats requests from there, so `hello:8080` is the in-cluster destination rather than a laptop hostname. `-H` adds an HTTP header used by a routing rule. `time` measures the command's elapsed execution time, which also includes kubectl and process-start overhead.
+`kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- ...` starts the following program in the client container. The shell loop repeats requests from there, so `hello:8080` is the in-cluster destination rather than a laptop hostname. `-H` adds an HTTP header used by a routing rule. `time` measures the command's elapsed execution time, which also includes kubectl and process-start overhead.
 
-When a command uses `kubectl apply -f - <<EOF`, the local shell supplies the following YAML to kubectl on standard input; `-f -` reads that input instead of a file. The policy changes live cluster configuration and remains in effect after your terminal command returns.
+When a command uses `kubectl --kubeconfig ~/.kube/config apply -f - <<EOF`, the local shell supplies the following YAML to kubectl on standard input; `-f -` reads that input instead of a file. The policy changes live cluster configuration and remains in effect after your terminal command returns.
 
 **Predict:** Write down which header, version distribution, delay, or error rate the next policy should produce. Change one policy at a time and send several requests. A 70/30 policy is a routing weight, not a guarantee of exactly seven v1 responses in ten requests. Read [the main command explanations](../README.md#understand-the-control-plane-and-traffic-commands) and [shell guide](../../../COMMANDS.md).
 
@@ -33,14 +33,14 @@ export PATH="$PWD/../.istio/istio-1.31.3/bin:$PATH"
 ### Step 2: Enable Sidecar Injection
 
 ```bash
-kubectl label namespace default istio-injection=enabled --overwrite
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled --overwrite
 ```
 
 **Note:** If you see "namespace/default not labeled", it means the label is already set. That's fine!
 
 Verify the label:
 ```bash
-kubectl get namespace -L istio-injection
+kubectl --kubeconfig ~/.kube/config get namespace -L istio-injection
 ```
 
 Expected output:
@@ -54,7 +54,7 @@ If you see `enabled` under `ISTIO-INJECTION`, you're good to go!
 ### Step 3: Deploy the Demo
 
 ```bash
-kubectl apply -f simple-demo.yaml
+kubectl --kubeconfig ~/.kube/config apply -f simple-demo.yaml
 ```
 
 **What gets deployed:**
@@ -69,7 +69,7 @@ kubectl apply -f simple-demo.yaml
 Check that pods are running with **2/2 containers** (app + istio-proxy):
 
 ```bash
-kubectl get pods
+kubectl --kubeconfig ~/.kube/config get pods
 ```
 
 Expected output:
@@ -87,7 +87,7 @@ hello-v2-xxx                2/2     Running   0          1m
 Generate 20 requests and see the 70/30 split:
 
 ```bash
-kubectl exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s http://hello:8080; done'
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s http://hello:8080; done'
 ```
 
 **Expected output:**
@@ -110,7 +110,7 @@ You should see roughly **14 responses from v1** and **6 responses from v2** (70/
 Open Kiali to see the traffic flow:
 
 ```bash
-kubectl port-forward -n istio-system svc/kiali 20001:20001
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/kiali 20001:20001
 ```
 
 Then open: http://localhost:20001
@@ -127,7 +127,7 @@ Then open: http://localhost:20001
 Open Jaeger to see distributed traces:
 
 ```bash
-kubectl port-forward -n istio-system svc/tracing 16686:80
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/tracing 16686:80
 ```
 
 Then open: http://localhost:16686
@@ -145,7 +145,7 @@ Then open: http://localhost:16686
 ### Make it 50/50
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -168,7 +168,7 @@ EOF
 
 Test it:
 ```bash
-kubectl exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s http://hello:8080; done'
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s http://hello:8080; done'
 ```
 
 Now you should see ~10 v1 and ~10 v2 responses.
@@ -176,7 +176,7 @@ Now you should see ~10 v1 and ~10 v2 responses.
 ### Send All Traffic to v2 (Blue-Green Deployment)
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -195,7 +195,7 @@ EOF
 
 Test it:
 ```bash
-kubectl exec deploy/client -c client -- sh -c 'for i in $(seq 1 10); do curl -s http://hello:8080; done'
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- sh -c 'for i in $(seq 1 10); do curl -s http://hello:8080; done'
 ```
 
 All responses should be from v2! 🔵
@@ -205,7 +205,7 @@ All responses should be from v2! 🔵
 Route beta users to v2, everyone else to v1:
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -231,13 +231,13 @@ EOF
 
 Test as regular user:
 ```bash
-kubectl exec deploy/client -c client -- curl -s http://hello:8080
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- curl -s http://hello:8080
 ```
 Output: `Hello from v1! 🟢`
 
 Test as beta user:
 ```bash
-kubectl exec deploy/client -c client -- curl -s -H "x-user-type: beta" http://hello:8080
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- curl -s -H "x-user-type: beta" http://hello:8080
 ```
 Output: `Hello from v2! 🔵 NEW VERSION!`
 
@@ -248,7 +248,7 @@ Output: `Hello from v2! 🔵 NEW VERSION!`
 Test how your system handles slow responses:
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -270,7 +270,7 @@ EOF
 
 Test it:
 ```bash
-time kubectl exec deploy/client -c client -- curl -s http://hello:8080
+time kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- curl -s http://hello:8080
 ```
 
 50% of requests will take 3+ seconds!
@@ -280,7 +280,7 @@ time kubectl exec deploy/client -c client -- curl -s http://hello:8080
 Test error handling:
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -302,7 +302,7 @@ EOF
 
 Test it:
 ```bash
-kubectl exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s -o /dev/null -w "%{http_code}\n" http://hello:8080; done'
+kubectl --kubeconfig ~/.kube/config exec deploy/client -c client -- sh -c 'for i in $(seq 1 20); do curl -s -o /dev/null -w "%{http_code}\n" http://hello:8080; done'
 ```
 
 You'll see ~30% HTTP 503 errors!
@@ -313,7 +313,7 @@ Check that traffic is encrypted with mutual TLS:
 
 ```bash
 # Get client pod name
-CLIENT_POD=$(kubectl get pod -l app=client -o jsonpath='{.items[0].metadata.name}')
+CLIENT_POD=$(kubectl --kubeconfig ~/.kube/config get pod -l app=client -o jsonpath='{.items[0].metadata.name}')
 
 # Check mTLS status
 istioctl proxy-config clusters "$CLIENT_POD" --fqdn hello.default.svc.cluster.local -o json
@@ -326,14 +326,14 @@ Look for `envoy.transport_sockets.tls` in the outbound cluster's transport-socke
 Remove the demo:
 
 ```bash
-kubectl delete -f simple-demo.yaml
+kubectl --kubeconfig ~/.kube/config delete -f simple-demo.yaml
 ```
 
 Remove Istio only after removing the demo and any other workloads that depend on this installation. Sample observability add-ons are separate resources and remain unless you delete their matching manifests:
 
 ```bash
 istioctl uninstall --purge -y
-kubectl label namespace default istio-injection-
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection-
 ```
 
 ## What You Just Learned

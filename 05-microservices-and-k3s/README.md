@@ -1,6 +1,6 @@
-# Tutorial 5: Microservices and Kubernetes
+# Tutorial 5: Microservices and K3s Concepts
 
-An introduction to microservices architecture and Kubernetes concepts for deploying distributed systems.
+An introduction to microservices and the cluster concepts you will use on K3s. **K3s is the course's Kubernetes distribution**: Pods, Services, Deployments, and the Kubernetes API are the same concepts used in other Kubernetes installations. This chapter explains the concepts; [Tutorial 5B](../05b-k3s-setup/README.md) installs your cluster, [Tutorial 6](../06-k3s-remote-access-and-helm/README.md) prepares client tools, and [Tutorial 7](../07-k3s-deploy-applications/README.md) deploys an application.
 
 ## Two Problems: Independent Change and Reliable Operation
 
@@ -12,7 +12,7 @@ These technologies are not inseparable. A monolith can run in a container, micro
 
 ## Why This Tutorial Matters
 
-**Course Requirement**: In this course, you will build a microservices-based application deployed on Kubernetes. This tutorial teaches the foundational concepts you need to understand.
+**Course Requirement**: You will build an application with multiple logical services and deploy it on your group's K3s cluster. This tutorial teaches the concepts behind that deployment.
 
 **What You'll Learn:**
 
@@ -2425,7 +2425,7 @@ The important distinction is the workload's identity and lifecycle, not simply w
 
 In the following tutorials, you will:
 - **[Tutorial 5B](../05b-k3s-setup/README.md)**: Log in to your VM, install K3s, configure kubectl permissions, and set up cert-manager and HTTPS
-- **[Tutorial 6](../06-k8s-getting-started/README.md)**: Optionally connect from your laptop using an SSH tunnel
+- **[Tutorial 6](../06-k3s-remote-access-and-helm/README.md)**: Optionally connect from your laptop using an SSH tunnel
 - **Tutorial 7**: Deploy applications with Helm and Ingress
 - **Tutorial 8**: Deploy PostgreSQL with StatefulSets
 - **Tutorial 9**: Build a React frontend

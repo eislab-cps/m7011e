@@ -56,11 +56,11 @@ The sample application handles requests and exposes measurements. Prometheus scr
 | Command below | What it does and where to observe it |
 | --- | --- |
 | `./install.sh` | Installs the monitoring chart into namespace `monitoring`, including its sample services. It does not install the Istio mesh from Tutorial 16. |
-| `kubectl port-forward ... svc/grafana 3000:3000` | Opens a local route to the dashboard UI. A working Grafana page alone does not prove Prometheus can reach a target. |
-| `kubectl port-forward ... svc/prometheus 9090:9090` | Opens Prometheus so you can inspect target health and query stored time series directly. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ... svc/grafana 3000:3000` | Opens a local route to the dashboard UI. A working Grafana page alone does not prove Prometheus can reach a target. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ... svc/prometheus 9090:9090` | Opens Prometheus so you can inspect target health and query stored time series directly. |
 | `curl .../api/orders` versus `curl .../metrics` | Calls an application operation versus reading its metric exposition. Reading `/metrics` is not the same workload as creating an order. |
-| `kubectl run ... --image=curlimages/curl --restart=Never -- curl ...` | Starts a client inside the cluster. The first options configure the Pod; arguments after `--` belong to the program in the container. `--rm` on an attached temporary client requests its deletion when it exits. |
-| `kubectl logs -f ...` | Follows application logs, a different signal from scraped metrics. `Ctrl+C` ends the follow, not the workload. |
+| `kubectl --kubeconfig ~/.kube/config run ... --image=curlimages/curl --restart=Never -- curl ...` | Starts a client inside the cluster. The first options configure the Pod; arguments after `--` belong to the program in the container. `--rm` on an attached temporary client requests its deletion when it exits. |
+| `kubectl --kubeconfig ~/.kube/config logs -f ...` | Follows application logs, a different signal from scraped metrics. `Ctrl+C` ends the follow, not the workload. |
 | `./build-images.sh` / `./push-images.sh NAME` in `examples/` | Builds images locally / uploads tagged images to a registry. Update the chart to use the intended images before deploying them. |
 
 **Measure a controlled change:** Note a counter's current value, send a known number of application requests, and wait for a scrape. Compare the raw metric, the Prometheus query, and the dashboard. Explain why a rate over a time window and an instantaneous counter value are different numbers. An empty graph can mean no matching series, a failed scrape, or an unsuitable time range; check those separately. See [the command guide](../../COMMANDS.md).
@@ -163,7 +163,7 @@ cd advanced/15-monitoring
 ./install.sh
 
 # Or manually:
-kubectl create namespace monitoring
+kubectl --kubeconfig ~/.kube/config create namespace monitoring
 helm install monitoring -n monitoring .
 ```
 
@@ -178,7 +178,7 @@ grafana-xxxxx                       1/1     Running   0          30s
 
 ```bash
 # Port-forward Grafana
-kubectl port-forward -n monitoring svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/grafana 3000:3000
 ```
 
 **Open browser:** http://localhost:3000
@@ -191,7 +191,7 @@ kubectl port-forward -n monitoring svc/grafana 3000:3000
 
 ```bash
 # Port-forward Prometheus
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
 ```
 
 **Open browser:** http://localhost:9090
@@ -547,12 +547,12 @@ The install script:
 
 **Port-forward Grafana:**
 ```bash
-kubectl port-forward -n monitoring svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/grafana 3000:3000
 ```
 
 **Port-forward Prometheus:**
 ```bash
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/prometheus 9090:9090
 ```
 
 ### Step 3: Generate Test Traffic
@@ -561,13 +561,13 @@ Generate some traffic to see metrics in action:
 
 ```bash
 # Create a test order
-kubectl run -it --rm test-client --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm test-client --image=curlimages/curl --restart=Never -- \
   curl -X POST http://order-service.monitoring.svc:8001/api/orders \
   -H "Content-Type: application/json" \
   -d '{"customer": "Alice", "items": ["laptop", "mouse"]}'
 
 # Get all orders
-kubectl run -it --rm test-client --image=curlimages/curl --restart=Never -- \
+kubectl --kubeconfig ~/.kube/config run -it --rm test-client --image=curlimages/curl --restart=Never -- \
   curl http://order-service.monitoring.svc:8001/api/orders
 ```
 
@@ -610,10 +610,10 @@ Open two terminal windows:
 
 ```bash
 # Terminal 1: Port-forward order-service
-kubectl port-forward -n monitoring svc/order-service 8001:8001
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/order-service 8001:8001
 
 # Terminal 2: Port-forward RabbitMQ
-kubectl port-forward -n monitoring svc/rabbitmq 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/rabbitmq 5672:5672
 ```
 
 Keep these running. You should see: `Forwarding from 127.0.0.1:8001 -> 8001`
@@ -662,7 +662,7 @@ Port-forward and use curl manually:
 
 ```bash
 # Port-forward order-service
-kubectl port-forward -n monitoring svc/order-service 8001:8001
+kubectl --kubeconfig ~/.kube/config port-forward -n monitoring svc/order-service 8001:8001
 
 # In another terminal, generate requests:
 # Create orders
@@ -906,7 +906,7 @@ prometheus:
 
 **Check service has correct annotations:**
 ```bash
-kubectl get svc order-service -n monitoring -o yaml | grep prometheus
+kubectl --kubeconfig ~/.kube/config get svc order-service -n monitoring -o yaml | grep prometheus
 ```
 
 Should show:

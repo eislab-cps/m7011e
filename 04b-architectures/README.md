@@ -270,7 +270,7 @@ A practical benefit is testing business behavior without starting HTTP servers o
 
 ## 5. Microservices
 
-**Microservices** make module boundaries into process and network boundaries. Each service owns a business responsibility and its data, exposes an API or events, and is deployed independently. [Tutorial 5](../05-microservices-and-k8s/README.md) covers the style in depth: service boundaries, database per service, the API gateway, discovery, and running services on Kubernetes. This section only places it among the other styles.
+**Microservices** make module boundaries into process and network boundaries. Each service owns a business responsibility and its data, exposes an API or events, and is deployed independently. [Tutorial 5](../05-microservices-and-k3s/README.md) covers the style in depth: service boundaries, database per service, the API gateway, discovery, and running services on Kubernetes. This section only places it among the other styles.
 
 ![Microservices turn module boundaries into network boundaries. Arrows are HTTP calls; each service owns a private database.](./images/microservices-todo.svg)
 
@@ -361,7 +361,7 @@ This sketch assumes a Todo service that accepts the forwarded token for its conf
 
 The BFF contains presentation logic (filtering, sorting, shaping), not the Todo service's business rules. The rule "only the owner may see a todo" stays in the Todo service; otherwise each BFF implements it slightly differently.
 
-A BFF is different from the API gateway in [Tutorial 5](../05-microservices-and-k8s/README.md). A gateway is shared infrastructure that routes requests and applies common policies such as authentication and rate limits. A BFF is application code for one client. Many systems use both: gateway in front, BFFs behind it. With only one web client and one backend, the backend already is the BFF.
+A BFF is different from the API gateway in [Tutorial 5](../05-microservices-and-k3s/README.md). A gateway is shared infrastructure that routes requests and applies common policies such as authentication and rate limits. A BFF is application code for one client. Many systems use both: gateway in front, BFFs behind it. With only one web client and one backend, the backend already is the BFF.
 
 > **Solves:** clients with different data needs; chatty clients over slow networks; frontend teams waiting for backend teams to change a general API.
 > **You give up:** one more service per client type; duplicated composition code between BFFs.
@@ -547,7 +547,7 @@ For each exercise, write down your prediction before reasoning it through, as de
 
 ## Next Steps
 
-Continue with [Tutorial 5: Microservices and Kubernetes](../05-microservices-and-k8s/README.md), which takes one of these styles, microservices, and shows how to define service boundaries and run the services on Kubernetes. The event-driven ideas return in [Tutorial 14: Service Communication](../advanced/14-service-communication/README.md), and the testing benefits of hexagonal design in [Tutorial 10](../10-testing-ci/README.md).
+Continue with [Tutorial 5: Microservices and K3s Concepts](../05-microservices-and-k3s/README.md), which takes one of these styles, microservices, and shows how to define service boundaries and run the services on Kubernetes. The event-driven ideas return in [Tutorial 14: Service Communication](../advanced/14-service-communication/README.md), and the testing benefits of hexagonal design in [Tutorial 10](../10-testing-ci/README.md).
 
 ## Further Reading
 

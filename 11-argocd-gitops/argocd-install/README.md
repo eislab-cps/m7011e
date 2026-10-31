@@ -9,9 +9,9 @@ These steps bootstrap Argo CD itself. Deploying your application through Argo CD
 | Command | What happens |
 | --- | --- |
 | `helm install ... -n argocd --create-namespace ...` | Reads this chart locally and creates release resources in the selected Kubernetes cluster. The chart also installs cluster-level resources. |
-| `kubectl get pods -n argocd -w` | Watches the installation's workload status; stop the watch with `Ctrl+C` when you have inspected readiness. |
-| `kubectl get secret ...` piped to `base64 -d` | Retrieves and decodes the initial administrator password. This prints a credential. |
-| `kubectl port-forward ... 8080:80` | Exposes a temporary local route to the Argo CD server; use a second terminal for other work. |
+| `kubectl --kubeconfig ~/.kube/config get pods -n argocd -w` | Watches the installation's workload status; stop the watch with `Ctrl+C` when you have inspected readiness. |
+| `kubectl --kubeconfig ~/.kube/config get secret ...` piped to `base64 -d` | Retrieves and decodes the initial administrator password. This prints a credential. |
+| `kubectl --kubeconfig ~/.kube/config port-forward ... 8080:80` | Exposes a temporary local route to the Argo CD server; use a second terminal for other work. |
 | `helm uninstall` / namespace deletion | Removes release resources / requests deletion of everything namespaced there. These are different scopes. |
 
 **Check:** Can you explain why a working local port forward does not prove that public DNS, ingress routing, and TLS are correct? Inspect each separately. See [the command guide](../../COMMANDS.md).
@@ -48,7 +48,7 @@ argocd:
 helm install argocd -f values.yaml -n argocd --create-namespace --timeout 10m .
 
 # Wait for installation to complete (this may take 2-3 minutes)
-kubectl get pods -n argocd -w
+kubectl --kubeconfig ~/.kube/config get pods -n argocd -w
 ```
 
 The installation job will automatically:
@@ -64,13 +64,13 @@ No manual configuration needed!
 ### Get Initial Password
 
 ```bash
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
+kubectl --kubeconfig ~/.kube/config get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
 ### Port Forward (Local Access)
 
 ```bash
-kubectl port-forward svc/argocd-server -n argocd 8080:80
+kubectl --kubeconfig ~/.kube/config port-forward svc/argocd-server -n argocd 8080:80
 ```
 
 Then open: http://localhost:8080 (the server runs HTTP behind Traefik).
@@ -88,13 +88,13 @@ If you configured a domain, access at: https://argocd.ltu-m7011e-yourname.se
 
 ```bash
 # Check all pods are running
-kubectl get pods -n argocd
+kubectl --kubeconfig ~/.kube/config get pods -n argocd
 
 # Check ingress
-kubectl get ingress -n argocd
+kubectl --kubeconfig ~/.kube/config get ingress -n argocd
 
 # Check Argo CD version
-kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[0].spec.containers[0].image}'
+kubectl --kubeconfig ~/.kube/config get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[0].spec.containers[0].image}'
 ```
 
 ## Uninstall
@@ -103,7 +103,7 @@ Helm removes the bootstrap chart resources. The Job-applied Argo CD resources ar
 
 ```bash
 helm uninstall argocd -n argocd
-kubectl delete namespace argocd
+kubectl --kubeconfig ~/.kube/config delete namespace argocd
 ```
 
 ## Troubleshooting
@@ -111,23 +111,23 @@ kubectl delete namespace argocd
 ### Pods Not Starting
 
 ```bash
-kubectl describe pods -n argocd
-kubectl logs -n argocd -l app.kubernetes.io/name=argocd-server
+kubectl --kubeconfig ~/.kube/config describe pods -n argocd
+kubectl --kubeconfig ~/.kube/config logs -n argocd -l app.kubernetes.io/name=argocd-server
 ```
 
 ### Ingress Not Working
 
 ```bash
-kubectl describe ingress argocd-server -n argocd
-kubectl get certificate -n argocd
+kubectl --kubeconfig ~/.kube/config describe ingress argocd-server -n argocd
+kubectl --kubeconfig ~/.kube/config get certificate -n argocd
 ```
 
 ### Certificate Issues
 
 ```bash
 # Check cert-manager
-kubectl get certificate -n argocd
-kubectl describe certificate argocd-tls -n argocd
+kubectl --kubeconfig ~/.kube/config get certificate -n argocd
+kubectl --kubeconfig ~/.kube/config describe certificate argocd-tls -n argocd
 
 # Switch to production issuer in values.yaml when ready
 # certIssuer: letsencrypt-prod

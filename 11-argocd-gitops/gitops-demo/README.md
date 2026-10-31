@@ -159,7 +159,7 @@ helm install test-dev hello-world-app -f environments/dev/values.yaml -n test-de
 
 # Cleanup
 helm uninstall test-dev -n test-dev
-kubectl delete namespace test-dev
+kubectl --kubeconfig ~/.kube/config delete namespace test-dev
 ```
 
 ## Troubleshooting

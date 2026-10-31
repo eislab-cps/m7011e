@@ -52,9 +52,9 @@ m7011e/                           ← START CLAUDE CODE HERE (repository root)
 ├── 02-docker/
 ├── 03-databases/
 ├── 04-frameworks/
-├── 05-microservices-and-k8s/
-├── 06-k8s-getting-started/
-├── 07-k8s-helloworld/
+├── 05-microservices-and-k3s/
+├── 06-k3s-remote-access-and-helm/
+├── 07-k3s-deploy-applications/
 ├── 08-postgresql/
 ├── 09-claude-code-frontend/
 ├── 10-testing-ci/
@@ -82,7 +82,7 @@ ls
 
 You should see output like:
 ```
-01-basic-webapp  02-docker  03-databases  04-frameworks  05-microservices-and-k8s  06-k8s-getting-started  07-k8s-helloworld  08-postgresql  09-claude-code-frontend  ...
+01-basic-webapp  02-docker  03-databases  04-frameworks  05-microservices-and-k3s  06-k3s-remote-access-and-helm  07-k3s-deploy-applications  08-postgresql  09-claude-code-frontend  ...
 ```
 
 **Step 3: Start Claude Code**

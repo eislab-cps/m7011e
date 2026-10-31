@@ -81,7 +81,7 @@ Argo CD exists to make the intended deployment inspectable and comparable with l
 
 ## Prerequisites
 
-- Completed Tutorial 6 (Kubernetes Getting Started)
+- Completed Tutorial 6 (K3s Remote Access and Helm)
 - Completed Tutorial 7 (Helm deployment)
 - kubectl configured and connected to LTU cluster
 - Git installed locally
@@ -93,16 +93,16 @@ There are several separate states: your working file, a local Git commit, the re
 | Command below | What changes or is observed |
 | --- | --- |
 | `helm install ... --create-namespace --timeout 10m` | Bootstraps the Argo CD installation in the selected cluster. Namespace creation and a longer timeout do not by themselves establish that all workloads are ready. |
-| `kubectl get pods -n argocd -w` | Continuously watches Pod status. `-w` keeps the command open; `Ctrl+C` stops the watch without uninstalling Argo CD. |
-| `kubectl get secret ... -o jsonpath=...` piped to `base64 -d` | Reads and decodes the initial admin password. The final command prints a credential, not encrypted text. |
-| `kubectl port-forward svc/argocd-server -n argocd 8080:80` | Creates a temporary local connection to the Argo CD UI/API. Keep it running while using that local address. |
+| `kubectl --kubeconfig ~/.kube/config get pods -n argocd -w` | Continuously watches Pod status. `-w` keeps the command open; `Ctrl+C` stops the watch without uninstalling Argo CD. |
+| `kubectl --kubeconfig ~/.kube/config get secret ... -o jsonpath=...` piped to `base64 -d` | Reads and decodes the initial admin password. The final command prints a credential, not encrypted text. |
+| `kubectl --kubeconfig ~/.kube/config port-forward svc/argocd-server -n argocd 8080:80` | Creates a temporary local connection to the Argo CD UI/API. Keep it running while using that local address. |
 | `git add`, `git commit`, `git push` | Select changes, record them locally, and publish them. Editing or committing alone does not update the remote branch Argo CD reads. |
 | `argocd app create ... --repo ... --path ... --revision ...` | Registers the source and destination Argo CD should manage. Those arguments select a repository, directory, and Git revision; they do not build a Docker image. |
 | `argocd app sync NAME` | Requests application of the desired manifests to the cluster. Check both synchronization and workload health afterward. |
 | `--auto-prune` / `--self-heal` | Enables deleting managed resources removed from Git / correcting detected live drift. These are active reconciliation behaviors. |
 | `git revert HEAD` followed by `git push` | Records and publishes a new commit undoing the selected commit's changes. Argo CD can then reconcile that new desired state. |
 
-**Predict and observe:** Change a value locally but do not push yet: should Argo CD see it? Push it, inspect the diff, synchronize if needed, then observe the running resources. Explain why `Synced` can coexist with an unhealthy application, and why a manual `kubectl scale` may later be undone by reconciliation. See [the command guide](../COMMANDS.md) for pipes and scope.
+**Predict and observe:** Change a value locally but do not push yet: should Argo CD see it? Push it, inspect the diff, synchronize if needed, then observe the running resources. Explain why `Synced` can coexist with an unhealthy application, and why a manual `kubectl --kubeconfig ~/.kube/config scale` may later be undone by reconciliation. See [the command guide](../COMMANDS.md) for pipes and scope.
 
 ## Part 1: Install Argo CD
 
@@ -134,7 +134,7 @@ helm install argocd -f values.yaml -n argocd --create-namespace --timeout 10m .
 ### 3. Wait for Installation to Complete
 
 ```bash
-kubectl get pods -n argocd -w
+kubectl --kubeconfig ~/.kube/config get pods -n argocd -w
 ```
 
 Wait until all pods show `Running` and `Ready` (Ctrl+C to stop watching).
@@ -150,7 +150,7 @@ The installation takes 2-3 minutes. The Helm chart automatically:
 #### Get Initial Admin Password
 
 ```bash
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
+kubectl --kubeconfig ~/.kube/config get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
 #### Access via Ingress (Recommended)
@@ -167,7 +167,7 @@ Access ArgoCD at your configured domain: `https://argocd.ltu-m7011e-johan.se`
 If ingress isn't working or for local testing:
 
 ```bash
-kubectl port-forward svc/argocd-server -n argocd 8080:80
+kubectl --kubeconfig ~/.kube/config port-forward svc/argocd-server -n argocd 8080:80
 ```
 
 Open browser to: `http://localhost:8080` (the bootstrap configures the server for HTTP behind Traefik).
@@ -343,7 +343,7 @@ argocd app create hello-world-dev \
 Most GitOps way - using YAML manifests:
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl --kubeconfig ~/.kube/config apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -377,13 +377,13 @@ The application is created but not yet deployed. Let's sync it!
 The declarative example uses `CreateNamespace=true`, which lets Argo CD create the destination namespace. For the UI and CLI examples, either enable that sync option or create the namespaces yourself:
 ```bash
 # dev environment
-kubectl create namespace hello-world-dev
+kubectl --kubeconfig ~/.kube/config create namespace hello-world-dev
 
 # staging environment
-kubectl create namespace hello-world-staging
+kubectl --kubeconfig ~/.kube/config create namespace hello-world-staging
 
 # prod environment
-kubectl create namespace hello-world-prod
+kubectl --kubeconfig ~/.kube/config create namespace hello-world-prod
 ```
 
 **Via UI:**
@@ -405,13 +405,13 @@ argocd app sync hello-world-dev
 argocd app get hello-world-dev
 
 # Check Kubernetes resources
-kubectl get all -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get all -n hello-world-dev
 
 # Check pods
-kubectl get pods -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get pods -n hello-world-dev
 
 # Check ingress
-kubectl get ingress -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get ingress -n hello-world-dev
 ```
 
 **Visit your application:**
@@ -462,7 +462,7 @@ argocd app sync hello-world-dev  # If manual sync
 #### 4. Verify the scaling
 
 ```bash
-kubectl get pods -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get pods -n hello-world-dev
 ```
 
 You should now see 3 pods running!
@@ -512,7 +512,7 @@ argocd app set hello-world-dev --sync-policy automated --auto-prune --self-heal
 
 **Via kubectl:**
 ```bash
-kubectl patch application hello-world-dev -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+kubectl --kubeconfig ~/.kube/config patch application hello-world-dev -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
 ```
 
 Now any Git commit will automatically deploy!
@@ -592,7 +592,7 @@ Wait for automatic sync or sync manually before running the commands
 
 ```bash
 argocd app get hello-world-dev
-kubectl get pods -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get pods -n hello-world-dev
 ```
 
 Pods will fail with `ImagePullBackOff` error.
@@ -729,7 +729,7 @@ argocd app set hello-world-dev --self-heal
 **Solution:**
 ```bash
 # Check pod events
-kubectl describe pod <pod-name> -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config describe pod <pod-name> -n hello-world-dev
 
 # Fix image in Git and sync
 # Or add image pull secrets if using private registry
@@ -745,7 +745,7 @@ kubectl describe pod <pod-name> -n hello-world-dev
 argocd app sync hello-world-dev --timeout 600
 
 # Check resource health
-kubectl get all -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get all -n hello-world-dev
 ```
 
 #### 4. Certificate/TLS Issues
@@ -755,10 +755,10 @@ kubectl get all -n hello-world-dev
 **Solution:**
 ```bash
 # Check certificate status
-kubectl get certificate -n hello-world-dev
+kubectl --kubeconfig ~/.kube/config get certificate -n hello-world-dev
 
 # Check cert-manager logs
-kubectl logs -n cert-manager -l app=cert-manager
+kubectl --kubeconfig ~/.kube/config logs -n cert-manager -l app=cert-manager
 ```
 
 ### Debugging Commands
@@ -800,9 +800,9 @@ argocd app delete hello-world-prod --cascade=false
 argocd app delete hello-world-dev --cascade
 
 # Or delete namespaces directly
-kubectl delete namespace hello-world-dev
-kubectl delete namespace hello-world-staging
-kubectl delete namespace hello-world-prod
+kubectl --kubeconfig ~/.kube/config delete namespace hello-world-dev
+kubectl --kubeconfig ~/.kube/config delete namespace hello-world-staging
+kubectl --kubeconfig ~/.kube/config delete namespace hello-world-prod
 ```
 
 ### Uninstall Argo CD
@@ -812,11 +812,11 @@ The bootstrap chart owns the installer and configuration, not the resources appl
 ```bash
 # If installed via our Helm chart
 helm uninstall argocd -n argocd
-kubectl delete namespace argocd
+kubectl --kubeconfig ~/.kube/config delete namespace argocd
 
 # If installed via official chart
 helm uninstall argocd -n argocd
-kubectl delete namespace argocd
+kubectl --kubeconfig ~/.kube/config delete namespace argocd
 ```
 
 ## Exercise: Deploy Your Own Application

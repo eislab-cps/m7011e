@@ -38,6 +38,21 @@ Use `program --help`, or a subcommand such as `kubectl port-forward --help`, to 
 
 ## Know which computer runs the work
 
+### Select the course cluster in the command
+
+Tutorial 5B copies K3s's administrator configuration into your private `~/.kube/config`. The kubectl bundled with K3s otherwise prefers `/etc/rancher/k3s/k3s.yaml`, which belongs to root. Select your copy directly:
+
+```bash
+kubectl --kubeconfig ~/.kube/config get pods -n tls-demo
+helm --kubeconfig ~/.kube/config list --all-namespaces
+```
+
+`--kubeconfig` supplies a filename to that command; no `export` or separate environment-variable assignment is needed. `~` means your home directory on the computer running the command. On Windows PowerShell, write `"$HOME/.kube/config"`. For laptop access, Tutorial 6 changes the laptop copy's endpoint and opens an SSH tunnel; the VM copy keeps its original endpoint.
+
+Command summaries in conceptual chapters may use the shorter `kubectl get ...` spelling to explain an operation. When adapting one for your VM, include the same `--kubeconfig ~/.kube/config` option. The practical setup and deployment commands show it explicitly.
+
+### Locate the program and its effects
+
 | Command | Where the work happens |
 | --- | --- |
 | `python3 app.py` | The program runs on your machine, using its Python environment. |

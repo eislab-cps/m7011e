@@ -45,13 +45,13 @@ There are three places involved: your laptop runs the CLI, Kubernetes runs the d
 
 | Command below | Meaning in this setup |
 | --- | --- |
-| `./create_namespace.sh` / `kubectl create namespace db` | Alternative ways to create the same namespace. Run one path. |
+| `./create_namespace.sh` / `kubectl --kubeconfig ~/.kube/config create namespace db` | Alternative ways to create the same namespace. Run one path. |
 | `./install.sh` / `helm install postgresql -f values.yaml -n db .` | Alternative ways to install this chart. The script invokes that Helm installation; it does not create application tables. |
-| `kubectl port-forward -n db svc/postgres-service 5432:5432` | Keep a **local:remote** tunnel open. It does not make the database publicly available through an Ingress. |
+| `kubectl --kubeconfig ~/.kube/config port-forward -n db svc/postgres-service 5432:5432` | Keep a **local:remote** tunnel open. It does not make the database publicly available through an Ingress. |
 | `psql -h localhost -p 5432 -U postgres` | Start a local client, connecting to that local tunnel as database user `postgres`. `-h`, `-p`, and `-U` select host, port, and database user. |
-| `kubectl exec -it -n db postgres-statefulset-0 -- psql -U postgres` | Start the client inside the database Pod. `--` separates kubectl's options from the program it runs; no laptop port forward is needed for this path. |
+| `kubectl --kubeconfig ~/.kube/config exec -it -n db postgres-statefulset-0 -- psql -U postgres` | Start the client inside the database Pod. `--` separates kubectl's options from the program it runs; no laptop port forward is needed for this path. |
 | `helm upgrade ...` | Change the Kubernetes configuration. Changing initialization credentials in values is not a SQL password-change command on an already-initialized database. |
-| `pg_dump ... > backup.sql` through `kubectl exec` | Run the dump in the Pod, but write the output file on your laptop because the local shell handles `>`. |
+| `pg_dump ... > backup.sql` through `kubectl --kubeconfig ~/.kube/config exec` | Run the dump in the Pod, but write the output file on your laptop because the local shell handles `>`. |
 
 **Predict:** If the tunnel uses `5433:5432`, which port belongs in your local client's `-p` option? If the Pod is replaced but reuses its PVC, why should committed rows remain? Explain why deleting the PVC is a different operation from restarting a Pod. See [the command guide](../COMMANDS.md#understand-ports-and-foreground-processes).
 
@@ -76,7 +76,7 @@ Create the namespace where PostgreSQL will be deployed:
 Or manually:
 
 ```bash
-kubectl create namespace db
+kubectl --kubeconfig ~/.kube/config create namespace db
 ```
 
 ### Step 3: Install the Chart
@@ -98,7 +98,7 @@ helm install postgresql -f values.yaml -n db .
 Check that the PostgreSQL pod is running:
 
 ```bash
-kubectl get pods -n db
+kubectl --kubeconfig ~/.kube/config get pods -n db
 ```
 
 Expected output:
@@ -110,7 +110,7 @@ postgres-statefulset-0     1/1     Running   0          1m
 Check the service:
 
 ```bash
-kubectl get svc -n db
+kubectl --kubeconfig ~/.kube/config get svc -n db
 ```
 
 Expected output:
@@ -176,10 +176,10 @@ The client version depends on your package manager. Use a client compatible with
 
 ### Option 1: Port Forwarding (Development/Testing)
 
-To access the database from your local machine, use `kubectl port-forward`:
+To access the database from your local machine, use `kubectl --kubeconfig ~/.kube/config port-forward`:
 
 ```bash
-kubectl port-forward -n db svc/postgres-service 5432:5432
+kubectl --kubeconfig ~/.kube/config port-forward -n db svc/postgres-service 5432:5432
 ```
 
 This command forwards local port 5432 to the PostgreSQL service running in Kubernetes. Keep this terminal window open while you need database access.
@@ -200,7 +200,7 @@ postgresql://postgres:your-password@localhost:5432/postgres
 If port 5432 is already in use on your local machine, forward to a different port:
 
 ```bash
-kubectl port-forward -n db svc/postgres-service 5433:5432
+kubectl --kubeconfig ~/.kube/config port-forward -n db svc/postgres-service 5433:5432
 ```
 
 Then connect to `localhost:5433` instead.
@@ -220,7 +220,7 @@ Or simply `postgres-service` if they're in the same namespace.
 To access the database directly from the pod:
 
 ```bash
-kubectl exec -it -n db postgres-statefulset-0 -- psql -U postgres
+kubectl --kubeconfig ~/.kube/config exec -it -n db postgres-statefulset-0 -- psql -U postgres
 ```
 
 ## Connecting with Different Clients
@@ -306,7 +306,7 @@ helm uninstall postgresql -n db
 **Note**: The PVC has a `helm.sh/resource-policy: keep` annotation, so Helm leaves it behind on uninstall. Reinstalling the release can reuse that claim. To remove this database's data after uninstalling:
 
 ```bash
-kubectl delete pvc postgresql-pvc -n db
+kubectl --kubeconfig ~/.kube/config delete pvc postgresql-pvc -n db
 ```
 
 ![Restarting, uninstalling, and deleting data are different operations. Read each column top to bottom: the action, what is removed, and how the volume reclaim policy affects the result.](./images/postgres-data-lifecycle.svg)
@@ -317,36 +317,36 @@ kubectl delete pvc postgresql-pvc -n db
 
 Check pod logs:
 ```bash
-kubectl logs -n db postgres-statefulset-0
+kubectl --kubeconfig ~/.kube/config logs -n db postgres-statefulset-0
 ```
 
 Describe the pod for events:
 ```bash
-kubectl describe pod -n db postgres-statefulset-0
+kubectl --kubeconfig ~/.kube/config describe pod -n db postgres-statefulset-0
 ```
 
 ### Storage Issues
 
 Check PVC status:
 ```bash
-kubectl get pvc -n db
+kubectl --kubeconfig ~/.kube/config get pvc -n db
 ```
 
 Ensure your StorageClass exists:
 ```bash
-kubectl get storageclass
+kubectl --kubeconfig ~/.kube/config get storageclass
 ```
 
 ### Connection Issues
 
 Verify the service is running:
 ```bash
-kubectl get svc -n db postgres-service
+kubectl --kubeconfig ~/.kube/config get svc -n db postgres-service
 ```
 
 Test connectivity from within the cluster:
 ```bash
-kubectl run -it --rm debug --image=postgres:16 --restart=Never -n db -- psql -h postgres-service -U postgres
+kubectl --kubeconfig ~/.kube/config run -it --rm debug --image=postgres:16 --restart=Never -n db -- psql -h postgres-service -U postgres
 ```
 
 ### Password Not Working
@@ -359,8 +359,8 @@ Data is persisted using a PersistentVolumeClaim. The data will survive pod resta
 
 ```bash
 # Dump the database
-kubectl exec -n db postgres-statefulset-0 -- pg_dump -U postgres postgres > backup.sql
+kubectl --kubeconfig ~/.kube/config exec -n db postgres-statefulset-0 -- pg_dump -U postgres postgres > backup.sql
 
 # Restore from backup
-cat backup.sql | kubectl exec -i -n db postgres-statefulset-0 -- psql -U postgres
+cat backup.sql | kubectl --kubeconfig ~/.kube/config exec -i -n db postgres-statefulset-0 -- psql -U postgres
 ```

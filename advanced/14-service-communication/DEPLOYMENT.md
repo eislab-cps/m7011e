@@ -1,6 +1,6 @@
 # RabbitMQ Deployment Guide
 
-Quick guide to deploy and access RabbitMQ on Kubernetes using kubectl port-forward.
+Quick guide to deploy and access RabbitMQ on Kubernetes using kubectl --kubeconfig ~/.kube/config port-forward.
 
 ## Understand the Deployment and Connection Commands
 
@@ -41,27 +41,27 @@ helm install rabbitmq -n rabbitmq . \
 cd advanced/14-service-communication
 
 # Create namespace
-kubectl create namespace rabbitmq
+kubectl --kubeconfig ~/.kube/config create namespace rabbitmq
 
 # Deploy using Helm (with default credentials from values.yaml)
 helm install rabbitmq -n rabbitmq .
 
 # Wait for pod to be ready
-kubectl rollout status deployment/rabbitmq-deployment -n rabbitmq --timeout=180s
+kubectl --kubeconfig ~/.kube/config rollout status deployment/rabbitmq-deployment -n rabbitmq --timeout=180s
 ```
 
 ## Step 3: Verify Deployment
 
 ```bash
 # Check pod status
-kubectl get pods -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get pods -n rabbitmq
 
 # Expected output:
 # NAME                                  READY   STATUS    RESTARTS   AGE
 # rabbitmq-deployment-xxxxxxxxxx-xxxxx  1/1     Running   0          30s
 
 # Check services
-kubectl get svc -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get svc -n rabbitmq
 
 # Expected output:
 # NAME                          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)
@@ -75,7 +75,7 @@ kubectl get svc -n rabbitmq
 
 ```bash
 # Forward management UI to localhost
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 ```
 
 Open browser: **http://localhost:15672**
@@ -86,7 +86,7 @@ Open browser: **http://localhost:15672**
 
 ```bash
 # Forward AMQP API to localhost
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 ```
 
 Now your applications can connect to `localhost:5672`
@@ -95,10 +95,10 @@ Now your applications can connect to `localhost:5672`
 
 ```bash
 # Terminal 1: AMQP API
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 
 # Terminal 2: Management UI
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-management 15672:15672
 ```
 
 ## Step 5: Test the Deployment
@@ -143,7 +143,7 @@ If you need direct access without port-forward:
 
 ```bash
 # Get node IP
-kubectl get nodes -o wide
+kubectl --kubeconfig ~/.kube/config get nodes -o wide
 
 # Access via NodePort
 # AMQP API: <NODE_IP>:30000
@@ -185,7 +185,7 @@ Helm retains `rabbitmq-pvc`. Deleting the namespace below also deletes that PVC 
 helm uninstall rabbitmq -n rabbitmq
 
 # Delete namespace (optional)
-kubectl delete namespace rabbitmq
+kubectl --kubeconfig ~/.kube/config delete namespace rabbitmq
 ```
 
 ## Troubleshooting
@@ -194,23 +194,23 @@ kubectl delete namespace rabbitmq
 
 ```bash
 # Check pod logs
-kubectl logs -n rabbitmq deployment/rabbitmq-deployment
+kubectl --kubeconfig ~/.kube/config logs -n rabbitmq deployment/rabbitmq-deployment
 
 # Describe pod for events
-kubectl describe pod -n rabbitmq -l app=rabbitmq
+kubectl --kubeconfig ~/.kube/config describe pod -n rabbitmq -l app=rabbitmq
 ```
 
 ### Port-forward connection refused
 
 ```bash
 # Ensure pod is running
-kubectl get pods -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get pods -n rabbitmq
 
 # Check if service exists
-kubectl get svc -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get svc -n rabbitmq
 
 # Try port-forward with pod name directly
-kubectl port-forward -n rabbitmq <pod-name> 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq <pod-name> 5672:5672
 ```
 
 ### Cannot connect from Python script
@@ -229,10 +229,10 @@ telnet localhost 5672
 
 ```bash
 # Check that the credentials Secret exists
-kubectl describe secret rabbitmq-credentials -n rabbitmq
+kubectl --kubeconfig ~/.kube/config describe secret rabbitmq-credentials -n rabbitmq
 
 # Restart pod to pick up new credentials
-kubectl rollout restart deployment/rabbitmq-deployment -n rabbitmq
+kubectl --kubeconfig ~/.kube/config rollout restart deployment/rabbitmq-deployment -n rabbitmq
 ```
 
 ## Next Steps

@@ -4,7 +4,7 @@ Run commands from `advanced/14-service-communication/examples/`. These examples 
 
 ## What Each Process Does
 
-`pip install -r requirements.txt` installs the Python AMQP client dependencies; it does not start a broker. `kubectl port-forward ... 5672:5672` keeps a local connection path to the cluster's broker open. Run producers and consumers in separate terminals with that path available.
+`pip install -r requirements.txt` installs the Python AMQP client dependencies; it does not start a broker. `kubectl --kubeconfig ~/.kube/config port-forward ... 5672:5672` keeps a local connection path to the cluster's broker open. Run producers and consumers in separate terminals with that path available.
 
 `consumer_simple.py` waits for deliveries. `producer_simple.py` publishes and exits. The crash demo intentionally ends a consumer before some work is acknowledged; inspect ready and unacknowledged queue counts before and after reconnecting a consumer. A worker identifier labels a process; it does not create a separate queue automatically.
 
@@ -20,7 +20,7 @@ Run commands from `advanced/14-service-communication/examples/`. These examples 
 
 3. **Port-forward RabbitMQ** (if testing locally):
    ```bash
-   kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+   kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
    ```
 
 ## Example 1: Simple Producer and Consumer
@@ -105,10 +105,10 @@ Default credentials (configured in `values.yaml`):
 **Connection refused:**
 ```bash
 # Check RabbitMQ is running
-kubectl get pods -n rabbitmq
+kubectl --kubeconfig ~/.kube/config get pods -n rabbitmq
 
 # Ensure port-forward is active (if testing locally)
-kubectl port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
+kubectl --kubeconfig ~/.kube/config port-forward -n rabbitmq svc/rabbitmq-service-api 5672:5672
 ```
 
 **Authentication failed:**

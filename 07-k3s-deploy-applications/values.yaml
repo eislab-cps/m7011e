@@ -6,4 +6,4 @@ app:
 domain: group-07-m7011e-ltu.se
 email: johan.kristiansson@ltu.se
 
-message: "Hello from Kubernetes with SSL!"
+message: "Hello from K3s with HTTPS!"

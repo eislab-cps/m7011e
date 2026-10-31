@@ -1,6 +1,6 @@
-# Tutorial 0: Introduction — The Internet, HTTP, Cloud Computing, and Kubernetes
+# Tutorial 0: Introduction — The Internet, HTTP, Cloud Computing, and K3s
 
-This tutorial is the map for the rest of the course. It explains, at a basic level, what happens when you open a web page, how HTTP messages are built, what "the cloud" actually is, and why we run applications on Kubernetes. Later tutorials go into each topic in depth; here the goal is to know which part of the system each later tutorial is about.
+This tutorial is the map for the rest of the course. It explains what happens when you open a web page, how HTTP messages work, what "the cloud" provides, and why we run applications on K3s. **K3s is the Kubernetes distribution used in the course**; Kubernetes names the underlying platform. Later tutorials explain each part in depth.
 
 You do not need to install anything except a web browser and `curl`. Many systems include it; install it with your operating system's package manager if it is missing. In Windows PowerShell, use `curl.exe` to avoid an older alias with different flags.
 
@@ -23,7 +23,7 @@ By completing this tutorial, you will be able to:
 
 A web application is not one program. A single page load involves your browser, your operating system, a DNS resolver, several routers, possibly a load balancer, a web server, an application, and a database. When something goes wrong, the error you see comes from one of these parts. Knowing the parts, and the order in which they are used, is what lets you read an error as evidence instead of guessing.
 
-The course builds the system up layer by layer: an HTTP API ([Tutorial 1](../01-basic-webapp/README.md)), packaged in containers ([Tutorial 2](../02-docker/README.md)), split into services ([Tutorial 5](../05-microservices-and-k8s/README.md)), and deployed to a Kubernetes cluster in the cloud ([Tutorials 6–7](../06-k8s-getting-started/README.md)). This tutorial gives you the vocabulary for all of them.
+The course builds the system up layer by layer: an HTTP API ([Tutorial 1](../01-basic-webapp/README.md)), packaged in containers ([Tutorial 2](../02-docker/README.md)), split into services ([Tutorial 5](../05-microservices-and-k3s/README.md)), and deployed to the K3s cluster you create in [Tutorial 5B](../05b-k3s-setup/README.md). [Tutorial 6](../06-k3s-remote-access-and-helm/README.md) prepares the clients; [Tutorial 7](../07-k3s-deploy-applications/README.md) deploys an application. The [README's learning stages](../README.md#tutorials-by-learning-stage) help you navigate the sequence.
 
 ---
 
@@ -227,13 +227,13 @@ The two are combined in practice: cloud providers rent you VMs, and you run cont
 
 ---
 
-## Part 4: Kubernetes in One Picture
+## Part 4: K3s and Its Kubernetes Concepts
 
 ### Why Containers Need Orchestration
 
 Running one container is easy: `docker run`. Running a real application is harder. You need several copies of each service for load and for failures, spread over several machines. When a machine dies, its containers must be started elsewhere. When you release a new version, you want to replace copies gradually without downtime. Other services need a stable way to find each copy, even though containers come and go with new IP addresses.
 
-Doing this by hand, or with scripts, does not scale. A **container orchestrator** does it automatically. **Kubernetes** (often written *k8s*) is the most widely used one. Google released it as open source in 2014; it is a Cloud Native Computing Foundation project maintained by its community. See the [Kubernetes overview](https://kubernetes.io/docs/concepts/overview/).
+A **container orchestrator** automates this coordination. **Kubernetes** is the platform packaged by K3s. In external documentation, **K8s** is shorthand for Kubernetes, not a third product. Google released Kubernetes as open source in 2014; it is maintained by its community as a Cloud Native Computing Foundation project. See the [Kubernetes overview](https://kubernetes.io/docs/concepts/overview/).
 
 ### Desired State
 
@@ -254,7 +254,7 @@ The main objects, at a glance:
 
 Follow a request in the picture: the browser reaches the **Ingress**, which routes `todo.example.com` to the right **Service**, which forwards it to one of the **Pods**, wherever they currently run.
 
-This is all you need for now. [Tutorial 5](../05-microservices-and-k8s/README.md) explains these objects and the controller pattern, [Tutorial 5B](../05b-k3s-setup/README.md) takes you from SSH access to your group's VM through K3s installation and HTTPS, and [Tutorial 6](../06-k8s-getting-started/README.md) adds optional laptop access. [Tutorial 7](../07-k8s-helloworld/README.md) then deploys an application using Helm.
+This is all you need for now. [Tutorial 5](../05-microservices-and-k3s/README.md) explains these objects and the controller pattern, [Tutorial 5B](../05b-k3s-setup/README.md) takes you from SSH access to your group's VM through K3s installation and HTTPS, and [Tutorial 6](../06-k3s-remote-access-and-helm/README.md) adds optional laptop access. [Tutorial 7](../07-k3s-deploy-applications/README.md) then deploys an application using Helm.
 
 **A caution:** Kubernetes solves operational problems, and it adds its own complexity. A small project can be served well by a single VM or a PaaS. The course uses Kubernetes because it makes scheduling, discovery, rollout, and recovery visible, and because it is widely used in industry.
 
@@ -270,9 +270,9 @@ Each later tutorial zooms in on part of the picture above:
 | Container images, VMs vs containers | [02 — Docker and Docker Compose](../02-docker/README.md) |
 | Where data lives, replication | [03 — Databases](../03-databases/README.md), [08 — PostgreSQL](../08-postgresql/README.md), [13 — MongoDB](../13-mongodb/README.md) |
 | What runs in the browser and what on the server | [04 — Frameworks](../04-frameworks/README.md), [09 — React with Claude Code](../09-claude-code-frontend/README.md) |
-| How to split and connect a system | [04b — Software Architectures](../04b-architectures/README.md), [05 — Microservices and Kubernetes](../05-microservices-and-k8s/README.md) |
+| How to split and connect a system | [04b — Software Architectures](../04b-architectures/README.md), [05 — Microservices and K3s Concepts](../05-microservices-and-k3s/README.md) |
 | VM access, SSH, K3s, kubeconfig permissions, certificates | [05B — K3s on Your VM and HTTPS](../05b-k3s-setup/README.md) |
-| Cluster, nodes, Pods, Services, Ingress, TLS | [06 — Laptop Access](../06-k8s-getting-started/README.md), [07 — Hello World](../07-k8s-helloworld/README.md) |
+| Client tools and application deployment | [06 — K3s Remote Access and Helm](../06-k3s-remote-access-and-helm/README.md), [07 — Deploy Applications on K3s](../07-k3s-deploy-applications/README.md) |
 | Releasing safely and repeatably | [10 — Testing and CI](../10-testing-ci/README.md), [11 — Argo CD and GitOps](../11-argocd-gitops/README.md) |
 | Statelessness, cookies, tokens | [12 — Keycloak](../12-keycloak/README.md) |
 | Communication between services | [14 — Service Communication](../advanced/14-service-communication/README.md), [16 — Service Meshes](../advanced/16-service-meshes/README.md) |

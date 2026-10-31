@@ -1,4 +1,4 @@
 #!/bin/bash
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
-kubectl create namespace db --dry-run=client -o yaml | kubectl apply -f -
+kubectl --kubeconfig "$HOME/.kube/config" create namespace db --dry-run=client -o yaml | kubectl --kubeconfig "$HOME/.kube/config" apply -f -

@@ -8,7 +8,7 @@ For a smaller experiment, use [the simple demo](./examples/README.md). Read what
 
 `./install-istio.sh` installs the control plane and sample observability add-ons, and labels the default namespace for injection. `export PATH=...` only selects the downloaded CLI for this terminal. The application manifests create workloads, while routing and security manifests configure how their proxies handle traffic.
 
-`kubectl exec ... -c frontend -- curl ...` runs the request in the application container. `istioctl proxy-config ...` inspects a proxy's configuration; it does not send a user request. A namespace label affects newly created eligible Pods, so inspect existing Pods for an actual proxy before interpreting the results.
+`kubectl --kubeconfig ~/.kube/config exec ... -c frontend -- curl ...` runs the request in the application container. `istioctl proxy-config ...` inspects a proxy's configuration; it does not send a user request. A namespace label affects newly created eligible Pods, so inspect existing Pods for an actual proxy before interpreting the results.
 
 For each experiment, predict the response, apply one policy, run multiple requests, and compare the observed distribution or delay with your prediction. Remove the active fault-injection policy before measuring an unrelated scenario. The [main command walkthrough](./README.md#understand-the-control-plane-and-traffic-commands) and [shell guide](../../COMMANDS.md) explain flags, scope, and cleanup.
 
@@ -30,13 +30,13 @@ This installs:
 
 ```bash
 # Deploy backend v1
-kubectl apply -f backend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f backend-deployment.yaml
 
 # Deploy frontend
-kubectl apply -f frontend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f frontend-deployment.yaml
 
 # Verify sidecars were injected (2/2 containers per pod)
-kubectl get pods
+kubectl --kubeconfig ~/.kube/config get pods
 ```
 
 Expected output:
@@ -50,10 +50,10 @@ frontend-xxx                 2/2     Running   0          1m
 
 ```bash
 # Get frontend pod name
-FRONTEND_POD=$(kubectl get pod -l app=frontend -o jsonpath='{.items[0].metadata.name}')
+FRONTEND_POD=$(kubectl --kubeconfig ~/.kube/config get pod -l app=frontend -o jsonpath='{.items[0].metadata.name}')
 
 # Test backend from frontend
-kubectl exec "$FRONTEND_POD" -c frontend -- curl http://backend:5678
+kubectl --kubeconfig ~/.kube/config exec "$FRONTEND_POD" -c frontend -- curl http://backend:5678
 ```
 
 Expected: `Backend v1 response`
@@ -63,17 +63,17 @@ Expected: `Backend v1 response`
 ### Enable Retries and Timeouts
 
 ```bash
-kubectl apply -f traffic-management/02-retries-timeouts.yaml
+kubectl --kubeconfig ~/.kube/config apply -f traffic-management/02-retries-timeouts.yaml
 ```
 
 ### Deploy Canary (v2)
 
 ```bash
 # Deploy v2
-kubectl apply -f backend-v2-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f backend-v2-deployment.yaml
 
 # Configure 90% v1, 10% v2
-kubectl apply -f traffic-management/04-canary-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f traffic-management/04-canary-deployment.yaml
 
 # Test traffic split
 ./test-traffic.sh 100
@@ -84,7 +84,7 @@ kubectl apply -f traffic-management/04-canary-deployment.yaml
 ### Kiali (Service Graph)
 
 ```bash
-kubectl port-forward -n istio-system svc/kiali 20001:20001
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/kiali 20001:20001
 ```
 
 Open: http://localhost:20001
@@ -92,7 +92,7 @@ Open: http://localhost:20001
 ### Jaeger (Distributed Tracing)
 
 ```bash
-kubectl port-forward -n istio-system svc/tracing 16686:80
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/tracing 16686:80
 ```
 
 Open: http://localhost:16686
@@ -100,7 +100,7 @@ Open: http://localhost:16686
 ### Grafana (Metrics)
 
 ```bash
-kubectl port-forward -n istio-system svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/grafana 3000:3000
 ```
 
 Open: http://localhost:3000
@@ -125,17 +125,17 @@ istioctl proxy-config clusters $FRONTEND_POD
 ### Enable Strict mTLS
 
 ```bash
-kubectl apply -f security/mtls-strict.yaml
+kubectl --kubeconfig ~/.kube/config apply -f security/mtls-strict.yaml
 ```
 
 ### Inject Faults for Testing
 
 ```bash
 # 50% of requests get 5s delay
-kubectl apply -f fault-injection/delay-injection.yaml
+kubectl --kubeconfig ~/.kube/config apply -f fault-injection/delay-injection.yaml
 
 # 10% of requests get HTTP 500
-kubectl apply -f fault-injection/error-injection.yaml
+kubectl --kubeconfig ~/.kube/config apply -f fault-injection/error-injection.yaml
 ```
 
 ### Clean Up
@@ -145,7 +145,7 @@ kubectl apply -f fault-injection/error-injection.yaml
 istioctl uninstall --purge -y
 
 # Remove namespace label
-kubectl label namespace default istio-injection-
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection-
 ```
 
 ---
@@ -156,10 +156,10 @@ kubectl label namespace default istio-injection-
 
 ```bash
 # Check namespace label
-kubectl get namespace -L istio-injection
+kubectl --kubeconfig ~/.kube/config get namespace -L istio-injection
 
 # If missing or you want to ensure it's set, add it:
-kubectl label namespace default istio-injection=enabled --overwrite
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled --overwrite
 ```
 
 **Note:** If you see "namespace/default not labeled", it means the label is already set!
@@ -168,10 +168,10 @@ kubectl label namespace default istio-injection=enabled --overwrite
 
 ```bash
 # Check VirtualService
-kubectl get virtualservice
+kubectl --kubeconfig ~/.kube/config get virtualservice
 
 # Describe VirtualService
-kubectl describe virtualservice backend
+kubectl --kubeconfig ~/.kube/config describe virtualservice backend
 
 # Check Envoy configuration
 istioctl proxy-config routes $FRONTEND_POD
@@ -181,10 +181,10 @@ istioctl proxy-config routes $FRONTEND_POD
 
 ```bash
 # Check if it's sidecar overhead
-kubectl logs $FRONTEND_POD -c istio-proxy
+kubectl --kubeconfig ~/.kube/config logs $FRONTEND_POD -c istio-proxy
 
 # View metrics
-kubectl port-forward -n istio-system svc/grafana 3000:3000
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/grafana 3000:3000
 # Then open Istio dashboards
 ```
 

@@ -34,15 +34,15 @@ spec:
 YAML
 
 istioctl install -f "$ISTIO_DOWNLOAD_DIR/tracing-install.yaml" -y
-kubectl rollout status deployment/istiod -n istio-system --timeout=300s
-kubectl label namespace default istio-injection=enabled --overwrite
+kubectl --kubeconfig "$HOME/.kube/config" rollout status deployment/istiod -n istio-system --timeout=300s
+kubectl --kubeconfig "$HOME/.kube/config" label namespace default istio-injection=enabled --overwrite
 
 # Use the sample add-ons shipped with this exact Istio version.
 for addon in prometheus grafana jaeger kiali; do
-    kubectl apply -f "$ISTIO_DIR/samples/addons/$addon.yaml"
+    kubectl --kubeconfig "$HOME/.kube/config" apply -f "$ISTIO_DIR/samples/addons/$addon.yaml"
 done
 
-kubectl apply -f - <<'YAML'
+kubectl --kubeconfig "$HOME/.kube/config" apply -f - <<'YAML'
 apiVersion: telemetry.istio.io/v1
 kind: Telemetry
 metadata:
@@ -56,11 +56,11 @@ spec:
 YAML
 
 for component in prometheus grafana jaeger kiali; do
-    kubectl rollout status "deployment/$component" -n istio-system --timeout=300s
+    kubectl --kubeconfig "$HOME/.kube/config" rollout status "deployment/$component" -n istio-system --timeout=300s
 done
 
 printf '\nIstio and sample observability add-ons are ready.\n'
 printf 'For this terminal, run: export PATH="%s/bin:$PATH"\n' "$ISTIO_DIR"
-printf 'Kiali: kubectl port-forward -n istio-system svc/kiali 20001:20001\n'
-printf 'Jaeger: kubectl port-forward -n istio-system svc/tracing 16686:80\n'
-printf 'Grafana: kubectl port-forward -n istio-system svc/grafana 3000:3000\n'
+printf 'Kiali: kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/kiali 20001:20001\n'
+printf 'Jaeger: kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/tracing 16686:80\n'
+printf 'Grafana: kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/grafana 3000:3000\n'

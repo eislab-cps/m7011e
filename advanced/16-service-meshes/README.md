@@ -80,12 +80,12 @@ The installer configures cluster infrastructure; the demo runs application traff
 | --- | --- |
 | `./install-istio.sh` | Downloads the pinned CLI if needed, installs Istio's demo control plane, configures the tracing provider, enables default-namespace injection, and installs the matching sample add-ons. These are real cluster changes. |
 | `export PATH=...:$PATH` | Makes the downloaded `istioctl` available in this terminal. It does not install another control plane or change every terminal's environment. |
-| `kubectl label namespace default istio-injection=enabled --overwrite` | Configures automatic sidecar injection for newly created eligible Pods. Existing Pods are not retroactively given a sidecar. `--overwrite` allows updating an existing label value. |
-| `kubectl apply -f examples/simple-demo.yaml` from the tutorial root | Creates the demo workloads and traffic configuration. From inside `examples/`, use the shorter path shown below. Relative paths depend on the current directory. |
+| `kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled --overwrite` | Configures automatic sidecar injection for newly created eligible Pods. Existing Pods are not retroactively given a sidecar. `--overwrite` allows updating an existing label value. |
+| `kubectl --kubeconfig ~/.kube/config apply -f examples/simple-demo.yaml` from the tutorial root | Creates the demo workloads and traffic configuration. From inside `examples/`, use the shorter path shown below. Relative paths depend on the current directory. |
 | `./test-demo.sh 20` from `examples/` | Waits for demo readiness, then sends 20 requests from the client workload and counts response versions. Twenty is a sample count, not a promised exact 70/30 split. |
-| `kubectl exec ... -c client -- curl ...` | Starts curl inside the application container. `-c` matters because the Pod also contains a proxy container. |
+| `kubectl --kubeconfig ~/.kube/config exec ... -c client -- curl ...` | Starts curl inside the application container. `-c` matters because the Pod also contains a proxy container. |
 | `istioctl proxy-config clusters ...` | Inspects the proxy's received configuration. This provides stronger evidence about transport settings than simply assuming that installed Istio implies encryption. |
-| `kubectl apply -f security/mtls-strict.yaml` | Applies a policy requiring mTLS for its targeted traffic. Confirm what workloads and namespaces the policy selects. |
+| `kubectl --kubeconfig ~/.kube/config apply -f security/mtls-strict.yaml` | Applies a policy requiring mTLS for its targeted traffic. Confirm what workloads and namespaces the policy selects. |
 | `istioctl uninstall --purge -y` | Removes mesh installation resources; `-y` skips the confirmation prompt. Follow the cleanup section to remove demo resources and injection settings too. |
 
 **Predict and test:** Why can an old Pod lack a sidecar after its namespace is labeled? Why will 20 weighted requests not necessarily produce exactly 14 v1 and 6 v2 responses? Distinguish the browser-facing TLS from Tutorial 7, workload-to-workload mTLS, and user authorization from Tutorial 12: each authenticates or protects a different boundary. See [the command guide](../../COMMANDS.md).
@@ -100,11 +100,11 @@ Use this small demo to connect each setup command to an observable routing resul
 export PATH="$PWD/.istio/istio-1.31.3/bin:$PATH"
 
 # 2. Enable sidecar injection (use --overwrite if already labeled)
-kubectl label namespace default istio-injection=enabled --overwrite
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled --overwrite
 
 # 3. Deploy the demo
 cd examples
-kubectl apply -f simple-demo.yaml
+kubectl --kubeconfig ~/.kube/config apply -f simple-demo.yaml
 
 # 4. Test traffic splitting (70% v1, 30% v2)
 ./test-demo.sh 20
@@ -224,7 +224,7 @@ istioctl install --set profile=demo -y
 
 **Verify installation:**
 ```bash
-kubectl get pods -n istio-system
+kubectl --kubeconfig ~/.kube/config get pods -n istio-system
 ```
 
 **Expected pods:**
@@ -241,10 +241,10 @@ Label your namespace to automatically inject Envoy sidecars:
 
 ```bash
 # Enable for default namespace
-kubectl label namespace default istio-injection=enabled --overwrite
+kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled --overwrite
 
 # Verify the label
-kubectl get namespace -L istio-injection
+kubectl --kubeconfig ~/.kube/config get namespace -L istio-injection
 ```
 
 Expected output:
@@ -376,11 +376,11 @@ spec:
 
 **Deploy the application:**
 ```bash
-kubectl apply -f backend-deployment.yaml
-kubectl apply -f frontend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f backend-deployment.yaml
+kubectl --kubeconfig ~/.kube/config apply -f frontend-deployment.yaml
 
 # Verify sidecars were injected
-kubectl get pods
+kubectl --kubeconfig ~/.kube/config get pods
 ```
 
 **You should see 2 containers per pod** (app + istio-proxy):
@@ -568,10 +568,10 @@ spec:
 **Test it:**
 ```bash
 # Regular user (90% v1, 10% v2)
-kubectl exec frontend-xxx -c frontend -- curl backend:5678
+kubectl --kubeconfig ~/.kube/config exec frontend-xxx -c frontend -- curl backend:5678
 
 # Beta user (100% v2)
-kubectl exec frontend-xxx -c frontend -- curl -H "x-beta-user: true" backend:5678
+kubectl --kubeconfig ~/.kube/config exec frontend-xxx -c frontend -- curl -H "x-beta-user: true" backend:5678
 ```
 
 ---
@@ -595,12 +595,12 @@ spec:
 
 **Apply it:**
 ```bash
-kubectl apply -f security/mtls-strict.yaml
+kubectl --kubeconfig ~/.kube/config apply -f security/mtls-strict.yaml
 ```
 
 **Inspect the outbound TLS configuration:**
 ```bash
-FRONTEND_POD=$(kubectl get pod -l app=frontend -o jsonpath='{.items[0].metadata.name}')
+FRONTEND_POD=$(kubectl --kubeconfig ~/.kube/config get pod -l app=frontend -o jsonpath='{.items[0].metadata.name}')
 istioctl proxy-config clusters "$FRONTEND_POD" --fqdn backend.default.svc.cluster.local -o json
 ```
 
@@ -646,7 +646,7 @@ For traces to join across several application hops, the application must forward
 ### Access Kiali (Service Mesh Dashboard)
 
 ```bash
-kubectl port-forward -n istio-system svc/kiali 20001:20001
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/kiali 20001:20001
 ```
 
 Open: http://localhost:20001
@@ -661,7 +661,7 @@ Open: http://localhost:20001
 ### Access Jaeger (Distributed Tracing)
 
 ```bash
-kubectl port-forward -n istio-system svc/tracing 16686:80
+kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/tracing 16686:80
 ```
 
 Open: http://localhost:16686
@@ -677,7 +677,7 @@ Open: http://localhost:16686
 ```bash
 # Generate requests
 for i in {1..100}; do
-  kubectl exec frontend-xxx -c frontend -- curl -s backend:5678
+  kubectl --kubeconfig ~/.kube/config exec frontend-xxx -c frontend -- curl -s backend:5678
 done
 ```
 
@@ -826,7 +826,7 @@ spec:
 
 ```bash
 # Check sidecar resource usage
-kubectl top pods
+kubectl --kubeconfig ~/.kube/config top pods
 
 # Compare with and without sidecar
 ```

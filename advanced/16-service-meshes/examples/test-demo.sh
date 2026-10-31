@@ -17,26 +17,26 @@ echo "╚═══════════════════════�
 echo ""
 
 # Check if demo is deployed
-if ! kubectl get deployment client &> /dev/null; then
+if ! kubectl --kubeconfig "$HOME/.kube/config" get deployment client &> /dev/null; then
     echo "❌ Error: Demo not deployed"
     echo ""
     echo "Please deploy first:"
-    echo "  kubectl label namespace default istio-injection=enabled"
-    echo "  kubectl apply -f simple-demo.yaml"
+    echo "  kubectl --kubeconfig ~/.kube/config label namespace default istio-injection=enabled"
+    echo "  kubectl --kubeconfig ~/.kube/config apply -f simple-demo.yaml"
     exit 1
 fi
 
 # Wait for pods to be ready
 echo "Waiting for pods to be ready..."
-kubectl wait --for=condition=ready pod -l app=client --timeout=60s
-kubectl wait --for=condition=ready pod -l app=hello --timeout=60s
+kubectl --kubeconfig "$HOME/.kube/config" wait --for=condition=ready pod -l app=client --timeout=60s
+kubectl --kubeconfig "$HOME/.kube/config" wait --for=condition=ready pod -l app=hello --timeout=60s
 
 echo ""
 echo "Generating $COUNT requests to hello service..."
 echo ""
 
 # Run test and count responses
-RESULT=$(kubectl exec deploy/client -c client -- sh -ec "for i in \$(seq 1 $COUNT); do curl --fail --silent --show-error http://hello:8080; echo; done")
+RESULT=$(kubectl --kubeconfig "$HOME/.kube/config" exec deploy/client -c client -- sh -ec "for i in \$(seq 1 $COUNT); do curl --fail --silent --show-error http://hello:8080; echo; done")
 
 V1_COUNT=$(echo "$RESULT" | grep -c "v1" || true)
 V2_COUNT=$(echo "$RESULT" | grep -c "v2" || true)
@@ -77,10 +77,10 @@ fi
 
 echo ""
 echo "View traffic in Kiali:"
-echo "  kubectl port-forward -n istio-system svc/kiali 20001:20001"
+echo "  kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/kiali 20001:20001"
 echo "  Open: http://localhost:20001"
 echo ""
 echo "View traces in Jaeger:"
-echo "  kubectl port-forward -n istio-system svc/tracing 16686:80"
+echo "  kubectl --kubeconfig ~/.kube/config port-forward -n istio-system svc/tracing 16686:80"
 echo "  Open: http://localhost:16686"
 echo ""
