@@ -15,7 +15,7 @@ Keep `tls-demo` until the demonstration. If you already moved to Tutorial 7 or y
 
 ## Demonstration Order
 
-Aim for approximately eight minutes of prepared demonstration. This is a suggested walkthrough, not a new fixed session duration.
+Aim for approximately eight minutes of prepared demonstration.
 
 | Step | Show | Explain |
 | --- | --- | --- |
