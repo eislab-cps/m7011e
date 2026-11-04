@@ -2,8 +2,6 @@
 
 Demonstrate your group's environment to **Casper Lundberg on Friday 13 November**. Prepare with [Tutorial 5B](./README.md), sections 1–15. The purpose is to establish that you can access, inspect and explain your working environment before developing the full project. The sample web application is sufficient for this checkpoint.
 
-Use Canvas for the exact demonstration time and practical arrangements. **Form your project group in Canvas immediately**; the deadline is Wednesday 4 November. **Also sign up separately for a design seminar in Canvas** on 16, 17 or 19 November. Those design seminars have six project groups per 90-minute session; they are separate from this environment demonstration.
-
 ## Prepare Before the Session
 
 - Know your group number, members, assigned public IP and domain.
@@ -15,11 +13,9 @@ Use Canvas for the exact demonstration time and practical arrangements. **Form y
 
 Keep `tls-demo` until the demonstration. If you already moved to Tutorial 7 or your application, show equivalent resources in their actual namespace. Do not create two Ingresses for the same hostname and `/` route just to reproduce example names.
 
-The finished project, a separate monitoring stack and an advanced feature are not required at this checkpoint. The current numbered core assignment list is **REQ1–REQ26**; monitoring is supporting material rather than a separate numbered requirement.
-
 ## Demonstration Order
 
-Aim for approximately eight minutes of prepared demonstration, leaving time for questions within the slot announced in Canvas. This is a suggested walkthrough, not a new fixed session duration.
+Aim for approximately eight minutes of prepared demonstration. This is a suggested walkthrough, not a new fixed session duration.
 
 | Step | Show | Explain |
 | --- | --- | --- |
