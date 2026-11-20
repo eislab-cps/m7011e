@@ -13,7 +13,9 @@ postgres:
 # Keycloak Configuration
 keycloak:
   replicas: 1
-  image: quay.io/keycloak/keycloak:23.0
+  # Unofficial rebuild of quay.io/keycloak/keycloak:23.0 that also runs on
+  # older x86-64-v1 CPUs (the official image needs x86-64-v2).
+  image: docker.io/cappelumpa/keycloak-x86-64-v1:23.0
 
   # Admin credentials (CHANGE THESE!)
   adminUser: admin
@@ -29,10 +31,14 @@ keycloak:
     password: keycloak-secure-password-123  # Must match PostgreSQL password
 
   # Resource limits (optional)
+  # requests = what is reserved on the node (kept small); limits = how far it
+  # may grow when needed. start-dev rebuilds Keycloak on every boot, which is
+  # CPU-heavy, so the CPU limit is high enough for older machines to finish
+  # starting; after startup it idles far below it.
   resources:
     limits:
-      cpu: 500m
-      memory: 1Gi
+      cpu: "2"
+      memory: 1536Mi
     requests:
       cpu: 100m
       memory: 256Mi

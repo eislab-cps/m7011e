@@ -18,9 +18,20 @@ spec:
          containers:
            - name: postgres
              image: {{ .Values.postgres.image }}
+             # Some k3s/Ubuntu hosts' default AppArmor profile blocks the
+             # signals Postgres uses during first-boot init, leaving it never
+             # listening on TCP. Requires Kubernetes 1.30+.
+             securityContext:
+               appArmorProfile:
+                 type: Unconfined
              imagePullPolicy: "IfNotPresent"
              ports:
                - containerPort: 5432
+             readinessProbe:
+               exec:
+                 command: ["pg_isready", "-U", {{ .Values.postgres.user | quote }}, "-d", {{ .Values.keycloak.database.database | quote }}]
+               initialDelaySeconds: 5
+               periodSeconds: 5
              envFrom:
                - configMapRef:
                    name: postgres-config
