@@ -68,7 +68,7 @@ kubectl --kubeconfig ~/.kube/config get certificate hello-world-prod-tls -n tls-
 **On a laptop**, open the public URL and inspect the served certificate. A terminal alternative is:
 
 ```bash
-curl --head https://group-07-m7011e-ltu.se
+curl --head https://group-7-m7011e-ltu.se
 ```
 
 Replace the example domain. `curl` makes an HTTPS request with normal certificate verification; `--head` asks for response headers. The sample supports this method; use a normal GET if your replacement application does not. A browser warning or `curl --insecure` does not demonstrate trusted production HTTPS. Inspect the hostname, validity and trust, and explain why the expected certificate is being served.

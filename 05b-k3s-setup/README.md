@@ -10,7 +10,7 @@ There are three milestones:
 2. **Enable HTTPS:** install cert-manager, try staging, then request a trusted certificate (sections 8–13).
 3. **Continue with your application:** keep the environment for the demonstration, then use Tutorials 6 and 7 (sections 14–16).
 
-Commands use the example IP and domain directly. Replace `203.0.113.10` and `group-07-m7011e-ltu.se` with your group's details wherever they appear; no shell variables need to be set first.
+Commands use the example IP and domain directly. Replace `203.0.113.10` and `group-7-m7011e-ltu.se` with your group's details wherever they appear; no shell variables need to be set first.
 
 **Course checkpoint — Friday 13 November 2026:** prepare the environment in sections 1–15 and use the [mandatory environment demonstration brief](./DEMONSTRATION.md) to prepare for Casper's session. Keep the sample application available until you have demonstrated it; the cleanup in section 16 can wait. If you have already replaced it with a later tutorial's application, demonstrate that equivalent working setup using its actual resource names.
 
@@ -288,7 +288,7 @@ data:
     <head><title>K3s HTTPS test</title></head>
     <body>
       <h1>Hello from the course VM</h1>
-      <p>Domain: group-07-m7011e-ltu.se</p>
+      <p>Domain: group-7-m7011e-ltu.se</p>
       <p>The browser's certificate check, not this text, proves TLS trust.</p>
     </body>
     </html>
@@ -357,10 +357,10 @@ spec:
   ingressClassName: traefik
   tls:
   - hosts:
-    - group-07-m7011e-ltu.se
+    - group-7-m7011e-ltu.se
     secretName: hello-world-staging-tls
   rules:
-  - host: group-07-m7011e-ltu.se
+  - host: group-7-m7011e-ltu.se
     http:
       paths:
       - path: /
@@ -372,7 +372,7 @@ spec:
               number: 80
 EOF
 kubectl --kubeconfig ~/.kube/config get ingress hello-world -n tls-demo
-curl --head "http://group-07-m7011e-ltu.se"
+curl --head "http://group-7-m7011e-ltu.se"
 ```
 
 The Ingress matches the HTTP hostname and `/` path, then routes through the Service. `tls.hosts` names the certificate's hostname, and `secretName` names the TLS material Traefik will use. The annotation asks cert-manager's ingress-shim to create a Certificate in the **same namespace**. It does not install an issuer or create DNS. `curl --head` requests HTTP response headers; a successful plain HTTP response still says nothing about certificate trust.
@@ -409,8 +409,8 @@ kubectl --kubeconfig ~/.kube/config logs deployment/cert-manager-cainjector -n c
 Test the staging endpoint:
 
 ```bash
-curl --head "https://group-07-m7011e-ltu.se"
-curl --insecure --head "https://group-07-m7011e-ltu.se"
+curl --head "https://group-7-m7011e-ltu.se"
+curl --insecure --head "https://group-7-m7011e-ltu.se"
 ```
 
 The first call is expected to reject a staging certificate's trust chain. The second is a deliberate **staging-only diagnostic**: `--insecure` bypasses certificate verification for that one curl call so you can inspect application routing. Do not carry it into production checks. A Ready staging Certificate and an untrusted browser warning are compatible results.
@@ -429,7 +429,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - group-07-m7011e-ltu.se
+    - group-7-m7011e-ltu.se
     secretName: hello-world-prod-tls
 EOF
 kubectl --kubeconfig ~/.kube/config get certificates -n tls-demo --watch
@@ -442,7 +442,7 @@ While the new certificate is being issued, Traefik may temporarily serve its def
 ```bash
 kubectl --kubeconfig ~/.kube/config wait --for=condition=Ready certificate/hello-world-prod-tls -n tls-demo --timeout=300s
 kubectl --kubeconfig ~/.kube/config get certificate hello-world-prod-tls -n tls-demo -o yaml
-curl --head "https://group-07-m7011e-ltu.se"
+curl --head "https://group-7-m7011e-ltu.se"
 ```
 
 Confirm `issuerRef.name: letsencrypt-prod` and a true Ready condition. `-o yaml` prints the resource configuration and status, not the Secret's private key. The curl call now verifies TLS normally.
@@ -450,7 +450,7 @@ Confirm `issuerRef.name: letsencrypt-prod` and a true Ready condition. `-o yaml`
 **Also test from your laptop in a second terminal**, using your actual assigned domain:
 
 ```bash
-curl --head "https://group-07-m7011e-ltu.se"
+curl --head "https://group-7-m7011e-ltu.se"
 ```
 
 This tests the public route rather than only connectivity from inside the VM. Open the same HTTPS URL in a browser and inspect the certificate's names and issuer. A page saying “TLS works” is not evidence; the client's verified connection is.
@@ -484,7 +484,7 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
   dnsNames:
-  - group-07-m7011e-ltu.se
+  - group-7-m7011e-ltu.se
 ```
 
 `issuerRef` selects the issuer; `dnsNames` lists names to validate; `secretName` chooses the output. The application Ingress's `tls.secretName` must be `my-app-tls` in the **same namespace**. Choose one management approach for that certificate rather than having an annotation and a separately maintained Certificate compete over it. See the [Certificate reference](https://cert-manager.io/docs/usage/certificate/) and [Ingress annotation behavior](https://cert-manager.io/docs/usage/ingress/).
