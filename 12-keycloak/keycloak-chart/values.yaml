@@ -31,15 +31,17 @@ keycloak:
     password: keycloak-secure-password-123  # Must match PostgreSQL password
 
   # Resource limits (optional)
-  # start-dev rebuilds Keycloak on every boot, which is CPU-heavy; 500m was
-  # too little for older machines to finish starting.
+  # requests = what is reserved on the node (kept small); limits = how far it
+  # may grow when needed. start-dev rebuilds Keycloak on every boot, which is
+  # CPU-heavy, so the CPU limit is high enough for older machines to finish
+  # starting; after startup it idles far below it.
   resources:
     limits:
       cpu: "2"
       memory: 1536Mi
     requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
 
 # Ingress configuration
 domain: keycloak.ltu-m7011e-johan.se  # Change to your domain
