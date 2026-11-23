@@ -13,9 +13,7 @@ postgres:
 # Keycloak Configuration
 keycloak:
   replicas: 1
-  # Unofficial rebuild of quay.io/keycloak/keycloak:23.0 that also runs on
-  # older x86-64-v1 CPUs (the official image needs x86-64-v2).
-  image: docker.io/cappelumpa/keycloak-x86-64-v1:23.0
+  image: quay.io/keycloak/keycloak:23.0
 
   # Admin credentials (CHANGE THESE!)
   adminUser: admin
