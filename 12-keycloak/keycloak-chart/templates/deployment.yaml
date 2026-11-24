@@ -56,6 +56,15 @@ spec:
         - name: http
           containerPort: 8080
           protocol: TCP
+        # Allows up to 10 min to start on slow machines; liveness/readiness
+        # only begin once this passes.
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 60
         livenessProbe:
           httpGet:
             path: /health/live
